@@ -12,7 +12,7 @@
     </div>
 
     <div class="green">
-    <h2>What tihs is</h2>
+      <h2>What tihs is</h2>
     </div>
     <p>
       Welcome to <i>my first webpage.</i> I created this webpage without the
@@ -20,26 +20,26 @@
       <b>understanding of html.</b>
     </p>
     <div class="green">
-    <h2>Why this is</h2>
+      <h2>Why this is</h2>
     </div>
     <div class="lists">
-    <ul>
-      <li>To learn HTML</li>
-      <li>
-        List element
-        <ol>
-          <li>Home</li>
-          <li>FAQ</li>
-          <li>Contact</li>
-          <li>About</li>
-        </ol>
-      </li>
-      <li>Here I have created ordered and unordered list</li>
-    </ul>
-</div>
+      <ul>
+        <li>To learn HTML</li>
+        <li>
+          List element
+          <ol>
+            <li>Home</li>
+            <li>FAQ</li>
+            <li>Contact</li>
+            <li>About</li>
+          </ol>
+        </li>
+        <li>Here I have created ordered and unordered list</li>
+      </ul>
+    </div>
 
     <div class="green">
-        <h2>ZeusLearning.com</h2>
+      <h2>ZeusLearning.com</h2>
     </div>
 
     <a href="https://www.zeuslearning.com/" target="_blank"
@@ -47,12 +47,14 @@
     >
 
     <div class="green">
-    <h2>On click of following image navigate to Google.com</h2>
+      <h2>On click of following image navigate to Google.com</h2>
     </div>
     <a href="https://www.google.com/"
-      ><img src="./images/google.png" style="height: 100px; border: 2px dashed rgb(169,169,169);" alt="no image found"
+      ><img
+        src="./images/google.png"
+        style="height: 100px; border: 2px dashed rgb(169, 169, 169)"
+        alt="no image found"
     /></a>
-
 
     <h2 class="grey">Some random table</h2>
     <table>
@@ -71,22 +73,34 @@
         <td>Row 3, cell 2</td>
         <td>Row 3, cell 3</td>
       </tr>
+       <tr>
+        <td>Row 4, cell 1</td>
+        <td>Row 4, cell 2</td>
+        <td>Row 4, cell 3</td>
+      </tr>
     </table>
 
     <h2 class="grey">Some random form</h2>
-    <p><i><b>Note: </b></i>it looks the part, but won't do a anything</p>
+    <p>
+      <i><b>Note: </b></i>it looks the part, but won't do a anything
+    </p>
 
-    <form name="myForm" onsubmit="return validateForm()" action="">
+    <form name="myForm" id="myForm" onsubmit="return validateForm()" action="">
       <p>Name:</p>
       <input type="text" name="Name" id="name" placeholder="Your name" />
 
       <p>Comments:</p>
-      <textarea name="comment" id="comment" rows="8" placeholder="Your comment"></textarea>
+      <textarea
+        name="comment"
+        id="comment"
+        rows="8"
+        placeholder="Your comment"
+      ></textarea>
 
       <p>Are you :</p>
-      <input type="radio" id="male" name="gender" value="male"/>
+      <input type="radio" id="male" name="gender" value="male" />
       <label for="male">Male</label><br />
-      <input type="radio" id="female" name="gender" value="female"/>
+      <input type="radio" id="female" name="gender" value="female" />
       <label for="female">Female</label><br />
 
       <input type="submit" id="submit" value="Submit Query" />
@@ -94,25 +108,29 @@
   </body>
   <script>
 
-    function validateForm() {
-        let name = document.getElementById("name").value;
-        let comment = document.getElementById("comment").value;
-        let ismale = document.getElementById("male").checked;
-        let isfemale = document.getElementById("female").checked;
-        
-    if (name == "") {
-        alert("Name must be filled out");
-        return false;
-    }else if(comment == ""){
-        alert("comment must be filled out");
-        return false;
-    }else if (!ismale && !isfemale){
-        alert("gender must be checked");
-        return false;
-    }
+        document.getElementById("myForm").addEventListener("submit",function validateForm(e) {
+          e.preventDefault();
 
-    return true;
-};
+            let name = document.getElementById("name");
+            let comment = document.getElementById("comment");
+            let ismale = document.getElementById("male");
+            let isfemale = document.getElementById("female");
+
+        if (name.value == '') {
+            name.focus();
+            alert("Name must be filled out");
+            return false;
+        }else if(comment.value == ''){
+          comment.focus();
+            alert("comment must be filled out");
+            return false;
+        }else if (!(ismale.checked) && !(isfemale.checked)){
+            alert("gender must be checked");
+            return false;
+        }
+
+        alert("form submited");
+        return true;
+    })
   </script>
 </html>
-
