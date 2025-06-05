@@ -1,48 +1,72 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
+
+@font-face {
+    font-family: "Roboto";
+    src: url(./fonts/Roboto-VariableFont_wdth\,wght.ttf);
+}
+
 body{
     background-color: black;
     margin-top: 20%;
+    
 }
 
 .profile-box{
     justify-self: center;
     background-color: white;
-    margin: auto 0px;
-    width: 20%;
-    height: 5%;
+    font-family: "Roboto";
+    width: 457px;
+    height: 138px;
 }
 
-.profile-pic>img{
-    margin-bottom: -5px;
-    margin-top: 5px;
-    width: 100px;
+.profile-pic{
+    width: 130px;
+    height: 130px;
 }
 
 .content-box{
-    padding: 5px;
+    margin: 4px;
     display: flex;
+    gap: 14px;
+    width: 457px;
+    height: 138px;
     align-items: center;
-    gap: 15px;
-}
-
-.profile-text{
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .username{
-    margin: 2px;
+    margin-bottom: 14px;
+    font-family: "Roboto";
+    font-size: 20px;
     font-weight: bold;
+    color: #000000;
 }
 
 .bio{
-    margin: 5px;
+    margin-bottom: 24px;
+    font-size: 20px;
+    color: #000000;
 }
 
 .interaction{
-    margin-top: 10px;
-    font-family: Arial, Helvetica, sans-serif;
+    /* margin-top: 10px; */
+    display: flex;
+    gap: 24px;
     color: grey;
 }
 
 .interaction > span {
     margin: 0px 10px;
+}
+
+.interaction-count{
+    margin-left: 14px;
+}
+
+.icon-box{
+    display: flex;
+    align-items: center;
+}
+
+.icon{
+    font-size: 20px;
 }

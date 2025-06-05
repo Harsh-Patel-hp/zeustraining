@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Edu+QLD+Hand:wght@400..700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Edu+QLD+Hand:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <div class="profile-box">
-        <div class="content-box">
-            <div class="profile-pic">
-                <img src="./images/pic.webp" alt="profile pic not loaded">
+      <div class="content-box">
+        <img
+          src="./images/pic.webp"
+          class="profile-pic"
+          alt="profile pic not loaded"
+        />
+
+        <div class="profile-text">
+          <div class="username">@moshhamedani</div>
+          <div class="bio">I'd love to teach you HTML/CSS!</div>
+          <div class="interaction">
+            <!-- <img src="./images/comment.png" alt="comment icon not loaded" style="width: 16px; height: 25px;"> -->
+            <div class="icon-box">
+              <i
+                class="fa-regular fa-comment icon"
+                style="transform: scaleX(-1)"
+              ></i>
+              <span class="interaction-count">242</span>
             </div>
-            <div class="profile-text">
-                <div class="username">
-                    @moshhamedani
-                </div>
-                <div class="bio">
-                I'd love to teach you HTML/CSS!
-                </div>
-                <div class="interaction">
-                    <!-- <img src="./images/comment.png" alt="comment icon not loaded" style="width: 16px; height: 25px;"> -->
-                    <i class="fa-regular fa-comment" style="transform: scaleX(-1);"></i>
-                    <span class="interaction-count">242</span>
-                    <i class="fa-solid fa-retweet"></i>
-                    <span class="interaction-count">142</span>
-                    <i class="fa-regular fa-heart"></i>
-                    <span class="interaction-count">2.6k</span>
-                </div>
+            <div class="icon-box">
+              <i class="fa-solid fa-retweet icon"></i>
+              <span class="interaction-count">142</span>
             </div>
+            <div class="icon-box">
+              <i class="fa-regular fa-heart icon"></i>
+              <span class="interaction-count">2.6k</span>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>
