@@ -1,13 +1,7 @@
-table,th,td {
-      border: 1px solid black;
-      
-}
-table{
-  background: rgba(128, 128, 128, 0.89);
-}
 body{
   background-color:#ffffcc;
   margin: 30px;
+  font-size: 0.85rem;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -20,7 +14,7 @@ body{
   font-style: italic;
   display: flex;
   align-items: center;
-  padding: 10px 0px;
+  padding: 5px 0px;
   letter-spacing: 10px;
   color: #ffffcc;
   background: #990000;
@@ -41,6 +35,12 @@ input::placeholder {
 textarea::placeholder {
   opacity: 1;
   color: black;
+  font-family:'Courier New', Courier, monospace;
+}
+
+img { 
+  height: 110px;
+  border: 2px dashed rgb(169, 169, 169);
 }
 
 
@@ -50,15 +50,17 @@ textarea::placeholder {
 }
 
 .green > h2{
+  padding: 2px 0px;
 margin-left: 10px;
 }
 
 .lists{
     font-style: italic;
-    color: #cc0000;
+    color: #aa2c23;
 }
 
 .grey{
+  font-size: 1rem;
   color: rgba(128, 128, 128, 0.68);
 }
 
@@ -66,5 +68,25 @@ margin-left: 10px;
   margin-top: 10px;
 }
 a {
+  color: #9a358f;
   text-decoration: none;
+}
+
+.gen{
+  margin: 10px 0px;
+}
+
+.title p {
+  margin: -5px;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+
+}
+
+table {
+  background: #cccccc;
 }

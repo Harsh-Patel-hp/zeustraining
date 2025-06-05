@@ -12,12 +12,12 @@
     </div>
 
     <div class="green">
-      <h2>What tihs is</h2>
+      <h2>What this is</h2>
     </div>
     <p>
       Welcome to <i>my first webpage.</i> I created this webpage without the
       assistance of webpage editor. Just my little text editor and a keen
-      <b>understanding of html.</b>
+      <i><b>understanding of html.</b></i>
     </p>
     <div class="green">
       <h2>Why this is</h2>
@@ -52,7 +52,6 @@
     <a href="https://www.google.com/"
       ><img
         src="./images/google.png"
-        style="height: 100px; border: 2px dashed rgb(169, 169, 169)"
         alt="no image found"
     /></a>
 
@@ -94,13 +93,13 @@
         name="comment"
         id="comment"
         rows="8"
-        placeholder="Your comment"
+        placeholder="Your comments"
       ></textarea>
 
-      <p>Are you :</p>
-      <input type="radio" id="male" name="gender" value="male" />
+      <p>Are you:</p>
+      <input type="radio" class="gen" id="male" name="gender" value="male" />
       <label for="male">Male</label><br />
-      <input type="radio" id="female" name="gender" value="female" />
+      <input type="radio" class="gen" id="female" name="gender" value="female" />
       <label for="female">Female</label><br />
 
       <input type="submit" id="submit" value="Submit Query" />
@@ -129,6 +128,10 @@
             return false;
         }
 
+        name.value="";
+        comment.value ="";
+        ismale.checked = false;
+        isfemale.checked = false;
         alert("form submited");
         return true;
     })
