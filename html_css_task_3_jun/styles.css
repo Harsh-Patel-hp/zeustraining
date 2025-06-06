@@ -32,6 +32,10 @@ input::placeholder {
   color: black;
 }
 
+textarea{
+  overflow-y: scroll
+}
+
 textarea::placeholder {
   opacity: 1;
   color: black;

@@ -50,9 +50,7 @@
       <h2>On click of following image navigate to Google.com</h2>
     </div>
     <a href="https://www.google.com/"
-      ><img
-        src="./images/google.png"
-        alt="no image found"
+      ><img src="./images/google.png" alt="no image found"
     /></a>
 
     <h2 class="grey">Some random table</h2>
@@ -72,7 +70,7 @@
         <td>Row 3, cell 2</td>
         <td>Row 3, cell 3</td>
       </tr>
-       <tr>
+      <tr>
         <td>Row 4, cell 1</td>
         <td>Row 4, cell 2</td>
         <td>Row 4, cell 3</td>
@@ -99,41 +97,49 @@
       <p>Are you:</p>
       <input type="radio" class="gen" id="male" name="gender" value="male" />
       <label for="male">Male</label><br />
-      <input type="radio" class="gen" id="female" name="gender" value="female" />
+      <input
+        type="radio"
+        class="gen"
+        id="female"
+        name="gender"
+        value="female"
+      />
       <label for="female">Female</label><br />
 
       <input type="submit" id="submit" value="Submit Query" />
     </form>
   </body>
   <script>
+    document
+      .getElementById("myForm")
+      .addEventListener("submit", function validateForm(e) {
+        e.preventDefault();
 
-        document.getElementById("myForm").addEventListener("submit",function validateForm(e) {
-          e.preventDefault();
+        let name = document.getElementById("name");
+        let comment = document.getElementById("comment");
+        let ismale = document.getElementById("male");
+        let isfemale = document.getElementById("female");
 
-            let name = document.getElementById("name");
-            let comment = document.getElementById("comment");
-            let ismale = document.getElementById("male");
-            let isfemale = document.getElementById("female");
-
-        if (name.value == '') {
-            name.focus();
-            alert("Name must be filled out");
-            return false;
-        }else if(comment.value == ''){
+        if (name.value == "") {
+          name.focus();
+          alert("Name must be filled out");
+          return false;
+        } else if (comment.value == "") {
           comment.focus();
-            alert("comment must be filled out");
-            return false;
-        }else if (!(ismale.checked) && !(isfemale.checked)){
-            alert("gender must be checked");
-            return false;
+          alert("comment must be filled out");
+          return false;
+        } else if (!ismale.checked && !isfemale.checked) {
+          alert("gender must be checked");
+          ismale.focus();
+          return false;
         }
 
-        name.value="";
-        comment.value ="";
+        name.value = "";
+        comment.value = "";
         ismale.checked = false;
         isfemale.checked = false;
         alert("form submited");
         return true;
-    })
+      });
   </script>
 </html>

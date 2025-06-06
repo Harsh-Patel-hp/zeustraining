@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .box {
+        width: 100%;
+        height: 100px;
+        overflow-x: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Factorial Calculator</h2>
+    <input
+      type="number"
+      placeholder="Enter the number"
+      name="inputnum"
+      id="inputnum"
+    />
+    <input type="button" onclick="myfunc()" value="submit" id="submit" />
+    <div class="box">
+      <div id="output"></div>
+    </div>
+  </body>
+  <script src="./factorial.js"></script>
+</html>
