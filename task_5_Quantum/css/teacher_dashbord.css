@@ -218,3 +218,96 @@ body {
   text-align: center;
   color: #000;
 }
+
+.stats-section {
+  font-family: "Quicksand";
+  margin: 2rem;
+  background: #8ddc97;
+  border-radius: 3px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat-item {
+  font-family: "Quicksand";
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-info h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat-info p {
+  font-family: "Quicksand";
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem;
+}
+
+.courses-info {
+  color: #666;
+  font-size: 14px;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sort-select {
+  width: 10rem;
+  height: 30px;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #eeeeee;
+  outline: none;
+  color: #222222;
+  appearance: none;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  background-image: url("../assets/icons/arrow-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+.sort-btn {
+  transform: rotate(90deg);
+  border: 0px;
+}
+
+.line {
+  margin: 17px 30px;
+  border-bottom: 1px solid #686868;
+  opacity: 0.12;
+}
