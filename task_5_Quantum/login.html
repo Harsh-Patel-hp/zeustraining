@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/login.css" />
+  </head>
+  <body>
+    <div class="login_container">
+      <div class="header">
+        <img
+          src="./assets/icons/logo used in header.svg"
+          class="header-logo"
+          srcset=""
+        />
+      </div>
+
+      <div class="main-login">
+        <div class="login-box">
+          <div class="login-title">
+            <div class="back-icon">
+              <img src="./assets/icons/back.svg" alt="" srcset="" />
+            </div>
+            <div class="text">Log in with Quantum</div>
+          </div>
+          <div class="login-form">
+            <div class="radio-btns form-field">
+              <div class="radio-btn">
+                <input
+                  type="radio"
+                  name="school_type"
+                  id="district"
+                  value="district"
+                />
+                <label for="district">District</label>
+              </div>
+              <div class="radio-btn">
+                <input
+                  type="radio"
+                  name="school_type"
+                  id="independent_school"
+                  value="independent_school"
+                />
+                <label for="independent_school">Independent school</label>
+              </div>
+            </div>
+            <div class="state dropdown form-field">
+              <label for="state">State*</label>
+              <select name="languages" id="lang">
+                <option value="alabama">Alabama</option>
+                <option value="state1">state1</option>
+                <option value="state2">state2</option>
+                <option value="state3">state3</option>
+                <option value="state4">state4</option>
+              </select>
+            </div>
+            <div class="state dropdown form-field">
+              <label for="district">District*</label>
+              <select name="languages" id="lang">
+                <option value="alabama">Alabama School District</option>
+              </select>
+            </div>
+            <div class="form-field username">
+              <div class="text-field">
+                <input
+                  placeholder="Username/Email ID*"
+                  type="text"
+                  name="username"
+                  id="username"
+                />
+              </div>
+              <a href="#" class="forgot">Forgot username?</a>
+            </div>
+            <div class="form-field">
+              <div class="text-field password-container">
+                <input
+                  placeholder="Password*"
+                  type="password"
+                  name="password"
+                  id="password"
+                />
+                <img
+                  src="./assets/icons/preview.svg"
+                  alt=""
+                  srcset=""
+                  class="password-eye"
+                  onclick="togglePassword()"
+                />
+              </div>
+              <a href="#" class="forgot">Forgot password?</a>
+            </div>
+            <div class="form-field remember-me">
+              <input type="checkbox" name="remember" id="remember" />
+              <label for="remember">Remember me</label>
+            </div>
+
+            <div class="form-field login-field">
+              <button type="submit" class="login-btn">Log in</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="about"><a href="#">About </a></div>
+        <div class="middel-line"></div>
+        <div class="contact"><a href="#"> Contact Us</a></div>
+      </div>
+
+      <div class="footer">
+        <img
+          src="./assets/icons/logo_used_in_footer.svg"
+          class="footer-logo"
+          alt=""
+        />
+        <div class="foot-text">
+          <div class="copy-right">Copyright © 2020 2021</div>
+          <div class="zeus">Zeus Systems Pvt. Ltd.</div>
+          <div class="all-right">All rights reserved</div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="./loginscript.js"></script>
+</html>

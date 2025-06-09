@@ -1,0 +1,301 @@
+@font-face {
+  font-family: "Quicksand";
+  src: url("../assets/Quicksand_font_1/Quicksand-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background-color: #eeeeee;
+  font-family: "Quicksand";
+  height: 100vh;
+  margin: 0px;
+}
+
+.login_container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0px;
+  flex: 1; /* This will make main-login take up remaining space */
+}
+
+.footer {
+  font-size: 12px;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  color: #616161;
+  background-color: #e0e1e1;
+  margin-top: auto; /* This pushes footer to bottom */
+}
+
+.header {
+  width: 100%;
+  background-image: url("../assets/header_pattern_svg.svg");
+  border-bottom: 2px solid #3ac7ec;
+  background-color: black;
+  mix-blend-mode: multiply;
+}
+
+.header-logo {
+  margin: 15px 0px 10px 20px;
+}
+.main-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0px;
+}
+
+.login-box {
+  width: 488px;
+  height: 560px;
+  background-color: #ffffff;
+  border-top: 4px solid #3ac7ec;
+  border-radius: 3px;
+}
+
+.login-title {
+  margin: 16px 30px;
+  display: flex;
+}
+
+.login-title .text {
+  font-family: "Quicksand";
+  margin: 0px auto;
+  /* font-weight: bold; */
+  /* font-style: normal; */
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.login-form {
+  margin: 32px;
+}
+.radio-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin: 18px;
+}
+
+.radio-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.radio-btns input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0px;
+  border: 2px solid #1f7a54;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+.radio-btns input[type="radio"]:checked::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  background-color: #1f7a54;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}
+
+.form-field {
+  margin: 25px 0px;
+}
+
+.dropdown select {
+  height: 30px;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  outline: none;
+  color: #222222;
+  appearance: none;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  background-image: url("../assets/icons//arrow-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+.dropdown {
+  height: 45px;
+}
+
+.dropdown label {
+  margin-top: 10px;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0px;
+  color: #666666;
+  opacity: 1;
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field .text-field {
+  width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.text-field input {
+  outline: none;
+  font-size: 1rem;
+  border: none;
+}
+.username {
+  margin-top: 55px;
+  margin-bottom: 30px;
+}
+
+.form-field input::placeholder {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #666666;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+.forgot {
+  margin-top: 5px;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #1f7a54;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: flex;
+  justify-content: end;
+}
+
+.password-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin-left: -6px;
+  margin-bottom: 32px;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  background-image: url("../assets/icons/checkbox-unchecked.svg");
+  height: 21px;
+  width: 21px;
+}
+
+input[type="checkbox"]:checked {
+  background-image: url("../assets/icons/checkbox-checked.svg");
+}
+
+.login-field {
+  display: flex;
+  justify-content: center;
+}
+
+.login-btn {
+  height: 40px;
+  width: 215.51px;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  border: none;
+  text-transform: uppercase;
+  border-radius: 3px;
+  box-shadow: 0px 3px 5px #0000003d;
+  background-color: #3fd28b;
+}
+
+.info {
+  display: flex;
+  margin: 16px;
+  justify-content: center;
+}
+
+.info a {
+  text-decoration: none;
+  color: #1f7a54;
+  font-size: 14px;
+}
+
+.info .about {
+  margin-right: 10px;
+}
+
+.info .contact {
+  margin-left: 10px;
+}
+.middel-line {
+  border-right: 1px solid #d1d1d1;
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 12px;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  color: #616161;
+  background-color: #e0e1e1;
+}
+
+.foot-text {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding-left: 10px;
+  border-left: 1px solid #0000001f;
+}
+
+.zeus {
+  margin: 0px 10px;
+  font-weight: bold;
+}
+
+.footer-logo {
+  margin-right: 10px;
+}
