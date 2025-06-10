@@ -6,3 +6,9 @@ function togglePassword() {
     password.type = "password";
   }
 }
+
+let loginbtn = document
+  .getElementById("login-button")
+  .addEventListener("click", () => {
+    window.location.href = "./teacher_dashbord.html";
+  });
