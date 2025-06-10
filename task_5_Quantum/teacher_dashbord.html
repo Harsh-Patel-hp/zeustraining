@@ -6,6 +6,7 @@
     <title>Dashbord</title>
     <link rel="stylesheet" href="./css/teacher_dashbord.css" />
   </head>
+
   <body>
     <div class="dashbord-container">
       <div class="nav-bar">
@@ -16,7 +17,7 @@
           srcset=""
         />
         <div class="nav-links">
-          <a href="#">dashboard</a>
+          <a href="#" class="active">dashboard</a>
           <a href="#">content</a>
           <a href="#">users</a>
           <a href="#">reports</a>
@@ -47,171 +48,299 @@
           </button>
         </div>
       </div>
-
-      <div class="main-content">
-        <section class="stats-section">
-          <div class="stat-item">
-            <div class="stat-icon">
-              <img src="./assets/icons/courses.svg" alt="" srcset="" />
+      <div class="content-of-dashbord">
+        <div class="main-content">
+          <section class="stats-section">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <img src="./assets/icons/courses.svg" alt="" srcset="" />
+              </div>
+              <div class="stat-info">
+                <h3>4</h3>
+                <p>Courses</p>
+              </div>
             </div>
-            <div class="stat-info">
-              <h3>4</h3>
-              <p>Courses</p>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <img src="./assets/icons/classes.svg" alt="" srcset="" />
+              </div>
+              <div class="stat-info">
+                <h3>4</h3>
+                <p>Classes</p>
+              </div>
             </div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-icon">
-              <img src="./assets/icons/classes.svg" alt="" srcset="" />
-            </div>
-            <div class="stat-info">
-              <h3>4</h3>
-              <p>Classes</p>
-            </div>
-          </div>
-        </section>
-      </div>
-      <div class="courses-header">
-        <div class="courses-info">Showing 4 of 4 courses</div>
-        <div class="sort-controls">
-          <span>Sort By:</span>
-          <select class="sort-select">
-            <option>Course Name</option>
-            <option>Date Created</option>
-            <option>Students</option>
-          </select>
-          <button class="sort-btn">
-            <img src="./assets/icons/back.svg" alt="" srcset="" />
-          </button>
+          </section>
         </div>
-      </div>
-      <div class="line"></div>
-      <!-- Courses Grid -->
-      <div class="courses-grid">
-        <!-- Course 1: Acceleration -->
-        <div class="course-card">
-          <div class="star-icon">⭐</div>
-          <div class="course-content">
-            <div class="course-image physics"></div>
-            <div class="course-info">
-              <div class="course-header">
-                <div>
-                  <h3 class="course-title">Acceleration</h3>
-                  <div class="course-meta">Physics • Grade 7 +2</div>
-                  <div class="course-stats">
-                    <span>4 Units</span>
-                    <span>18 Lessons</span>
-                    <span>24 Topics</span>
+        <div class="courses-header">
+          <div class="courses-info">Showing 4 of 4 courses</div>
+          <div class="sort-controls">
+            <span>Sort By:</span>
+            <select class="sort-select">
+              <option>Course Name</option>
+              <option>Date Created</option>
+              <option>Students</option>
+            </select>
+            <button class="sort-btn">
+              <img src="./assets/icons/back.svg" alt="" srcset="" />
+            </button>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="courses-grid">
+          <div class="course-card">
+            <div class="star-icon">
+              <img src="./assets/icons/favourite.svg" alt="" srcset="" />
+            </div>
+            <div class="course-content">
+              <div class="image-and-info">
+                <div class="course-image">
+                  <img src="./assets/images/imageMask-1.svg" alt="" srcset="" />
+                </div>
+                <div class="course-info">
+                  <div class="course-header">
+                    <div class="course-title">Acceleration</div>
+                    <div class="sub-grade">
+                      <div class="subject">Physics</div>
+                      <div class="sub-line"></div>
+                      <div class="grade">
+                        Grade 7<span class="add-grade">+2</span>
+                      </div>
+                    </div>
+                    <div class="unit-lessons-topic">
+                      <div class="count">4</div>
+                      <div class="text">Units</div>
+                      <div class="count">18</div>
+                      <div class="text">Lessons</div>
+                      <div class="count">24</div>
+                      <div class="text">Topics</div>
+                    </div>
+                  </div>
+                  <div class="course-class">
+                    <div class="class-selection">
+                      <select name="class-name" id="class-name">
+                        <option value="B">Mr. Frank's Class B</option>
+                        <option value="A">Class A</option>
+                        <option value="C">Class C</option>
+                      </select>
+                    </div>
+                    <div class="classs-info">
+                      <div class="student-count">50 Students</div>
+                      <div class="sub-line"></div>
+                      <div class="class-duration">
+                        21-Jan-2020 - 21-Aug-2020
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="course-class">
-                Mr. Frank's Class B ▼
-                <div class="course-class-info">
-                  <span>50 Students</span>
-                  <span>21-Jan-2020 - 21-Aug-2020</span>
-                </div>
-              </div>
+              <div class="course-line"></div>
               <div class="course-actions">
-                <button class="action-btn">👁️</button>
-                <button class="action-btn">📋</button>
-                <button class="action-btn">📊</button>
-                <button class="action-btn">📈</button>
+                <img src="./assets/icons/preview.svg" alt="" srcset="" />
+                <img src="./assets/icons/manage course.svg" alt="" srcset="" />
+                <img
+                  src="./assets/icons/grade submissions.svg"
+                  alt=""
+                  srcset=""
+                />
+                <img src="./assets/icons/reports.svg" alt="" srcset="" />
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Course 2: Displacement, Velocity and Speed -->
-        <div class="course-card">
-          <div class="star-icon">⭐</div>
-          <div class="course-content">
-            <div class="course-image physics"></div>
-            <div class="course-info">
-              <div class="course-header">
-                <div>
-                  <h3 class="course-title">Displacement, Velocity and Speed</h3>
-                  <div class="course-meta">Physics 2 • Grade 6 +3</div>
-                  <div class="course-stats">
-                    <span>2 Units</span>
-                    <span>15 Lessons</span>
-                    <span>20 Topics</span>
+          <div class="course-card">
+            <div class="star-icon">
+              <img src="./assets/icons/favourite.svg" alt="" srcset="" />
+            </div>
+            <div class="course-content">
+              <div class="image-and-info">
+                <div class="course-image">
+                  <img src="./assets/images/imageMask-2.svg" alt="" srcset="" />
+                </div>
+                <div class="course-info">
+                  <div class="course-header">
+                    <div class="course-title">
+                      Displacement, Velocity and Speed
+                    </div>
+                    <div class="sub-grade">
+                      <div class="subject">Physics 2</div>
+                      <div class="sub-line"></div>
+                      <div class="grade">
+                        Grade 6<span class="add-grade">+3</span>
+                      </div>
+                    </div>
+                    <div class="unit-lessons-topic">
+                      <div class="count">2</div>
+                      <div class="text">Units</div>
+                      <div class="count">15</div>
+                      <div class="text">Lessons</div>
+                      <div class="count">20</div>
+                      <div class="text">Topics</div>
+                    </div>
+                  </div>
+                  <div class="course-class">
+                    <div class="class-selection">
+                      <select name="class-name" id="class-name">
+                        <option value="B">No Classes</option>
+                        <option value="A">Class A</option>
+                        <option value="C">Class C</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="course-class">No Classes ▼</div>
+              <div class="course-line"></div>
               <div class="course-actions">
-                <button class="action-btn">👁️</button>
-                <button class="action-btn">📋</button>
-                <button class="action-btn">📊</button>
-                <button class="action-btn">📈</button>
+                <img src="./assets/icons/preview.svg" alt="" srcset="" />
+                <img
+                  src="./assets/icons/manage course.svg"
+                  class="low-opacity"
+                  alt=""
+                  srcset=""
+                />
+                <img
+                  src="./assets/icons/grade submissions.svg"
+                  alt=""
+                  class="low-opacity"
+                  srcset=""
+                />
+                <img src="./assets/icons/reports.svg" alt="" srcset="" />
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Course 3: Introduction to Biology -->
-        <div class="course-card">
-          <div class="star-icon">⭐</div>
-          <div class="course-content">
-            <div class="course-image biology"></div>
-            <div class="course-info">
-              <div class="course-header">
-                <div>
-                  <h3 class="course-title">
-                    Introduction to Biology: Micro organisms and how they
-                    affect...
-                  </h3>
-                  <div class="course-meta">Biology • Grade 4 +1</div>
-                  <div class="course-stats">
-                    <span>5 Units</span>
-                    <span>16 Lessons</span>
-                    <span>22 Topics</span>
+          <div class="course-card">
+            <div class="star-icon">
+              <img src="./assets/icons/favourite.svg" alt="" srcset="" />
+            </div>
+            <div class="course-content">
+              <div class="image-and-info">
+                <div class="course-image">
+                  <img src="./assets/images/imageMask.svg" alt="" srcset="" />
+                </div>
+                <div class="course-info">
+                  <div class="course-header">
+                    <div class="course-title">
+                      Introduction to Biology: Micro organisms and how they
+                      affec...
+                    </div>
+                    <div class="sub-grade">
+                      <div class="subject">Biology</div>
+                      <div class="sub-line"></div>
+                      <div class="grade">
+                        Grade 4<span class="add-grade">+1</span>
+                      </div>
+                    </div>
+                    <div class="unit-lessons-topic">
+                      <div class="count">5</div>
+                      <div class="text">Units</div>
+                      <div class="count">16</div>
+                      <div class="text">Lessons</div>
+                      <div class="count">22</div>
+                      <div class="text">Topics</div>
+                    </div>
+                  </div>
+                  <div class="course-class">
+                    <div class="class-selection">
+                      <select name="class-name" id="class-name">
+                        <option value="B">All Classes</option>
+                        <option value="A">Class A</option>
+                        <option value="C">Class C</option>
+                      </select>
+                    </div>
+                    <div class="classs-info">
+                      <div class="student-count">300 Students</div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="course-class">
-                All Classes ▼
-                <div class="course-class-info">
-                  <span>300 Students</span>
+              <div class="course-line"></div>
+              <div class="course-actions">
+                <img src="./assets/icons/preview.svg" alt="" srcset="" />
+                <img
+                  src="./assets/icons/manage course.svg"
+                  class="low-opacity"
+                  alt=""
+                  srcset=""
+                />
+                <img
+                  src="./assets/icons/grade submissions.svg"
+                  class="low-opacity"
+                  alt=""
+                  srcset=""
+                />
+                <img src="./assets/icons/reports.svg" alt="" srcset="" />
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="expired-badge">EXPIRED</div>
+            <div class="course-content">
+              <div class="image-and-info">
+                <div class="course-image">
+                  <img src="./assets/images/imageMask-3.svg" alt="" srcset="" />
+                </div>
+                <div class="course-info">
+                  <div class="course-header">
+                    <div class="course-title">
+                      Introduction to High School Mathematics
+                    </div>
+                    <div class="sub-grade">
+                      <div class="subject">Mathematics</div>
+                      <div class="sub-line"></div>
+                      <div class="grade">
+                        Grade 3<span class="add-grade">+3</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="course-class">
+                    <div class="class-selection">
+                      <select name="class-name" id="class-name">
+                        <option value="A">Mr. Frank's Class A</option>
+                        <option value="B">Class B</option>
+                        <option value="C">Class C</option>
+                      </select>
+                    </div>
+                    <div class="classs-info">
+                      <div class="student-count">44 Students</div>
+                      <div class="sub-line"></div>
+                      <div class="class-duration">
+                        14-Oct-2019 - 20-Oct-2020
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div class="course-line"></div>
               <div class="course-actions">
-                <button class="action-btn">👁️</button>
-                <button class="action-btn">📋</button>
-                <button class="action-btn">📊</button>
-                <button class="action-btn">📈</button>
+                <img src="./assets/icons/preview.svg" alt="" srcset="" />
+                <img src="./assets/icons/manage course.svg" alt="" srcset="" />
+                <img
+                  src="./assets/icons/grade submissions.svg"
+                  alt=""
+                  srcset=""
+                />
+                <img src="./assets/icons/reports.svg" alt="" srcset="" />
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Course 4: Introduction to High School Mathematics -->
-        <div class="course-card">
-          <div class="expired-badge">EXPIRED</div>
-          <div class="course-content">
-            <div class="course-image math"></div>
-            <div class="course-info">
-              <div class="course-header">
-                <div>
-                  <h3 class="course-title">
-                    Introduction to High School Mathematics
-                  </h3>
-                  <div class="course-meta">Mathematics • Grade 8 +3</div>
-                </div>
-              </div>
-              <div class="course-class">
-                Mr. Frank's Class A ▼
-                <div class="course-class-info">
-                  <span>44 Students</span>
-                  <span>14-Oct-2019 - 20-Oct-2020</span>
-                </div>
-              </div>
-              <div class="course-actions">
-                <button class="action-btn">👁️</button>
-                <button class="action-btn">📋</button>
-                <button class="action-btn">📊</button>
-                <button class="action-btn">📈</button>
-              </div>
+        <div class="footer-about">
+          <div class="info">
+            <div class="about"><a href="#">About </a></div>
+            <div class="middel-line"></div>
+            <div class="contact"><a href="#"> Contact Us</a></div>
+          </div>
+          <div class="footer">
+            <img
+              src="./assets/icons/logo_used_in_footer.svg"
+              class="footer-logo"
+              alt=""
+            />
+            <div class="foot-text">
+              <div class="copy-right">Copyright © 2020 2021</div>
+              <div class="zeus">Zeus Systems Pvt. Ltd.</div>
+              <div class="all-right">All rights reserved</div>
             </div>
           </div>
         </div>
