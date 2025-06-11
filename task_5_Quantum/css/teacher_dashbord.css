@@ -200,14 +200,14 @@ body {
   justify-content: space-between;
 }
 
-.show-all {
+.alerts-box .show-all {
+  text-transform: uppercase;
   letter-spacing: -0.35px;
   height: 48px;
   font-size: 14px;
   color: #1f7a54;
   position: sticky;
   bottom: 0;
-  padding: 15px 124px;
   background-color: #ffffff;
   box-shadow: 0px 1px 6px #0000003d;
   border-radius: 0px 0px 2px 2px;
@@ -283,6 +283,26 @@ body {
 
 .announcement-time {
   margin-left: auto;
+}
+
+.show-all-and-create-new {
+  text-transform: uppercase;
+  height: 48px;
+  font-size: 14px;
+  color: #1f7a54;
+  position: sticky;
+  bottom: 0;
+  background-color: #ffffff;
+  box-shadow: 0px 1px 6px #0000003d;
+  border-radius: 0px 0px 2px 2px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.line-of-announcement {
+  border-left: 1px solid #0000001f;
+  height: 30px;
 }
 
 .notifications .announcement-box-show {

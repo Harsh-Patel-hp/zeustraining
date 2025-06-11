@@ -8,52 +8,96 @@ let announcements = document.querySelector(".announcement-icon");
 let alertBox = document.querySelector(".alerts-box");
 let announcementBox = document.querySelector(".announcements-box");
 
-menuBtn.addEventListener("mouseover", () => {
-  navLinks.classList.toggle("show");
-  hamburger.classList.toggle("white-icon");
-});
+// Menu button hover functionality
+let menuTimeout;
 
-menuBtn.addEventListener("mouseout", () => {
-  navLinks.classList.remove("show");
-  hamburger.classList.remove("white-icon");
-});
+function showMenu() {
+  clearTimeout(menuTimeout);
+  navLinks.classList.add("show");
+  hamburger.classList.add("white-icon");
+}
 
-alerts.addEventListener("mouseover", () => {
-  alertBox.classList.toggle("alert-box-show");
-  alerts.classList.toggle("white-icon");
+function hideMenu() {
+  menuTimeout = setTimeout(() => {
+    navLinks.classList.remove("show");
+    hamburger.classList.remove("white-icon");
+  }, 200); // 200ms delay before hiding
+}
+
+menuBtn.addEventListener("mouseenter", showMenu);
+menuBtn.addEventListener("mouseleave", hideMenu);
+
+// Also add hover events to the nav-links themselves
+navLinks.addEventListener("mouseenter", showMenu);
+navLinks.addEventListener("mouseleave", hideMenu);
+
+// Alerts hover functionality
+let alertTimeout;
+
+function showAlerts() {
+  clearTimeout(alertTimeout);
+  alertBox.classList.add("alert-box-show");
+  alerts.classList.add("white-icon");
   let alertCount = alerts.querySelector(".alert-count");
   if (alertCount) {
-    alertCount.classList.toggle("count-hide");
+    alertCount.classList.add("count-hide");
   }
-});
+}
 
-alerts.addEventListener("mouseout", () => {
-  alertBox.classList.remove("alert-box-show");
-  alerts.classList.remove("white-icon");
-  let alertCount = alerts.querySelector(".alert-count");
-  if (alertCount) {
-    alertCount.classList.remove("count-hide");
-  }
-});
+function hideAlerts() {
+  alertTimeout = setTimeout(() => {
+    alertBox.classList.remove("alert-box-show");
+    alerts.classList.remove("white-icon");
+    let alertCount = alerts.querySelector(".alert-count");
+    if (alertCount) {
+      alertCount.classList.remove("count-hide");
+    }
+  }, 200); // 200ms delay before hiding
+}
 
-announcements.addEventListener("mouseover", () => {
-  announcementBox.classList.toggle("announcement-box-show");
+alerts.addEventListener("mouseenter", showAlerts);
+alerts.addEventListener("mouseleave", hideAlerts);
+
+// Also add hover events to the alert box itself
+if (alertBox) {
+  alertBox.addEventListener("mouseenter", showAlerts);
+  alertBox.addEventListener("mouseleave", hideAlerts);
+}
+
+// Announcements hover functionality
+let announcementTimeout;
+
+function showAnnouncements() {
+  clearTimeout(announcementTimeout);
+  announcementBox.classList.add("announcement-box-show");
+  announcements.classList.add("white-icon");
   let announcementCount = announcements.querySelector(".announcement-count");
   if (announcementCount) {
-    announcementCount.classList.toggle("count-hide");
+    announcementCount.classList.add("count-hide");
   }
-  announcements.classList.toggle("white-icon");
-});
+}
 
-announcements.addEventListener("mouseout", () => {
-  announcementBox.classList.remove("announcement-box-show");
-  let announcementCount = announcements.querySelector(".announcement-count");
-  if (announcementCount) {
-    announcementCount.classList.remove("count-hide");
-  }
-  announcements.classList.remove("white-icon");
-});
+function hideAnnouncements() {
+  announcementTimeout = setTimeout(() => {
+    announcementBox.classList.remove("announcement-box-show");
+    announcements.classList.remove("white-icon");
+    let announcementCount = announcements.querySelector(".announcement-count");
+    if (announcementCount) {
+      announcementCount.classList.remove("count-hide");
+    }
+  }, 200); // 200ms delay before hiding
+}
 
+announcements.addEventListener("mouseenter", showAnnouncements);
+announcements.addEventListener("mouseleave", hideAnnouncements);
+
+// Also add hover events to the announcement box itself
+if (announcementBox) {
+  announcementBox.addEventListener("mouseenter", showAnnouncements);
+  announcementBox.addEventListener("mouseleave", hideAnnouncements);
+}
+
+// Navigation items click functionality
 navItems.forEach((link) => {
   link.addEventListener("click", () => {
     navItems.forEach((item) => item.classList.remove("active"));
@@ -70,20 +114,25 @@ navItems.forEach((link) => {
   });
 });
 
+// Courses and Classes functionality
 const courses = document.getElementById("courses");
 const classes = document.getElementById("classes");
 
 function removeActive() {
-  courses.classList.remove("courses-active");
-  classes.classList.remove("classes-active");
+  if (courses) courses.classList.remove("courses-active");
+  if (classes) classes.classList.remove("classes-active");
 }
 
-courses.addEventListener("click", function () {
-  removeActive();
-  courses.classList.add("courses-active");
-});
+if (courses) {
+  courses.addEventListener("click", function () {
+    removeActive();
+    courses.classList.add("courses-active");
+  });
+}
 
-classes.addEventListener("click", function () {
-  removeActive();
-  classes.classList.add("classes-active");
-});
+if (classes) {
+  classes.addEventListener("click", function () {
+    removeActive();
+    classes.classList.add("classes-active");
+  });
+}
