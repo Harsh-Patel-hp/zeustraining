@@ -148,7 +148,7 @@ body {
 }
 
 .alerts-box {
-  display: none;
+  /* display: none; */
   height: 582px;
   position: absolute;
   overflow-y: scroll;
@@ -159,6 +159,7 @@ body {
 
 .alert-text {
   display: -webkit-box;
+  font-weight: 600;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -182,7 +183,7 @@ body {
   justify-content: flex-end;
   font-size: 12px;
   color: #6e6e6e;
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
 }
 
@@ -195,6 +196,9 @@ body {
   height: 15px;
 }
 
+.alert-info-course {
+  font-weight: 600;
+}
 .alert-text-and-icon {
   display: flex;
   justify-content: space-between;
@@ -204,6 +208,7 @@ body {
   text-transform: uppercase;
   letter-spacing: -0.35px;
   height: 48px;
+  font-weight: 600;
   font-size: 14px;
   color: #1f7a54;
   position: sticky;
@@ -246,6 +251,14 @@ body {
   top: 41px;
   box-shadow: 0px 3px 6px #00000029;
 }
+.announcement-title-name {
+  font-weight: 600;
+  color: #222222;
+}
+.announcement-text {
+  font-weight: 600;
+  color: #222222;
+}
 
 .announcement-ele {
   background-color: #ffffee;
@@ -269,7 +282,7 @@ body {
   margin-top: 8px;
   font-size: 12px;
   color: #6e6e6e;
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
 }
 
@@ -289,6 +302,7 @@ body {
   text-transform: uppercase;
   height: 48px;
   font-size: 14px;
+  font-weight: 600;
   color: #1f7a54;
   position: sticky;
   bottom: 0;
