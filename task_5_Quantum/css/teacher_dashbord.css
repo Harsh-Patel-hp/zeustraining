@@ -139,6 +139,87 @@ body {
   letter-spacing: 0px;
 }
 
+.alerts-box .alert-white-ele {
+  background-color: #ffffff;
+}
+
+.notifications .alert-box-show {
+  display: block;
+}
+
+.alerts-box {
+  display: none;
+  height: 582px;
+  position: absolute;
+  overflow-y: scroll;
+  right: 101px;
+  top: 41px;
+  box-shadow: 0px 3px 6px #00000029;
+}
+
+.alert-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alert-ele {
+  background-color: #ffffee;
+  color: #222222;
+  padding: 16px;
+  width: 315px;
+}
+
+.alert-info {
+  margin-top: 8px;
+}
+
+.alert-time {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 12px;
+  color: #6e6e6e;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.notifications .notification-line {
+  border-bottom: 1px solid #2222221f;
+}
+
+.minus-icon {
+  height: 18px;
+  height: 15px;
+}
+
+.alert-text-and-icon {
+  display: flex;
+  justify-content: space-between;
+}
+
+.show-all {
+  letter-spacing: -0.35px;
+  height: 48px;
+  font-size: 14px;
+  color: #1f7a54;
+  position: sticky;
+  bottom: 0;
+  padding: 15px 124px;
+  background-color: #ffffff;
+  box-shadow: 0px 1px 6px #0000003d;
+  border-radius: 0px 0px 2px 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notifications .count-hide {
+  display: none;
+}
+
 .alert-count {
   position: absolute;
   top: -5px;
@@ -151,6 +232,63 @@ body {
   text-align: center;
   color: #fff;
 }
+
+.attach-icon {
+  width: 13px;
+}
+
+.announcements-box {
+  display: none;
+  height: 582px;
+  position: absolute;
+  overflow-y: scroll;
+  right: 101px;
+  top: 41px;
+  box-shadow: 0px 3px 6px #00000029;
+}
+
+.announcement-ele {
+  background-color: #ffffee;
+  color: #222222;
+  padding: 16px;
+  width: 315px;
+}
+
+.announcement-title-and-icon {
+  display: flex;
+  justify-content: space-between;
+}
+.announcement-text {
+  margin: 8px 0px;
+}
+
+.announcement-info-and-time {
+  margin-left: -3px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6e6e6e;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.announcements-box .announcement-white-ele {
+  background-color: #ffffff;
+}
+
+.announcement-course-info {
+  margin-top: 8px;
+}
+
+.announcement-time {
+  margin-left: auto;
+}
+
+.notifications .announcement-box-show {
+  display: block;
+}
+
 .announcement-count {
   position: absolute;
   top: -5px;
@@ -544,15 +682,6 @@ body {
     flex-wrap: wrap;
     border-bottom: 2px solid #3ac7ec;
   }
-
-  .nav-bar:hover .nav-links {
-    display: flex;
-    animation: slideDown 0.3s ease-out;
-    position: absolute;
-    top: 40px;
-    right: 16px;
-  }
-
   .notifications {
     margin-left: auto;
   }
@@ -605,6 +734,16 @@ body {
     display: flex;
     flex-direction: column;
     margin-left: 16px;
+  }
+
+  .nav-links .nav-item.active .sub-links::before {
+    content: "";
+    position: absolute;
+    height: 48px;
+    left: -16px;
+    width: 280px;
+    z-index: -1;
+    background-color: #f3f3f3;
   }
 
   .nav-links .nav-item.active .arrow-roate {
