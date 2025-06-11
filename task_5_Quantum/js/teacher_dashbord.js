@@ -1,21 +1,33 @@
 let menuBtn = document.getElementById("menu-btn");
+const navBar = document.querySelector(".nav-bar");
 let navLinks = document.querySelector(".nav-links");
 let hamburger = document.querySelector(".hamburger");
-let navItems = document.querySelectorAll(".nav-links a");
+let navItems = document.querySelectorAll(".nav-links .nav-item");
+let hoverTimer;
 
-menuBtn.addEventListener("click", () => {
+menuBtn.addEventListener("mouseover", () => {
   navLinks.classList.toggle("show");
-  hamburger.classList.toggle("active");
+  hamburger.classList.toggle("white-icon");
+});
+
+menuBtn.addEventListener("mouseout", () => {
+  navLinks.classList.remove("show");
+  hamburger.classList.remove("white-icon");
 });
 
 navItems.forEach((link) => {
   link.addEventListener("click", () => {
     navItems.forEach((item) => item.classList.remove("active"));
-
     link.classList.add("active");
+    const arrow_btn = link.querySelector(".arrow");
+    const subLinks = link.querySelector(".sub-links");
+    if (subLinks) {
+      subLinks.classList.toggle("sub-links-show");
+    }
 
-    navLinks.classList.remove("show");
-    hamburger.classList.remove("active");
+    if (arrow_btn) {
+      arrow_btn.classList.toggle("arrow-roate");
+    }
   });
 });
 
@@ -35,12 +47,4 @@ courses.addEventListener("click", function () {
 classes.addEventListener("click", function () {
   removeActive();
   classes.classList.add("classes-active");
-});
-
-// Close the menu if the user clicks outside the navbar
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".nav-bar")) {
-    navLinks.classList.remove("show");
-    hamburger.classList.remove("active");
-  }
 });

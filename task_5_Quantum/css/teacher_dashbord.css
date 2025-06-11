@@ -74,11 +74,23 @@ body {
   transition: color 0.3s ease;
   position: relative;
 }
-.nav-links a.active {
+.nav-links .nav-item.active {
   color: #ffffff;
 }
 
-.nav-links a.active::after {
+.nav-item {
+  position: relative;
+}
+
+.link-and-arrow .arrow {
+  display: none;
+}
+
+.sub-links {
+  display: none;
+}
+
+.nav-links .nav-item.active::after {
   content: "";
   position: absolute;
   bottom: -21px;
@@ -94,12 +106,15 @@ body {
   z-index: 3;
 }
 
+.white-icon {
+  filter: brightness(0) invert(1);
+}
+
 .menu-icon button {
   background: none;
   border: none;
   cursor: pointer;
   padding: 8px;
-
   transition: background-color 0.3s ease;
 }
 
@@ -527,21 +542,52 @@ body {
 @media (max-width: 768px) {
   .nav-bar {
     flex-wrap: wrap;
-    padding: 1rem;
+    border-bottom: 2px solid #3ac7ec;
   }
+
+  .nav-bar:hover .nav-links {
+    display: flex;
+    animation: slideDown 0.3s ease-out;
+    position: absolute;
+    top: 40px;
+    right: 16px;
+  }
+
   .notifications {
     margin-left: auto;
   }
+
+  .link-and-arrow .arrow {
+    display: block;
+  }
+
   .nav-links {
     display: none;
-    width: 100%;
+    width: 280px;
+    gap: 0;
     flex-direction: column;
     align-items: flex-start;
     margin-top: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 1rem;
-    backdrop-filter: blur(10px);
+    background: #ffffff;
+    border-radius: 2px;
+    padding: 0rem 1rem;
+  }
+  .nav-links .nav-item.active {
+    color: #1f7a54;
+  }
+
+  .nav-links .nav-item.active::before {
+    content: "";
+    position: absolute;
+    height: 48px;
+    left: -16px;
+    width: 280px;
+    z-index: -1;
+    background-color: #f3f3f3;
+  }
+
+  .nav-links .nav-item.active::after {
+    display: none;
   }
 
   .nav-bar .notifications {
@@ -550,13 +596,34 @@ body {
   .nav-links.show {
     display: flex;
     animation: slideDown 0.3s ease-out;
+    position: absolute;
+    top: 40px;
+    right: 16px;
+  }
+
+  .nav-links .nav-item.active .sub-links-show {
+    display: flex;
+    flex-direction: column;
+    margin-left: 16px;
+  }
+
+  .nav-links .nav-item.active .arrow-roate {
+    transform: rotate(180deg);
   }
 
   .nav-links a {
-    margin: 0.5rem 0;
-    padding: 0.5rem 0;
+    height: 48px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-start;
     width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #1f7a54;
+  }
+
+  .link-and-arrow {
+    display: flex;
+    width: 250px;
   }
 
   .nav-links a:last-child {
