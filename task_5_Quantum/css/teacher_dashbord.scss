@@ -69,6 +69,18 @@ body {
     background-color: $background-gray;
     font-family: "Quicksand", sans-serif;
     height: 100vh;
+    ::-webkit-scrollbar {
+            width: 4px;
+        }
+    
+        ::-webkit-scrollbar-thumb {
+            background: #000000;
+            border-radius: 6px;
+        }
+    
+        ::-webkit-scrollbar-track {
+            box-shadow: red;
+            border-radius: 6px; }
 }
 
 // Navigation
@@ -201,7 +213,7 @@ body {
     }
 
     .notification-line {
-        border-bottom: 1px solid rgba($text-dark, 0.12);
+        border-bottom: 1px solid #e4e4e0;
     }
 }
 
@@ -209,16 +221,19 @@ body {
 .alerts-box {
     display: none;
     height: 582px;
+    width: 315px;
     position: absolute;
     overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
     right: 101px;
     top: 41px;
     box-shadow: 0px 3px 6px rgba($black, 0.16);
-
+    animation: slideDown 0.4s ease-out;
+    border-radius: 2px;
     .alert-white-ele {
         background-color: $white;
     }
-
     .show-all {
         text-transform: uppercase;
         letter-spacing: -0.35px;
@@ -245,6 +260,7 @@ body {
 .alert-text {
     @include text-ellipsis(2);
     font-weight: 600;
+    width: 254px;
 
     &-and-icon {
         display: flex;
@@ -296,16 +312,21 @@ body {
 .announcements-box {
     display: none;
     height: 582px;
+    width: 315px;
     position: absolute;
     overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
     right: 47px;
     top: 41px;
     box-shadow: 0px 3px 6px rgba($black, 0.16);
-
+    animation: slideDown 0.4s ease-out;
+    border-radius: 2px;
     .announcement-white-ele {
         background-color: $white;
     }
 }
+
 
 .announcement-ele {
     background-color: $alert-yellow;
@@ -327,6 +348,7 @@ body {
 }
 
 .announcement-text {
+    width: 254px;
     font-weight: 600;
     color: $text-dark;
     margin: 8px 0px;
@@ -538,6 +560,14 @@ body {
     position: relative;
 }
 
+.star-gray-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+    font-size: 20px;
+    filter: grayscale(1);
+}
+
 .course-image {
     width: 132px;
     height: 157px;
@@ -565,6 +595,7 @@ body {
 }
 
 .course-title {
+    width: 248px;
     font-family: "Quicksand";
     font-style: normal;
     font-weight: 700;
@@ -648,6 +679,10 @@ body {
         opacity: 1;
         @include dropdown-arrow;
     }
+        .no-class-option {
+            color: #a7a7a7;
+       
+        }
 }
 
 .course-class {
@@ -870,6 +905,10 @@ body {
 
     .courses-grid {
         margin: 0px 98px;
+
+        .course-title {
+                width: auto;
+            }
     }
 
     .menu-icon {
