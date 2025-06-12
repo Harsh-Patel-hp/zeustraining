@@ -20,17 +20,15 @@ function hideMenu() {
   menuTimeout = setTimeout(() => {
     navLinks.classList.remove("show");
     hamburger.classList.remove("white-icon");
-  }, 200); // 200ms delay before hiding
+  }, 200);
 }
 
 menuBtn.addEventListener("mouseenter", showMenu);
 menuBtn.addEventListener("mouseleave", hideMenu);
 
-// Also add hover events to the nav-links themselves
 navLinks.addEventListener("mouseenter", showMenu);
 navLinks.addEventListener("mouseleave", hideMenu);
 
-// Alerts hover functionality
 let alertTimeout;
 
 function showAlerts() {
@@ -51,19 +49,17 @@ function hideAlerts() {
     if (alertCount) {
       alertCount.classList.remove("count-hide");
     }
-  }, 200); // 200ms delay before hiding
+  }, 200);
 }
 
 alerts.addEventListener("mouseenter", showAlerts);
 alerts.addEventListener("mouseleave", hideAlerts);
 
-// Also add hover events to the alert box itself
 if (alertBox) {
   alertBox.addEventListener("mouseenter", showAlerts);
   alertBox.addEventListener("mouseleave", hideAlerts);
 }
 
-// Announcements hover functionality
 let announcementTimeout;
 
 function showAnnouncements() {
@@ -84,19 +80,17 @@ function hideAnnouncements() {
     if (announcementCount) {
       announcementCount.classList.remove("count-hide");
     }
-  }, 200); // 200ms delay before hiding
+  }, 200);
 }
 
 announcements.addEventListener("mouseenter", showAnnouncements);
 announcements.addEventListener("mouseleave", hideAnnouncements);
 
-// Also add hover events to the announcement box itself
 if (announcementBox) {
   announcementBox.addEventListener("mouseenter", showAnnouncements);
   announcementBox.addEventListener("mouseleave", hideAnnouncements);
 }
 
-// Navigation items click functionality
 navItems.forEach((link) => {
   link.addEventListener("click", () => {
     navItems.forEach((item) => item.classList.remove("active"));
@@ -113,7 +107,6 @@ navItems.forEach((link) => {
   });
 });
 
-// Courses and Classes functionality
 const courses = document.getElementById("courses");
 const classes = document.getElementById("classes");
 
@@ -136,7 +129,6 @@ if (classes) {
   });
 }
 
-// Function to fetch the JSON file and generate course cards
 async function fetchCourseData() {
   try {
     const response = await fetch("./data/cardData.json");
@@ -150,22 +142,18 @@ async function fetchCourseData() {
   }
 }
 
-// Function to generate course cards dynamically
 function generateCourseCards(cardData) {
   const coursesGrid = document.getElementById("courses-grid");
 
   cardData.forEach((course) => {
-    // Create the course card div
     const courseCard = document.createElement("div");
     courseCard.classList.add("course-card");
 
-    // Handle expired course
     let expiredBadge = "";
     if (course.isExpired) {
       expiredBadge = '<div class="expired-badge">EXPIRED</div>';
     }
 
-    // Create the card content
     const courseContent = `
       ${expiredBadge}
       ${
@@ -262,46 +250,37 @@ function generateCourseCards(cardData) {
       </div>
     `;
 
-    // Insert the HTML into the course card
     courseCard.innerHTML = courseContent;
 
-    // Append the card to the grid
     coursesGrid.appendChild(courseCard);
   });
 }
 
-// Function to fetch alert data and generate the alerts
 async function fetchAlertData() {
   try {
-    // Fetch the JSON data from the alertData.json file
-    const response = await fetch("./data/alertData.json"); // Path to your JSON file
+    const response = await fetch("./data/alertData.json");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const alertData = await response.json(); // Parse the JSON
+    const alertData = await response.json();
 
-    // Call function to generate alert elements
     generateAlerts(alertData);
   } catch (error) {
     console.error("Error loading the JSON data:", error);
   }
 }
 
-// Function to generate alert elements dynamically
 function generateAlerts(alertData) {
   const alertsBox = document.getElementById("alerts-box");
 
   alertData.forEach((alert) => {
-    // Create the alert element div
     const alertElement = document.createElement("div");
     alertElement.classList.add("alert-ele");
 
-    // Handle "read" status (white background for read alerts)
     let alertClass = alert.read ? "alert-white-ele" : "";
     const Extractcourse = alert.course.split(":")[0] || "";
     const ExtractcourseName =
       alert.course.split(":")[1] || "No course assigned";
-    // Create the alert content
     const alertContent = `
       <div class="alert-text-and-icon">
         <div class="alert-text">${alert.msg}</div>
@@ -323,23 +302,19 @@ function generateAlerts(alertData) {
       <div class="alert-time">${alert.timestamp}</div>
     `;
 
-    // Add the content to the alert element
     alertElement.innerHTML = alertContent;
 
-    // Apply the background color based on the "read" status
     if (alertClass) {
       alertElement.classList.add(alertClass);
     }
 
     alertsBox.appendChild(alertElement);
 
-    // Add a line between alerts
     alertsBox
       .appendChild(document.createElement("div"))
       .classList.add("notification-line");
   });
 
-  // Add the "Show All" button
   const showAllButton = document.createElement("div");
   showAllButton.classList.add("show-all");
   showAllButton.textContent = "Show All";
@@ -348,33 +323,26 @@ function generateAlerts(alertData) {
 
 async function fetchAnnouncementData() {
   try {
-    // Fetch the JSON data from the announcementData.json file
-    const response = await fetch("./data/announcementData.json"); // Path to your JSON file
+    const response = await fetch("./data/announcementData.json");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const announcementData = await response.json(); // Parse the JSON
-
-    // Call function to generate announcement elements
+    const announcementData = await response.json();
     generateAnnouncements(announcementData);
   } catch (error) {
     console.error("Error loading the JSON data:", error);
   }
 }
 
-// Function to generate announcement elements dynamically
 function generateAnnouncements(announcementData) {
   const announcementsBox = document.getElementById("announcements-box");
 
   announcementData.forEach((announcement) => {
-    // Create the announcement element div
     const announcementElement = document.createElement("div");
     announcementElement.classList.add("announcement-ele");
 
-    // Handle "read" status (white background for read announcements)
     let announcementClass = announcement.read ? "announcement-white-ele" : "";
 
-    // Create the announcement content
     const announcementContent = `
       <div class="announcement-title-and-icon">
         <div class="announcement-title">
@@ -416,24 +384,19 @@ function generateAnnouncements(announcementData) {
       </div>
     `;
 
-    // Add the content to the announcement element
     announcementElement.innerHTML = announcementContent;
 
-    // Apply the background color based on the "read" status
     if (announcementClass) {
       announcementElement.classList.add(announcementClass);
     }
 
-    // Append the announcement element to the announcements box
     announcementsBox.appendChild(announcementElement);
 
-    // Add a line between announcements
     announcementsBox
       .appendChild(document.createElement("div"))
       .classList.add("notification-line");
   });
 
-  // Add the "Show All" and "Create New" buttons
   const showAllButton = document.createElement("div");
   showAllButton.classList.add("show-all");
   showAllButton.textContent = "Show All";
