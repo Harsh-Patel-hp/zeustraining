@@ -1,11 +1,9 @@
 @font-face {
   font-family: "Quicksand";
-  src: url("../assets/Quicksand_font_1/Quicksand-VariableFont_wght.ttf")
-    format("truetype");
+  src: url("../assets/Quicksand_font_1/Quicksand-VariableFont_wght.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
-
 body {
   background-color: #eeeeee;
   font-family: "Quicksand";
@@ -23,10 +21,9 @@ body {
   width: 100%;
   background-image: url("../assets/header_pattern_svg.svg");
   border-bottom: 2px solid #3ac7ec;
-  background-color: black;
+  background-color: #000000;
   position: relative;
 }
-
 .header::before {
   content: "";
   position: absolute;
@@ -34,10 +31,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+  background-color: rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
-
 .header-logo {
   margin: 15px 0px 10px 20px;
   position: relative;
@@ -46,11 +42,12 @@ body {
 
 .main-login {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   margin: 50px 0px;
   flex: 1;
 }
+
 .login-box {
   width: 488px;
   height: 560px;
@@ -63,35 +60,88 @@ body {
   margin: 16px 30px;
   display: flex;
 }
-
 .login-title .text {
   font-family: "Quicksand";
-  margin: 0px auto;
-  /* font-weight: bold; */
-  /* font-style: normal; */
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 600;
   font-size: 24px;
   line-height: 28px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #222222;
+  margin: 0px auto;
 }
 
 .login-form {
   margin: 32px;
 }
+
+.form-field {
+  margin: 25px 0px;
+}
+.form-field.username {
+  margin-top: 55px;
+  margin-bottom: 30px;
+}
+.form-field .text-field {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  outline: none;
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+}
+.form-field .text-field input {
+  outline: none;
+  font-size: 1rem;
+  border: none;
+}
+.form-field .text-field input::-moz-placeholder {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #666666;
+}
+.form-field .text-field input::placeholder {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #666666;
+}
+
 .radio-btns {
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
   margin: 18px;
 }
-
-.radio-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.radio-btns label {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #333333;
 }
-
-.radio-btns input[type="radio"] {
-  appearance: none;
+.radio-btns input[type=radio] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   width: 20px;
   height: 20px;
   margin: 0px;
@@ -101,8 +151,7 @@ body {
   cursor: pointer;
   outline: none;
 }
-
-.radio-btns input[type="radio"]:checked::before {
+.radio-btns input[type=radio]:checked::before {
   content: "";
   display: block;
   width: 10px;
@@ -114,17 +163,21 @@ body {
   left: 3px;
 }
 
-.form-field {
-  margin: 25px 0px;
+.radio-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
+.dropdown {
+  height: 45px;
+}
 .dropdown select {
   height: 30px;
+  color: #222222;
   border: none;
   border-bottom: 1px solid #e0e0e0;
   outline: none;
-  color: #222222;
-  appearance: none;
   font-family: "Quicksand";
   font-style: normal;
   font-weight: 500;
@@ -132,24 +185,23 @@ body {
   line-height: 20px;
   letter-spacing: 0px;
   opacity: 1;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   background-image: url("../assets/icons//arrow-down.svg");
   background-repeat: no-repeat;
   background-position: right -5px center;
 }
-.dropdown {
-  height: 45px;
-}
-
 .dropdown label {
   margin-top: 10px;
   font-family: "Quicksand";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 12px;
   line-height: 16px;
   letter-spacing: 0px;
-  color: #666666;
   opacity: 1;
+  color: #666666;
 }
 
 .state {
@@ -157,37 +209,17 @@ body {
   flex-direction: column;
 }
 
-.form-field .text-field {
-  width: 100%;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.text-field input {
-  outline: none;
-  font-size: 1rem;
-  border: none;
-}
-.username {
-  margin-top: 55px;
-  margin-bottom: 30px;
-}
-
-.form-field input::placeholder {
-  font-family: "Quicksand";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 20px;
-  color: #666666;
-  letter-spacing: 0px;
-  opacity: 1;
+.password-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .forgot {
   margin-top: 5px;
   font-family: "Quicksand";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0px;
@@ -199,32 +231,38 @@ body {
   justify-content: end;
 }
 
-.password-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .remember-me {
   display: flex;
   align-items: center;
   margin-left: -6px;
   margin-bottom: 32px;
 }
+.remember-me label {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  opacity: 1;
+  color: #222222;
+}
 
-input[type="checkbox"] {
-  appearance: none;
+input[type=checkbox] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   background-image: url("../assets/icons/checkbox-unchecked.svg");
   height: 21px;
   width: 21px;
 }
-
-input[type="checkbox"]:checked {
+input[type=checkbox]:checked {
   background-image: url("../assets/icons/checkbox-checked.svg");
 }
 
 .login-field {
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
@@ -236,11 +274,23 @@ input[type="checkbox"]:checked {
   font-weight: 500;
   font-size: 14px;
   line-height: 18px;
+  letter-spacing: 0px;
+  opacity: 1;
   border: none;
   text-transform: uppercase;
   border-radius: 3px;
-  box-shadow: 0px 3px 5px #0000003d;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.24);
   background-color: #3fd28b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.login-btn:hover {
+  background-color: #2fc97e;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.24);
+}
+.login-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
 }
 
 .info {
@@ -248,20 +298,22 @@ input[type="checkbox"]:checked {
   margin: 16px;
   justify-content: center;
 }
-
 .info a {
   text-decoration: none;
   color: #1f7a54;
   font-size: 14px;
+  transition: color 0.3s ease;
 }
-
+.info a:hover {
+  color: #155138;
+}
 .info .about {
   margin-right: 10px;
 }
-
 .info .contact {
   margin-left: 10px;
 }
+
 .middel-line {
   border-right: 1px solid #d1d1d1;
 }
@@ -271,7 +323,7 @@ input[type="checkbox"]:checked {
   align-items: center;
   height: 24px;
   padding-left: 10px;
-  border-left: 1px solid #0000001f;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .zeus {
@@ -286,10 +338,10 @@ input[type="checkbox"]:checked {
 .footer {
   font-size: 12px;
   display: flex;
-  height: 40px;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  height: 40px;
   color: #616161;
   background-color: #e0e1e1;
   margin-top: auto;
-}
+}/*# sourceMappingURL=login.css.map */
