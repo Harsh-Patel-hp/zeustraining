@@ -495,6 +495,7 @@ body ::-webkit-scrollbar-track {
   right: 1rem;
   font-size: 20px;
   filter: grayscale(1);
+  opacity: 0.4;
 }
 
 .course-image {
@@ -683,6 +684,7 @@ body ::-webkit-scrollbar-track {
 }
 .info a {
   text-decoration: none;
+  font-weight: 600;
   color: #1f7a54;
   font-size: 14px;
 }
