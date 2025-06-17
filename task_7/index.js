@@ -9,20 +9,20 @@ function createBackgroundAndChild() {
   child.id = "Bgchild";
   Mybackgroud.appendChild(child);
 
-  let isDragging = false;
+  let dragging = false;
   let offsetX = 0;
   let offsetY = 0;
 
   child.addEventListener("pointerdown", (event) => {
-    isDragging = true;
+    dragging = true;
     offsetX = event.clientX - child.offsetLeft;
     offsetY = event.clientY - child.offsetTop;
-    console.log(event.clientX, event.clientY);
+    // console.log(event.clientX, event.clientY);
     child.setPointerCapture(event.pointerId);
   });
 
   child.addEventListener("pointermove", (event) => {
-    if (!isDragging) return;
+    if (!dragging) return;
     let x = event.clientX - offsetX;
     let y = event.clientY - offsetY;
 
@@ -35,7 +35,7 @@ function createBackgroundAndChild() {
   });
 
   child.addEventListener("pointerup", (event) => {
-    isDragging = false;
+    dragging = false;
     child.releasePointerCapture(event.pointerId);
   });
 }
