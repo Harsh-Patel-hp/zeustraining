@@ -1,0 +1,19 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.my-background{
+    background-color: black;
+    height: 100vh;
+    margin: 0px;
+    position: relative;
+    overflow: hidden;
+    .bg-child{
+        touch-action: none;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background-color: white;
+    }
+}
