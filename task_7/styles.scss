@@ -3,6 +3,11 @@ body {
     padding: 0px;
 }
 
+.container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .my-background{
     background-color: #9E9E9E;
     height: 100vh;
@@ -10,6 +15,7 @@ body {
     position: relative;
     overflow: hidden;
     .bg-child{
+        border-radius: 50%;
         touch-action: none;
         position: absolute;
         width: 50px;

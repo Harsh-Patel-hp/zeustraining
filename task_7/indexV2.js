@@ -6,7 +6,8 @@ class BackgroundManager {
     if (bg_height) this.background.style.height = bg_height;
     if (bg_width) this.background.style.width = bg_width;
     this.background.id = "Mybackgroud";
-    document.body.appendChild(this.background);
+    let container = document.getElementById("container");
+    container.appendChild(this.background);
   }
 
   getElement() {
@@ -83,25 +84,29 @@ class DraggableChild {
 window.onload = () => {
   const bgManager = new BackgroundManager(
     (bg_color = "#03A9F4"),
-    (bg_height = "50vh")
+    (bg_height = "50vh"),
+    (bg_width = "50vw")
   );
-  new DraggableChild(bgManager.getElement(), "#c1770a");
+  new DraggableChild(bgManager.getElement(), "white");
 
   const bgManager2 = new BackgroundManager(
-    (bg_color = "#FF9800"),
-    (bg_height = "50vh")
+    (bg_color = "#e7e7e7"),
+    (bg_height = "50vh"),
+    (bg_width = "50vw")
   );
   new DraggableChild(bgManager2.getElement(), "#008dcd");
 
   const bgManager3 = new BackgroundManager(
-    (bg_color = "#009688"),
-    (bg_height = "50vh")
+    (bg_color = "#b9b9b9"),
+    (bg_height = "50vh"),
+    (bg_width = "50vw")
   );
   new DraggableChild(bgManager3.getElement(), "#384483");
 
   const bgManager4 = new BackgroundManager(
-    (bg_color = "#3F51B5"),
-    (bg_height = "50vh")
+    (bg_color = "#00bcd4"),
+    (bg_height = "50vh"),
+    (bg_width = "50vw")
   );
-  new DraggableChild(bgManager4.getElement(), "#28bfb1");
+  new DraggableChild(bgManager4.getElement(), "#cdcdcd");
 };
