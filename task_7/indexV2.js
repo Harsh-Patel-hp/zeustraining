@@ -2,7 +2,7 @@ import { BackgroundManager } from "./BackgroundManager.js";
 import { DraggableChild } from "./DraggableChild.js";
 
 const bgManager = new BackgroundManager("#03A9F4", "50vh", "50vw");
-new DraggableChild(bgManager.getElement(), "white");
+new DraggableChild(bgManager.getElement(), "white").automove();
 
 const bgManager2 = new BackgroundManager("#e7e7e7", "50vh", "50vw");
 new DraggableChild(bgManager2.getElement(), "#008dcd");

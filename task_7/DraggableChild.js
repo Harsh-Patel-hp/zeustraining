@@ -54,4 +54,45 @@ export class DraggableChild {
   getElement() {
     return this.child;
   }
+
+  automove(num = 100) {
+    let x = this.child.offsetWidth;
+    let y = this.child.offsetHeight;
+    let toptouch = false;
+    let floortouch = false;
+    setInterval(() => {
+      setTimeout(() => {
+        const bounds = this.parentElement.getBoundingClientRect();
+        console.log(bounds, y);
+        // x = Math.max(0, Math.min(x, bounds.width - this.child.offsetWidth));
+        // y = Math.max(0, Math.min(y, bounds.height - this.child.offsetHeight));
+
+        if (y == bounds.height - this.child.offsetHeight) {
+          floortouch = true;
+          toptouch = false;
+          console.log("floor");
+        }
+
+        if (y == 0) {
+          toptouch = true;
+          floortouch = false;
+          console.log("top");
+        }
+
+        if (toptouch) {
+          y++;
+          this.child.style.top = `${y}px`;
+        } else if (floortouch) {
+          console.log("floortouch");
+          y--;
+          x += 50;
+          this.child.style.left = `${x}px`;
+          this.child.style.top = `${y}px`;
+        } else {
+          y++;
+          this.child.style.top = `${y}px`;
+        }
+      }, 500);
+    }, num);
+  }
 }
