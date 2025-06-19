@@ -63,7 +63,15 @@ export class DraggableChild {
     let moveright = 0;
     setInterval(() => {
       const bounds = this.parentElement.getBoundingClientRect();
-      //   console.log("setInterval X", x);
+      // console.log(
+      //   "bounds.height : ",
+      //   bounds.height - this.child.offsetHeight,
+      //   " , y : ",
+      //   y
+      // );
+      bounds.height = Math.floor(bounds.height);
+      bounds.width = Math.floor(bounds.width);
+
       if (y == bounds.height - this.child.offsetHeight) {
         floortouch = true;
         moveright = 0;
