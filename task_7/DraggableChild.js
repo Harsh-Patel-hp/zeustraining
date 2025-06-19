@@ -55,44 +55,54 @@ export class DraggableChild {
     return this.child;
   }
 
-  automove(num = 100) {
-    let x = this.child.offsetWidth;
-    let y = this.child.offsetHeight;
+  automove(num = 50) {
+    let x = 0;
+    let y = 0;
     let toptouch = false;
     let floortouch = false;
+    let moveright = 0;
     setInterval(() => {
-      setTimeout(() => {
-        const bounds = this.parentElement.getBoundingClientRect();
-        console.log(bounds, y);
-        // x = Math.max(0, Math.min(x, bounds.width - this.child.offsetWidth));
-        // y = Math.max(0, Math.min(y, bounds.height - this.child.offsetHeight));
+      const bounds = this.parentElement.getBoundingClientRect();
+      //   console.log("setInterval X", x);
+      if (y == bounds.height - this.child.offsetHeight) {
+        floortouch = true;
+        moveright = 0;
+        toptouch = false;
+        y--;
+        // console.log("floor");
+        // console.log("floor X", x);
+        this.child.style.top = `${y}px`;
+      }
 
-        if (y == bounds.height - this.child.offsetHeight) {
-          floortouch = true;
-          toptouch = false;
-          console.log("floor");
-        }
+      if (y == 0) {
+        toptouch = true;
+        floortouch = false;
+        // console.log("top X", x);
+      }
 
-        if (y == 0) {
-          toptouch = true;
-          floortouch = false;
-          console.log("top");
-        }
-
-        if (toptouch) {
-          y++;
+      if (toptouch) {
+        y++;
+      } else if (floortouch && moveright < this.child.offsetWidth) {
+        // console.log(x);
+        x++;
+        moveright++;
+        // console.log(x);
+        this.child.style.left = `${x}px`;
+        if (x == bounds.width - this.child.offsetWidth) {
+          x = 0;
+          y = 0;
+          let toptouch = true;
+          let floortouch = false;
           this.child.style.top = `${y}px`;
-        } else if (floortouch) {
-          console.log("floortouch");
-          y--;
-          x += 50;
           this.child.style.left = `${x}px`;
-          this.child.style.top = `${y}px`;
-        } else {
-          y++;
-          this.child.style.top = `${y}px`;
+          moveright = 0;
         }
-      }, 500);
+      } else if (floortouch) {
+        y--;
+      } else {
+        y++;
+      }
+      this.child.style.top = `${y}px`;
     }, num);
   }
 }
