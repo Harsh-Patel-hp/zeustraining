@@ -32,6 +32,15 @@ export class Grid {
 
     this.scrollY = 0;
 
+    this.startColumn = 0;
+    this.endColumn = 20;
+    this.startRow = 0;
+    this.endRow = 0;
+    this.bufferRow = 5;
+    this.bufferColumn = 5;
+    this.userScreenWidth = window.innerWidth;
+    this.userScreenHeight = window.innerHeight;
+
     this.columns = [];
 
     this.rows = [];
@@ -78,6 +87,31 @@ export class Grid {
     this.resizeCanvas();
   }
 
+  getvisibleColumnCount() {
+    let startColIndex = this.endColumn;
+    this.endColumn = this.startColumn + this.bufferColumn;
+    let visibleColumnswidth = 0;
+    while (visibleColumnswidth <= this.userScreenWidth) {
+      visibleColumnswidth += this.columns[this.endColumn].width;
+      this.endColumn++;
+    }
+    this.startColumn = startColIndex;
+  }
+
+  getvisibleRowCount() {
+    let startRowIndex = this.endRow;
+    this.endRow = this.startRow + this.bufferRow;
+    let visibleRowsHeight = 0;
+    while (visibleRowsHeight <= this.userScreenHeight) {
+      visibleRowsHeight += this.rows[this.endRow].height;
+      this.endRow++;
+    }
+    this.startRow = startRowIndex;
+  }
+
+  createCanvas() {
+
+  }
   loadData(data) {
     this.data = data;
 
