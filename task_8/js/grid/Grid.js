@@ -132,6 +132,44 @@ export class Grid {
   }
 
   draw() {
+    this.drawLabel();
+    this.drawCell();
+  }
+
+  drawCell() {
+    const labelWidth = this.RowlabelWidth; // Width for row labels
+    const labelHeight = this.rowHeight; // Height for column labels
+
+    let y = labelHeight;
+    for (let r = 0; r < this.rows.length; r++) {
+      const row = this.rows[r];
+
+      let x = labelWidth;
+      for (let c = 0; c < this.columns.length; c++) {
+        const col = this.columns[c];
+        const cell = row.getCell(c);
+
+        this.ctx.fillStyle = this.getCellBackgroundColor(cell);
+        this.ctx.fillRect(x, y, col.width, row.height);
+
+        this.ctx.strokeStyle = "#ddd";
+        this.ctx.strokeRect(x + 0.5, y + 0.5, col.width, row.height);
+
+        this.ctx.fillStyle = "#000";
+        this.ctx.font = "12px Arial";
+        this.ctx.textAlign = "left";
+        this.ctx.textBaseline = "middle";
+        const text = cell ? cell.getDisplayValue() : "";
+        this.ctx.fillText(text, x + 5, y + row.height / 2, col.width - 10);
+
+        x += col.width;
+      }
+
+      y += row.height;
+    }
+  }
+
+  drawLabel() {
     const labelWidth = this.RowlabelWidth; // Width for row labels
     const labelHeight = this.rowHeight; // Height for column labels
 
@@ -141,8 +179,6 @@ export class Grid {
     this.ctx.fillRect(0, 0, labelWidth, labelHeight);
     this.ctx.strokeStyle = "#ccc";
     this.ctx.strokeRect(0 + 0.5, 0 + 0.5, labelWidth, labelHeight);
-
-    //ROW label
     let x = labelWidth;
     for (let c = 0; c < this.columns.length; c++) {
       const col = this.columns[c];
@@ -180,35 +216,6 @@ export class Grid {
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
       this.ctx.fillText(label, labelWidth / 2, y + row.height / 2);
-
-      y += row.height;
-    }
-
-    // Draw cells
-    y = labelHeight;
-    for (let r = 0; r < this.rows.length; r++) {
-      const row = this.rows[r];
-
-      x = labelWidth;
-      for (let c = 0; c < this.columns.length; c++) {
-        const col = this.columns[c];
-        const cell = row.getCell(c);
-
-        this.ctx.fillStyle = this.getCellBackgroundColor(cell);
-        this.ctx.fillRect(x, y, col.width, row.height);
-
-        this.ctx.strokeStyle = "#ddd";
-        this.ctx.strokeRect(x + 0.5, y + 0.5, col.width, row.height);
-
-        this.ctx.fillStyle = "#000";
-        this.ctx.font = "12px Arial";
-        this.ctx.textAlign = "left";
-        this.ctx.textBaseline = "middle";
-        const text = cell ? cell.getDisplayValue() : "";
-        this.ctx.fillText(text, x + 5, y + row.height / 2, col.width - 10);
-
-        x += col.width;
-      }
 
       y += row.height;
     }
