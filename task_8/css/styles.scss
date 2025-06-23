@@ -1,0 +1,51 @@
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    font-family: Arial, sans-serif;
+
+    overflow: hidden;
+
+}
+
+.toolbar {
+
+    padding: 10px;
+
+    background-color: #f0f0f0;
+
+    border-bottom: 1px solid #ccc;
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+.toolbar button {
+
+    padding: 5px 10px;
+
+    cursor: pointer;
+
+}
+
+.grid-container {
+
+    width: 100vw;
+
+    height: calc(100vh - 40px);
+
+    overflow: auto;
+
+}
+
+#excel-grid {
+
+    background-color: white;
+
+    display: block;
+
+}
