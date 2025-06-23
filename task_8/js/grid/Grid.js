@@ -2,6 +2,7 @@ import { Selection } from "./Selection.js";
 import { Column } from "./Column.js";
 import { Row } from "./Row.js";
 import { Cell } from "./Cell.js";
+import { EditCellCommand } from "./commands/EditCellCommand.js";
 export class Grid {
   constructor(canvas, columns = 50, rows = 100000) {
     this.canvas = canvas;

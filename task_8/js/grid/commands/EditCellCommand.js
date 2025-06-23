@@ -1,4 +1,5 @@
-class EditCellCommand extends Command {
+import { Command } from "./Command.js";
+export class EditCellCommand extends Command {
   constructor(cell, oldValue, newValue) {
     super();
 
