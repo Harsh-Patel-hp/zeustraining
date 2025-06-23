@@ -3,8 +3,10 @@ import { Column } from "./Column.js";
 import { Row } from "./Row.js";
 import { Cell } from "./Cell.js";
 import { EditCellCommand } from "./commands/EditCellCommand.js";
+import { Utils } from "./utils.js";
+import { CellRange } from "./CellRange.js";
 export class Grid {
-  constructor(canvas, columns = 50, rows = 100000) {
+  constructor(canvas, columns = 500, rows = 100000) {
     this.canvas = canvas;
 
     this.ctx = canvas.getContext("2d");
@@ -37,7 +39,7 @@ export class Grid {
 
     this.data = [];
 
-    this.headers = ["ID", "First Name", "Last Name", "Age", "Salary"];
+    this.headers = [];
 
     this.init();
 
@@ -77,15 +79,13 @@ export class Grid {
     for (let i = 0; i < Math.min(data.length, this.totalRows); i++) {
       const item = data[i];
 
-      this.setCellValue(i, 0, item.id);
+      let columnCount = 0;
 
-      this.setCellValue(i, 1, item.firstName);
-
-      this.setCellValue(i, 2, item.lastName);
-
-      this.setCellValue(i, 3, item.age);
-
-      this.setCellValue(i, 4, item.salary);
+      for (let field in item) {
+        this.setCellValue(i, columnCount, item[field]);
+        columnCount++;
+        this.headers.push(field);
+      }
     }
 
     this.draw();
@@ -275,45 +275,53 @@ export class Grid {
     let isResizing = false;
 
     this.canvas.addEventListener("mousedown", (e) => {
-      const rect = this.canvas.getBoundingClientRect();
+      const rect = this.canvas.parentElement.getBoundingClientRect();
+
+      console.log("--------------");
+      console.log("react.left", rect.left);
+      console.log("react.top", rect.top);
+      console.log("e.clientX", e.clientX);
+      console.log("e.clientY", e.clientY);
+      console.log("this.scrollX", this.scrollX);
+      console.log("this.scrollY", this.scrollY);
 
       const x = e.clientX - rect.left + this.scrollX;
 
       const y = e.clientY - rect.top + this.scrollY;
 
-      // Check for column resize
+      // // Check for column resize
 
-      resizeColumnIndex = this.getColumnAtPosition(x);
+      // resizeColumnIndex = this.getColumnAtPosition(x);
 
-      if (resizeColumnIndex !== -1) {
-        const col = this.columns[resizeColumnIndex];
+      // if (resizeColumnIndex !== -1) {
+      //   const col = this.columns[resizeColumnIndex];
 
-        if (
-          Math.abs(x - (this.getColumnX(resizeColumnIndex) + col.width)) < 5
-        ) {
-          isResizing = true;
+      //   if (
+      //     Math.abs(x - (this.getColumnX(resizeColumnIndex) + col.width)) < 5
+      //   ) {
+      //     isResizing = true;
 
-          initialColumnWidth = col.width;
+      //     initialColumnWidth = col.width;
 
-          return;
-        }
-      }
+      //     return;
+      //   }
+      // }
 
-      // Check for row resize
+      // // Check for row resize
 
-      resizeRowIndex = this.getRowAtPosition(y);
+      // resizeRowIndex = this.getRowAtPosition(y);
 
-      if (resizeRowIndex !== -1) {
-        const row = this.rows[resizeRowIndex];
+      // if (resizeRowIndex !== -1) {
+      //   const row = this.rows[resizeRowIndex];
 
-        if (Math.abs(y - (this.getRowY(resizeRowIndex) + row.height)) < 5) {
-          isResizing = true;
+      //   if (Math.abs(y - (this.getRowY(resizeRowIndex) + row.height)) < 5) {
+      //     isResizing = true;
 
-          initialRowHeight = row.height;
+      //     initialRowHeight = row.height;
 
-          return;
-        }
-      }
+      //     return;
+      //   }
+      // }
 
       // Handle cell selection
 
@@ -326,7 +334,7 @@ export class Grid {
 
         this.draw();
 
-        this.updateStatsDisplay();
+        // this.updateStatsDisplay();
       }
 
       dragStartX = x;
@@ -382,7 +390,7 @@ export class Grid {
 
             this.draw();
 
-            this.updateStatsDisplay();
+            // this.updateStatsDisplay();
           }
         }
       } else {
@@ -390,27 +398,27 @@ export class Grid {
 
         const colIndex = this.getColumnAtPosition(x);
 
-        if (colIndex !== -1) {
-          const col = this.columns[colIndex];
+        // if (colIndex !== -1) {
+        //   const col = this.columns[colIndex];
 
-          if (Math.abs(x - (this.getColumnX(colIndex) + col.width)) < 5) {
-            this.canvas.style.cursor = "col-resize";
+        //   if (Math.abs(x - (this.getColumnX(colIndex) + col.width)) < 5) {
+        //     this.canvas.style.cursor = "col-resize";
 
-            return;
-          }
-        }
+        //     return;
+        //   }
+        // }
 
-        const rowIndex = this.getRowAtPosition(y);
+        // const rowIndex = this.getRowAtPosition(y);
 
-        if (rowIndex !== -1) {
-          const row = this.rows[rowIndex];
+        // if (rowIndex !== -1) {
+        //   const row = this.rows[rowIndex];
 
-          if (Math.abs(y - (this.getRowY(rowIndex) + row.height)) < 5) {
-            this.canvas.style.cursor = "row-resize";
+        //   if (Math.abs(y - (this.getRowY(rowIndex) + row.height)) < 5) {
+        //     this.canvas.style.cursor = "row-resize";
 
-            return;
-          }
-        }
+        //     return;
+        //   }
+        // }
 
         this.canvas.style.cursor = "default";
       }
@@ -476,8 +484,8 @@ export class Grid {
 
     this.canvas.parentElement.addEventListener("scroll", (e) => {
       this.scrollX = e.target.scrollLeft;
-
       this.scrollY = e.target.scrollTop;
+      console.log(this.scrollX, this.scrollY);
     });
   }
 
@@ -492,7 +500,7 @@ export class Grid {
 
     input.style.left = this.getColumnX(cell.colIndex) - this.scrollX + "px";
 
-    input.style.top = this.getRowY(cell.rowIndex) - this.scrollY + "px";
+    input.style.top = this.getRowY(cell.rowIndex) - this.scrollY + 20 + "px";
 
     input.style.width = cell.width + "px";
 
@@ -518,7 +526,7 @@ export class Grid {
 
         this.executeCommand(command);
 
-        this.updateStatsDisplay();
+        // this.updateStatsDisplay();
       }
 
       container.removeChild(input);

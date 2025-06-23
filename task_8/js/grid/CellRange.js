@@ -1,4 +1,4 @@
-class CellRange {
+export class CellRange {
   constructor(startRow, startCol, endRow, endCol) {
     this.startRow = Math.min(startRow, endRow);
 
@@ -28,6 +28,8 @@ class CellRange {
         if (cell) cells.push(cell);
       }
     }
+
+    console.log(cells);
 
     return cells;
   }

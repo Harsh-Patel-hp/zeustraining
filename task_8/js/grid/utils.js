@@ -1,4 +1,4 @@
-class Utils {
+export class Utils {
   static isNumeric(value) {
     return !isNaN(parseFloat(value)) && isFinite(value);
   }

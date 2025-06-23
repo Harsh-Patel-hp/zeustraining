@@ -9,25 +9,13 @@ export class Cell {
     this.width = width;
 
     this.height = height;
-
-    this.formattedValue = this.formatValue(value);
-  }
-
-  formatValue(value) {
-    // if (Utils.isNumeric(value)) {
-    //   return Utils.formatNumber(value);
-    // }
-
-    return value;
   }
 
   setValue(newValue) {
     this.value = newValue;
-
-    this.formattedValue = this.formatValue(newValue);
   }
 
   getDisplayValue() {
-    return this.formattedValue || "";
+    return this.value || "";
   }
 }

@@ -1,4 +1,4 @@
-const generateSampleData = (count = 50) => {
+export const generateSampleData = (count = 50) => {
   const firstNames = [
     "Raj",
     "Shyam",
@@ -51,5 +51,3 @@ const generateSampleData = (count = 50) => {
 
   return data;
 };
-
-export const sampleData = generateSampleData();
