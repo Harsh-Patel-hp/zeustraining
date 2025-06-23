@@ -20,6 +20,11 @@ export class Grid {
     this.visibleRows = 50;
 
     this.rowHeight = 25;
+    this.zoomFactor = this.zoomLevel || 1;
+
+    this.RowlabelWidth = 25;
+
+    this.ColumnlabelHeight = 25;
 
     this.columnWidth = 100;
 
@@ -40,6 +45,8 @@ export class Grid {
     this.data = [];
 
     this.headers = [];
+    this.grid_container = document.getElementById("grid_container") || "";
+    this.virtual_class = document.getElementById("virtual_class") || "";
 
     this.init();
 
@@ -125,44 +132,79 @@ export class Grid {
   }
 
   draw() {
+    const labelWidth = this.RowlabelWidth; // Width for row labels
+    const labelHeight = this.rowHeight; // Height for column labels
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw grid lines and cells
+    this.ctx.fillStyle = "#e0e0e0";
+    this.ctx.fillRect(0, 0, labelWidth, labelHeight);
+    this.ctx.strokeStyle = "#ccc";
+    this.ctx.strokeRect(0 + 0.5, 0 + 0.5, labelWidth, labelHeight);
 
-    let y = 0;
+    //ROW label
+    let x = labelWidth;
+    for (let c = 0; c < this.columns.length; c++) {
+      const col = this.columns[c];
+      const label = Utils.colIndexToName(c);
 
+      this.ctx.fillStyle = "#f0f0f0";
+      this.ctx.fillRect(x, 0, col.width, labelHeight);
+
+      this.ctx.strokeStyle = "#ccc";
+      this.ctx.strokeRect(x + 0.5, 0 + 0.5, col.width, labelHeight);
+
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = "bold 12px Arial";
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+      this.ctx.fillText(label, x + col.width / 2, labelHeight / 2);
+
+      x += col.width;
+    }
+
+    //Column label
+    let y = labelHeight;
+    for (let r = 0; r < this.rows.length; r++) {
+      const row = this.rows[r];
+      const label = (r + 1).toString();
+
+      this.ctx.fillStyle = "#f0f0f0";
+      this.ctx.fillRect(0, y, labelWidth, row.height);
+
+      this.ctx.strokeStyle = "#ccc";
+      this.ctx.strokeRect(0 + 0.5, y + 0.5, labelWidth, row.height);
+
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = "bold 12px Arial";
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+      this.ctx.fillText(label, labelWidth / 2, y + row.height / 2);
+
+      y += row.height;
+    }
+
+    // Draw cells
+    y = labelHeight;
     for (let r = 0; r < this.rows.length; r++) {
       const row = this.rows[r];
 
-      let x = 0;
-
+      x = labelWidth;
       for (let c = 0; c < this.columns.length; c++) {
         const col = this.columns[c];
-
         const cell = row.getCell(c);
 
-        // Draw cell background
-
         this.ctx.fillStyle = this.getCellBackgroundColor(cell);
-
         this.ctx.fillRect(x, y, col.width, row.height);
 
-        // Draw cell border
-
         this.ctx.strokeStyle = "#ddd";
-
-        this.ctx.strokeRect(x, y, col.width, row.height);
-
-        // Draw cell text
+        this.ctx.strokeRect(x + 0.5, y + 0.5, col.width, row.height);
 
         this.ctx.fillStyle = "#000";
-
         this.ctx.font = "12px Arial";
-
+        this.ctx.textAlign = "left";
         this.ctx.textBaseline = "middle";
-
         const text = cell ? cell.getDisplayValue() : "";
-
         this.ctx.fillText(text, x + 5, y + row.height / 2, col.width - 10);
 
         x += col.width;
@@ -274,20 +316,20 @@ export class Grid {
 
     let isResizing = false;
 
-    this.canvas.addEventListener("mousedown", (e) => {
-      const rect = this.canvas.parentElement.getBoundingClientRect();
+    this.grid_container.addEventListener("mousedown", (e) => {
+      const rect = this.virtual_class.getBoundingClientRect();
 
-      console.log("--------------");
-      console.log("react.left", rect.left);
-      console.log("react.top", rect.top);
-      console.log("e.clientX", e.clientX);
-      console.log("e.clientY", e.clientY);
-      console.log("this.scrollX", this.scrollX);
-      console.log("this.scrollY", this.scrollY);
+      // console.log("--------------");
+      // console.log("react.left", rect.left);
+      // console.log("react.top", rect.top);
+      // console.log("e.clientX", e.clientX);
+      // console.log("e.clientY", e.clientY);
+      // console.log("this.scrollX", this.scrollX);
+      // console.log("this.scrollY", this.scrollY);
 
-      const x = e.clientX - rect.left + this.scrollX;
+      const x = e.clientX - rect.left + this.scrollX - this.RowlabelWidth;
 
-      const y = e.clientY - rect.top + this.scrollY;
+      const y = e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight;
 
       // // Check for column resize
 
@@ -344,8 +386,8 @@ export class Grid {
       isDragging = true;
     });
 
-    this.canvas.addEventListener("mousemove", (e) => {
-      const rect = this.canvas.getBoundingClientRect();
+    this.grid_container.addEventListener("mousemove", (e) => {
+      const rect = this.grid_container.getBoundingClientRect();
 
       const x = e.clientX - rect.left + this.scrollX;
 
@@ -424,7 +466,7 @@ export class Grid {
       }
     });
 
-    this.canvas.addEventListener("mouseup", () => {
+    this.grid_container.addEventListener("mouseup", () => {
       if (isResizing) {
         if (resizeColumnIndex !== -1) {
           const newWidth = this.columns[resizeColumnIndex].width;
@@ -464,14 +506,18 @@ export class Grid {
 
     // Double click for cell editing
 
-    this.canvas.addEventListener("dblclick", (e) => {
+    this.grid_container.addEventListener("dblclick", (e) => {
       if (isResizing) return;
 
-      const rect = this.canvas.getBoundingClientRect();
+      const rect = this.virtual_class.getBoundingClientRect();
 
-      const x = e.clientX - rect.left + this.scrollX;
+      const x = e.clientX - rect.left + this.scrollX - this.RowlabelWidth;
 
-      const y = e.clientY - rect.top + this.scrollY;
+      const y = e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight;
+
+      // console.log("Mouse Position (Client):", e.clientX, e.clientY);
+      // console.log("Virtual Class Position (Rect):", rect.left, rect.top);
+      // console.log("Calculated Coordinates (x, y):", x, y);
 
       const cell = this.getCellAtPosition(x, y);
 
@@ -482,7 +528,7 @@ export class Grid {
 
     // Handle scroll events
 
-    this.canvas.parentElement.addEventListener("scroll", (e) => {
+    this.grid_container.addEventListener("scroll", (e) => {
       this.scrollX = e.target.scrollLeft;
       this.scrollY = e.target.scrollTop;
       console.log(this.scrollX, this.scrollY);
@@ -498,23 +544,37 @@ export class Grid {
 
     input.style.position = "absolute";
 
-    input.style.left = this.getColumnX(cell.colIndex) - this.scrollX + "px";
+    input.style.left =
+      this.getColumnX(cell.colIndex) + this.RowlabelWidth + "px";
 
-    input.style.top = this.getRowY(cell.rowIndex) - this.scrollY + 20 + "px";
+    input.style.top =
+      this.getRowY(cell.rowIndex) + this.ColumnlabelHeight + "px";
 
     input.style.width = cell.width + "px";
 
     input.style.height = cell.height + "px";
 
-    input.style.border = "2px solid #4a90e2";
+    input.style.border = "2px solid #137e43"; // initial border color
 
     input.style.padding = "0 5px";
 
     input.style.boxSizing = "border-box";
+    input.style.backgroundColor = "white"; // background color of the input box
+    input.style.fontFamily = "Arial, sans-serif"; // matching Excel font
+    input.style.fontSize = "14px"; // adjust font size if necessary
+
+    // Focus styles (for the Excel-like effect)
+    input.style.outline = "none"; // remove default focus outline
+    input.style.transition = "border 0.2s, box-shadow 0.2s"; // smooth transition effect
 
     const container = this.canvas.parentElement;
 
     container.appendChild(input);
+
+    input.addEventListener("focus", () => {
+      input.style.border = "2px solid #137e43"; // Excel focus border color
+      input.style.boxShadow = "0 0 5pxrgb(15, 82, 45)"; // Matching soft glow
+    });
 
     input.focus();
 
