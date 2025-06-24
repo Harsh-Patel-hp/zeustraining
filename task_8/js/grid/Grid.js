@@ -134,11 +134,17 @@ export class Grid {
     const scrollLeft = this.scrollX;
 
     // Calculate visible range
-    this.startRow = Math.max(0, this.getRowIndexFromY(scrollTop));
-    this.endRow = Math.min(this.totalRows - 1, this.getRowIndexFromY(scrollTop + this.viewportHeight - this.ColumnlabelHeight));
+    this.startRow = Math.max(0, Math.floor(this.scrollY / this.rowHeight));
+    this.endRow = Math.min(
+      this.totalRows - 1,
+      Math.floor((this.scrollY + this.viewportHeight) / this.rowHeight)
+    );
 
-    this.startCol = Math.max(0, this.getColIndexFromX(scrollLeft));
-    this.endCol = Math.min(this.totalColumns - 1, this.getColIndexFromX(scrollLeft + this.viewportWidth - this.RowlabelWidth));
+    this.startCol = Math.max(0, Math.floor(this.scrollX / this.columnWidth));
+    this.endCol = Math.min(
+      this.totalColumns - 1,
+      Math.floor((this.scrollX + this.viewportWidth) / this.columnWidth)
+    );
 
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -377,9 +383,14 @@ export class Grid {
 
     // Handle scroll events - this is the key for virtual scrolling
     this.grid_container.addEventListener("scroll", (e) => {
-      this.scrollX = e.target.scrollLeft;
-      this.scrollY = e.target.scrollTop;
-      this.redrawVisible(); // Redraw only visible cells
+      this.scrollX = this.grid_container.scrollLeft;
+      this.scrollY = this.grid_container.scrollTop;
+
+      // Position the canvas to match scroll position
+      this.canvas.style.left = `${this.scrollX}px`;
+      this.canvas.style.top = `${this.scrollY}px`;
+
+      this.redrawVisible();
     });
 
     // Handle window resize
