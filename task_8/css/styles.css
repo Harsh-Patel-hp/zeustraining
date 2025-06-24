@@ -21,13 +21,13 @@ body {
 .grid-container {
   position: relative;
   overflow: auto;
-  height: 100vh;
+  height: 98vh;
   width: 100vw;
 }
 
 .virtual-class {
-  height: 100vh;
-  width: 100vw;
+  height: 3000px;
+  width: 3000px;
   position: relative;
   cursor: cell;
   z-index: 5;
