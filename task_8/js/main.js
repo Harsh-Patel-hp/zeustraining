@@ -5,6 +5,6 @@ window.onload = loadwindow();
 function loadwindow() {
   const canvas = document.getElementById("excel-grid");
 
-  const grid = new Grid(canvas, 200, 2000);
-  grid.loadData(sampleData(2000));
+  const grid = new Grid(canvas, 200, 100000);
+  grid.loadData(sampleData(100000));
 }

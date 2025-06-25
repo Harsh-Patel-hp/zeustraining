@@ -46,7 +46,8 @@ export class Grid {
   init() {
     // Initialize columns
     for (let i = 0; i < this.totalColumns; i++) {
-      const header = i < this.headers.length ? this.headers[i] : `Column ${i + 1}`;
+      const header =
+        i < this.headers.length ? this.headers[i] : `Column ${i + 1}`;
       this.columns.push(new Column(i, header, this.columnWidth));
     }
 
@@ -55,9 +56,11 @@ export class Grid {
       const row = new Row(i, this.rowHeight);
       this.rows.push(row);
     }
-
+    this.virtual_class.style.height = this.rowHeight * this.totalRows + "px";
+    this.virtual_class.style.width =
+      this.columnWidth * this.totalColumns + "px";
     this.setupCanvas();
-    this.redrawVisible();
+    // this.redrawVisible();
   }
 
   setupCanvas() {
@@ -70,12 +73,13 @@ export class Grid {
     this.canvas.height = this.viewportHeight;
 
     // Update canvas style
-    this.canvas.style.width = this.viewportWidth + 'px';
-    this.canvas.style.height = this.viewportHeight + 'px';
+    this.canvas.style.width = this.viewportWidth + "px";
+    this.canvas.style.height = this.viewportHeight + "px";
   }
 
   loadData(data) {
     this.data = data;
+    console.log(this.data);
     // Don't populate all cells immediately, do it on demand
     this.redrawVisible();
   }
@@ -83,7 +87,9 @@ export class Grid {
   setCellValue(rowIndex, colIndex, value) {
     // Ensure the row has cells initialized up to colIndex
     if (!this.rows[rowIndex].cells[colIndex]) {
-      this.rows[rowIndex].addCell(new Cell(rowIndex, colIndex, "", this.columnWidth, this.rowHeight));
+      this.rows[rowIndex].addCell(
+        new Cell(rowIndex, colIndex, "", this.columnWidth, this.rowHeight)
+      );
     }
     const cell = this.getCell(rowIndex, colIndex);
     if (cell) {
@@ -92,11 +98,18 @@ export class Grid {
   }
 
   getCell(rowIndex, colIndex) {
-    if (rowIndex >= 0 && rowIndex < this.rows.length && colIndex >= 0 && colIndex < this.totalColumns) {
+    if (
+      rowIndex >= 0 &&
+      rowIndex < this.rows.length &&
+      colIndex >= 0 &&
+      colIndex < this.totalColumns
+    ) {
       // Create cell on demand if it doesn't exist
       if (!this.rows[rowIndex].cells[colIndex]) {
         const value = this.getCellDataValue(rowIndex, colIndex);
-        this.rows[rowIndex].addCell(new Cell(rowIndex, colIndex, value, this.columnWidth, this.rowHeight));
+        this.rows[rowIndex].addCell(
+          new Cell(rowIndex, colIndex, value, this.columnWidth, this.rowHeight)
+        );
       }
       return this.rows[rowIndex].getCell(colIndex);
     }
@@ -152,11 +165,18 @@ export class Grid {
     // Set up clipping for cell area
     this.ctx.save();
     this.ctx.beginPath();
-    this.ctx.rect(this.RowlabelWidth, this.ColumnlabelHeight,
+    this.ctx.rect(
+      this.RowlabelWidth,
+      this.ColumnlabelHeight,
       this.canvas.width - this.RowlabelWidth,
-      this.canvas.height - this.ColumnlabelHeight);
+      this.canvas.height - this.ColumnlabelHeight
+    );
     this.ctx.clip();
 
+    console.log(this.startRow, this.endRow, this.startCol, this.endCol);
+    console.log(this.rows.length, this.columns.length);
+    console.log("this.canvas.width", this.canvas.width);
+    console.log("this.canvas.height", this.canvas.height);
     // Draw cells
     for (let row = this.startRow; row <= this.endRow; row++) {
       for (let col = this.startCol; col <= this.endCol; col++) {
@@ -180,7 +200,12 @@ export class Grid {
         this.ctx.textAlign = "left";
         this.ctx.textBaseline = "middle";
         const text = cell.getDisplayValue();
-        this.ctx.fillText(text, x + 5, y + this.rowHeight / 2, this.columnWidth - 10);
+        this.ctx.fillText(
+          text,
+          x + 5,
+          y + this.rowHeight / 2,
+          this.columnWidth - 10
+        );
 
         // Draw selection border if selected
         if (this.selection.activeCell === cell) {
@@ -203,20 +228,33 @@ export class Grid {
   drawColumnHeaders(scrollLeft) {
     // Fill header background
     this.ctx.fillStyle = "#f0f0f0";
-    this.ctx.fillRect(this.RowlabelWidth, 0, this.canvas.width - this.RowlabelWidth, this.ColumnlabelHeight);
+    this.ctx.fillRect(
+      this.RowlabelWidth,
+      0,
+      this.canvas.width - this.RowlabelWidth,
+      this.ColumnlabelHeight
+    );
 
     for (let col = this.startCol; col <= this.endCol; col++) {
       const x = this.getColumnX(col) - scrollLeft + this.RowlabelWidth;
 
       // Highlight selected column
-      if (this.selection.activeCell && this.selection.activeCell.colIndex === col) {
+      if (
+        this.selection.activeCell &&
+        this.selection.activeCell.colIndex === col
+      ) {
         this.ctx.fillStyle = "#d0e4ff";
         this.ctx.fillRect(x, 0, this.columnWidth, this.ColumnlabelHeight);
       }
 
       // Draw header border
       this.ctx.strokeStyle = "#ccc";
-      this.ctx.strokeRect(x + 0.5, 0 + 0.5, this.columnWidth, this.ColumnlabelHeight);
+      this.ctx.strokeRect(
+        x + 0.5,
+        0 + 0.5,
+        this.columnWidth,
+        this.ColumnlabelHeight
+      );
 
       // Draw header text
       this.ctx.fillStyle = "#000";
@@ -224,20 +262,32 @@ export class Grid {
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
       const label = Utils.colIndexToName(col);
-      this.ctx.fillText(label, x + this.columnWidth / 2, this.ColumnlabelHeight / 2);
+      this.ctx.fillText(
+        label,
+        x + this.columnWidth / 2,
+        this.ColumnlabelHeight / 2
+      );
     }
   }
 
   drawRowHeaders(scrollTop) {
     // Fill header background
     this.ctx.fillStyle = "#f0f0f0";
-    this.ctx.fillRect(0, this.ColumnlabelHeight, this.RowlabelWidth, this.canvas.height - this.ColumnlabelHeight);
+    this.ctx.fillRect(
+      0,
+      this.ColumnlabelHeight,
+      this.RowlabelWidth,
+      this.canvas.height - this.ColumnlabelHeight
+    );
 
     for (let row = this.startRow; row <= this.endRow; row++) {
       const y = this.getRowY(row) - scrollTop + this.ColumnlabelHeight;
 
       // Highlight selected row
-      if (this.selection.activeCell && this.selection.activeCell.rowIndex === row) {
+      if (
+        this.selection.activeCell &&
+        this.selection.activeCell.rowIndex === row
+      ) {
         this.ctx.fillStyle = "#d0e4ff";
         this.ctx.fillRect(0, y, this.RowlabelWidth, this.rowHeight);
       }
@@ -251,7 +301,11 @@ export class Grid {
       this.ctx.font = "bold 12px Arial";
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
-      this.ctx.fillText((row + 1).toString(), this.RowlabelWidth / 2, y + this.rowHeight / 2);
+      this.ctx.fillText(
+        (row + 1).toString(),
+        this.RowlabelWidth / 2,
+        y + this.rowHeight / 2
+      );
     }
   }
 
@@ -259,7 +313,12 @@ export class Grid {
     this.ctx.fillStyle = "#e0e0e0";
     this.ctx.fillRect(0, 0, this.RowlabelWidth, this.ColumnlabelHeight);
     this.ctx.strokeStyle = "#ccc";
-    this.ctx.strokeRect(0 + 0.5, 0 + 0.5, this.RowlabelWidth, this.ColumnlabelHeight);
+    this.ctx.strokeRect(
+      0 + 0.5,
+      0 + 0.5,
+      this.RowlabelWidth,
+      this.ColumnlabelHeight
+    );
   }
 
   // Remove the old draw method and replace with redrawVisible calls
@@ -407,8 +466,8 @@ export class Grid {
     input.style.position = "absolute";
 
     // Calculate position relative to viewport
-    const cellX = this.getColumnX(cell.colIndex) - this.scrollX + this.RowlabelWidth;
-    const cellY = this.getRowY(cell.rowIndex) - this.scrollY + this.ColumnlabelHeight;
+    const cellX = this.getColumnX(cell.colIndex) + this.RowlabelWidth;
+    const cellY = this.getRowY(cell.rowIndex) + this.ColumnlabelHeight;
 
     input.style.left = cellX + "px";
     input.style.top = cellY + "px";
@@ -469,17 +528,24 @@ export class Grid {
   getCellAtPosition(x, y) {
     const colIndex = this.getColumnAtPosition(x);
     const rowIndex = this.getRowAtPosition(y);
-    if (colIndex >= 0 && colIndex < this.totalColumns &&
-      rowIndex >= 0 && rowIndex < this.totalRows) {
+    if (
+      colIndex >= 0 &&
+      colIndex < this.totalColumns &&
+      rowIndex >= 0 &&
+      rowIndex < this.totalRows
+    ) {
       return this.getCell(rowIndex, colIndex);
     }
     return null;
   }
 
   executeCommand(command) {
-    if (command && typeof command.execute === 'function') {
+    if (command && typeof command.execute === "function") {
       command.execute();
-      this.commandHistory = this.commandHistory.slice(0, this.historyPointer + 1);
+      this.commandHistory = this.commandHistory.slice(
+        0,
+        this.historyPointer + 1
+      );
       this.commandHistory.push(command);
       this.historyPointer++;
       this.redrawVisible();
