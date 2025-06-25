@@ -29,8 +29,26 @@ export class CellRange {
       }
     }
 
-    console.log(cells);
+    // console.log(cells);
 
     return cells;
+  }
+
+  clearRange() {
+    console.log("clearRange");
+    this.startRow = null;
+    this.startCol = null;
+    this.endRow = null;
+    this.endCol = null;
+    console.log(this);
+  }
+
+  isCellRange() {
+    return (
+      this.startRow !== null &&
+      this.startCol !== null &&
+      this.endRow !== null &&
+      this.endCol !== null
+    );
   }
 }

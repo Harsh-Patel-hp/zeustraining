@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel</title>
 
-  <title>Excel</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
 
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
+  <body>
+    <div class="toolbar">
+      <span id="stats-display"></span>
+    </div>
 
-<body>
-  <div class="toolbar">
-    <span id="stats-display"></span>
-  </div>
-
-  <div class="grid-container" id="grid_container">
-    <div class="virtual-class" id="virtual_class"></div>
-    <canvas id="excel-grid"></canvas>
-  </div>
-  <script src="js/main.js" type="module"></script>
-</body>
-
+    <div class="grid-container" id="grid_container">
+      <canvas id="excel-grid"></canvas>
+      <div class="virtual-class" id="virtual_class"></div>
+    </div>
+    <script src="js/main.js" type="module"></script>
+  </body>
 </html>

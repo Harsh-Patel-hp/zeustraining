@@ -21,9 +21,11 @@ export class Grid {
     this.columnWidth = 100;
     this.scrollX = 0;
     this.scrollY = 0;
+    this.toolBoxHeight = 0;
     this.columns = [];
     this.rows = [];
     this.selection = new Selection();
+    this.cellrange = new CellRange();
     this.commandHistory = [];
     this.historyPointer = -1;
     this.data = [];
@@ -79,7 +81,7 @@ export class Grid {
 
   loadData(data) {
     this.data = data;
-    console.log(this.data);
+    // console.log(this.data);
     // Don't populate all cells immediately, do it on demand
     this.redrawVisible();
   }
@@ -135,14 +137,27 @@ export class Grid {
   }
 
   getColumnX(colIndex) {
-    return colIndex * this.columnWidth;
+    let XofColumn = 0;
+    for (let i = 0; i < colIndex; i++) {
+      XofColumn += this.columns[i].width;
+    }
+    return XofColumn;
   }
 
   getRowY(rowIndex) {
-    return rowIndex * this.rowHeight;
+    let YofRow = 0;
+    for (let i = 0; i < rowIndex; i++) {
+      YofRow += this.rows[i].height;
+    }
+    return YofRow;
   }
 
   redrawVisible() {
+    // console.log("redrawVisible");
+    // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
+    // console.log("this.startRow", this.startRow, "this.endRow", this.endRow);
+    // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
+    // console.log("AFTER");
     const scrollTop = this.scrollY;
     const scrollLeft = this.scrollX;
 
@@ -158,7 +173,9 @@ export class Grid {
       this.totalColumns - 1,
       Math.floor((this.scrollX + this.viewportWidth) / this.columnWidth)
     );
-
+    // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
+    // console.log("this.startRow", this.startRow, "this.endRow", this.endRow);
+    // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -167,32 +184,43 @@ export class Grid {
     this.ctx.beginPath();
     this.ctx.rect(
       this.RowlabelWidth,
-      this.ColumnlabelHeight,
+      this.ColumnlabelHeight + this.toolBoxHeight,
       this.canvas.width - this.RowlabelWidth,
       this.canvas.height - this.ColumnlabelHeight
     );
     this.ctx.clip();
 
-    console.log(this.startRow, this.endRow, this.startCol, this.endCol);
-    console.log(this.rows.length, this.columns.length);
-    console.log("this.canvas.width", this.canvas.width);
-    console.log("this.canvas.height", this.canvas.height);
+    // console.log(this.startRow, this.endRow, this.startCol, this.endCol);
+    // console.log(this.rows.length, this.columns.length);
+    // console.log("this.canvas.width", this.canvas.width);
+    // console.log("this.canvas.height", this.canvas.height);
     // Draw cells
     for (let row = this.startRow; row <= this.endRow; row++) {
       for (let col = this.startCol; col <= this.endCol; col++) {
         const cell = this.getCell(row, col);
         if (!cell) continue;
 
-        const x = this.getColumnX(col) - scrollLeft + this.RowlabelWidth;
-        const y = this.getRowY(row) - scrollTop + this.ColumnlabelHeight;
+        const x = Math.floor(
+          this.getColumnX(col) - scrollLeft + this.RowlabelWidth
+        );
+        const y =
+          this.getRowY(row) -
+          scrollTop +
+          this.ColumnlabelHeight +
+          this.toolBoxHeight;
 
         // Draw cell background
         this.ctx.fillStyle = this.getCellBackgroundColor(cell);
-        this.ctx.fillRect(x, y, this.columnWidth, this.rowHeight);
+        this.ctx.fillRect(x, y, this.columns[col].width, this.rows[row].height);
 
         // Draw cell border
         this.ctx.strokeStyle = "#ddd";
-        this.ctx.strokeRect(x + 0.5, y + 0.5, this.columnWidth, this.rowHeight);
+        this.ctx.strokeRect(
+          x + 0.5,
+          y + 0.5,
+          this.columns[col].width,
+          this.rows[row].height
+        );
 
         // Draw cell text
         this.ctx.fillStyle = "#000";
@@ -203,22 +231,50 @@ export class Grid {
         this.ctx.fillText(
           text,
           x + 5,
-          y + this.rowHeight / 2,
-          this.columnWidth - 10
+          y + this.rows[row].height / 2,
+          this.columns[col].width - 10
         );
 
-        // Draw selection border if selected
-        if (this.selection.activeCell === cell) {
-          this.ctx.strokeStyle = "#007BFF";
+        if (this.cellrange.isCellRange()) {
+          // console.log("this.cellrange", this.cellrange);
+          let selectedCellleft =
+            this.getColumnX(this.cellrange.startCol) + this.RowlabelWidth;
+          let selectedCelltop =
+            this.getRowY(this.cellrange.startRow + 2) - this.ColumnlabelHeight;
+
+          let selectedCellright =
+            this.getColumnX(this.cellrange.endCol) + this.RowlabelWidth;
+
+          let selectedCellbottom =
+            this.getRowY(this.cellrange.endRow + 2) - this.ColumnlabelHeight;
+          this.ctx.strokeStyle = "#137e43";
           this.ctx.lineWidth = 2;
-          this.ctx.strokeRect(x, y, this.columnWidth - 1, this.rowHeight - 1);
+          this.ctx.strokeRect(
+            selectedCellleft,
+            selectedCelltop,
+            selectedCellbottom,
+            selectedCellright,
+            this.rows[row].height - 1
+          );
+          this.ctx.lineWidth = 1;
+        }
+
+        if (this.selection.activeCell === cell) {
+          // Draw selection border if selected
+          this.ctx.strokeStyle = "#137e43";
+          this.ctx.lineWidth = 2;
+          this.ctx.strokeRect(
+            x,
+            y,
+            this.columns[col].width - 1,
+            this.rows[row].height - 1
+          );
           this.ctx.lineWidth = 1;
         }
       }
     }
 
     this.ctx.restore();
-
     // Draw headers
     this.drawColumnHeaders(scrollLeft);
     this.drawRowHeaders(scrollTop);
@@ -230,7 +286,7 @@ export class Grid {
     this.ctx.fillStyle = "#f0f0f0";
     this.ctx.fillRect(
       this.RowlabelWidth,
-      0,
+      this.toolBoxHeight,
       this.canvas.width - this.RowlabelWidth,
       this.ColumnlabelHeight
     );
@@ -243,15 +299,20 @@ export class Grid {
         this.selection.activeCell &&
         this.selection.activeCell.colIndex === col
       ) {
-        this.ctx.fillStyle = "#d0e4ff";
-        this.ctx.fillRect(x, 0, this.columnWidth, this.ColumnlabelHeight);
+        this.ctx.fillStyle = "#caead8";
+        this.ctx.fillRect(
+          x,
+          this.toolBoxHeight,
+          this.columnWidth,
+          this.ColumnlabelHeight
+        );
       }
 
       // Draw header border
       this.ctx.strokeStyle = "#ccc";
       this.ctx.strokeRect(
         x + 0.5,
-        0 + 0.5,
+        this.toolBoxHeight + 0.5,
         this.columnWidth,
         this.ColumnlabelHeight
       );
@@ -265,40 +326,56 @@ export class Grid {
       this.ctx.fillText(
         label,
         x + this.columnWidth / 2,
-        this.ColumnlabelHeight / 2
+        this.ColumnlabelHeight / 2 + this.toolBoxHeight
       );
     }
   }
 
   drawRowHeaders(scrollTop) {
+    // Set font first — must match actual drawing font
+    this.ctx.font = "bold 12px Arial";
+
+    // Determine max row number in current viewport
+    const maxRowNumber = this.endRow + 1;
+    const textWidth = this.ctx.measureText(maxRowNumber.toString()).width;
+
+    // Add padding and update row header width if needed
+    const desiredWidth = textWidth + 20; // 10px padding on each side
+    if (this.RowlabelWidth !== desiredWidth) {
+      this.RowlabelWidth = desiredWidth;
+    }
+
     // Fill header background
     this.ctx.fillStyle = "#f0f0f0";
     this.ctx.fillRect(
       0,
-      this.ColumnlabelHeight,
+      this.ColumnlabelHeight + this.toolBoxHeight,
       this.RowlabelWidth,
       this.canvas.height - this.ColumnlabelHeight
     );
 
     for (let row = this.startRow; row <= this.endRow; row++) {
-      const y = this.getRowY(row) - scrollTop + this.ColumnlabelHeight;
+      const y =
+        this.getRowY(row) -
+        scrollTop +
+        this.ColumnlabelHeight +
+        this.toolBoxHeight;
 
       // Highlight selected row
       if (
         this.selection.activeCell &&
         this.selection.activeCell.rowIndex === row
       ) {
-        this.ctx.fillStyle = "#d0e4ff";
+        this.ctx.fillStyle = "#caead8";
         this.ctx.fillRect(0, y, this.RowlabelWidth, this.rowHeight);
       }
 
-      // Draw header border
+      // Draw border
       this.ctx.strokeStyle = "#ccc";
-      this.ctx.strokeRect(0 + 0.5, y + 0.5, this.RowlabelWidth, this.rowHeight);
+      this.ctx.strokeRect(0.5, y + 0.5, this.RowlabelWidth, this.rowHeight);
 
-      // Draw header text
+      // Draw row number
       this.ctx.fillStyle = "#000";
-      this.ctx.font = "bold 12px Arial";
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
       this.ctx.fillText(
@@ -311,26 +388,26 @@ export class Grid {
 
   drawCornerCell() {
     this.ctx.fillStyle = "#e0e0e0";
-    this.ctx.fillRect(0, 0, this.RowlabelWidth, this.ColumnlabelHeight);
+    this.ctx.fillRect(
+      0,
+      this.toolBoxHeight,
+      this.RowlabelWidth,
+      this.ColumnlabelHeight
+    );
     this.ctx.strokeStyle = "#ccc";
     this.ctx.strokeRect(
       0 + 0.5,
-      0 + 0.5,
+      this.toolBoxHeight + 0.5,
       this.RowlabelWidth,
       this.ColumnlabelHeight
     );
   }
 
-  // Remove the old draw method and replace with redrawVisible calls
-  draw() {
-    this.redrawVisible();
-  }
-
   getCellBackgroundColor(cell) {
     if (this.selection.activeCell === cell) {
-      return "#d4e6f7";
+      return "#fff";
     } else if (this.selection.isCellSelected(cell)) {
-      return "#e6f2ff";
+      return "#e8f2ec";
     }
     return "#fff";
   }
@@ -369,6 +446,7 @@ export class Grid {
       const cell = this.getCellAtPosition(x, y);
       if (cell) {
         this.selection.clear();
+        this.cellrange.clearRange();
         this.selection.selectCell(cell);
         this.redrawVisible();
       }
@@ -396,18 +474,20 @@ export class Grid {
           this.redrawVisible();
         }
       } else if (isDragging) {
+        // console.log("dragging");
         const cell = this.getCellAtPosition(x, y);
+        // console.log("cell", cell);
         if (cell) {
           const startCell = this.getCellAtPosition(dragStartX, dragStartY);
           if (startCell) {
-            const range = new CellRange(
+            this.cellrange = new CellRange(
               startCell.rowIndex,
               startCell.colIndex,
               cell.rowIndex,
               cell.colIndex
             );
             this.selection.clear();
-            const cellsInRange = range.getCells(this);
+            const cellsInRange = this.cellrange.getCells(this);
             cellsInRange.forEach((c) => this.selection.selectCell(c));
             this.redrawVisible();
           }
@@ -431,6 +511,9 @@ export class Grid {
     this.grid_container.addEventListener("dblclick", (e) => {
       if (isResizing) return;
       const rect = this.canvas.getBoundingClientRect();
+      // console.log("e.clientX", e.clientX, "e.clientY", e.clientY);
+      // console.log("rect.left", rect.left, "rect.top", rect.top);
+      // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
       const x = e.clientX - rect.left + this.scrollX - this.RowlabelWidth;
       const y = e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight;
 
@@ -446,8 +529,8 @@ export class Grid {
       this.scrollY = this.grid_container.scrollTop;
 
       // Position the canvas to match scroll position
-      this.canvas.style.left = `${this.scrollX}px`;
-      this.canvas.style.top = `${this.scrollY}px`;
+      // this.canvas.style.left = `${this.scrollX}px`;
+      // this.canvas.style.top = `${this.scrollY}px`;
 
       this.redrawVisible();
     });
@@ -498,18 +581,18 @@ export class Grid {
         const command = new EditCellCommand(cell, cell.value, newValue);
         this.executeCommand(command);
       }
-      container.removeChild(input);
       input.removeEventListener("blur", handleBlur);
       input.removeEventListener("keydown", handleKeyDown);
+      container.removeChild(input);
     };
 
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         handleBlur();
       } else if (e.key === "Escape") {
-        container.removeChild(input);
         input.removeEventListener("blur", handleBlur);
         input.removeEventListener("keydown", handleKeyDown);
+        container.removeChild(input);
       }
     };
 

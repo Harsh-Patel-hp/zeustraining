@@ -21,7 +21,7 @@ body {
 .grid-container {
   position: relative;
   overflow: auto;
-  height: 100vh;
+  height: 98vh;
   width: 100vw;
 }
 
@@ -37,6 +37,6 @@ body {
   background-color: white;
   top: 0px;
   left: 0px;
-  position: absolute;
+  position: sticky;
   pointer-events: none;
 }/*# sourceMappingURL=styles.css.map */

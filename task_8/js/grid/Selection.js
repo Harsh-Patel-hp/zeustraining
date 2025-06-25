@@ -11,7 +11,6 @@ export class Selection {
 
   selectCell(cell) {
     this.selectedCells.add(cell);
-
     this.activeCell = cell;
   }
 
