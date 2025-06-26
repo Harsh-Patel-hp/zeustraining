@@ -158,6 +158,10 @@ export class Grid {
     // console.log("this.startRow", this.startRow, "this.endRow", this.endRow);
     // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
     // console.log("AFTER");
+
+    this.ColumnlabelHeight = Math.floor(this.ColumnlabelHeight);
+    this.RowlabelWidth = Math.floor(this.RowlabelWidth);
+
     const scrollTop = this.scrollY;
     const scrollLeft = this.scrollX;
 
@@ -203,11 +207,12 @@ export class Grid {
         const x = Math.floor(
           this.getColumnX(col) - scrollLeft + this.RowlabelWidth
         );
-        const y =
+        const y = Math.floor(
           this.getRowY(row) -
-          scrollTop +
-          this.ColumnlabelHeight +
-          this.toolBoxHeight;
+            scrollTop +
+            this.ColumnlabelHeight +
+            this.toolBoxHeight
+        );
 
         // Draw cell background
         this.ctx.fillStyle = this.getCellBackgroundColor(cell);
@@ -275,7 +280,10 @@ export class Grid {
           this.ctx.lineWidth = 1;
         }
 
-        if (this.selection.activeCell === cell) {
+        if (
+          this.selection.activeCell === cell &&
+          !this.cellrange.isCellRange()
+        ) {
           // Draw selection border if selected
           this.ctx.strokeStyle = "#137e43";
           this.ctx.lineWidth = 2;
@@ -308,12 +316,26 @@ export class Grid {
     );
 
     for (let col = this.startCol; col <= this.endCol; col++) {
-      const x = this.getColumnX(col) - scrollLeft + this.RowlabelWidth;
+      const x = Math.floor(
+        this.getColumnX(col) - scrollLeft + this.RowlabelWidth
+      );
 
-      // Highlight selected column
+      // Draw header border
+      this.ctx.strokeStyle = "#ccc";
+      this.ctx.strokeRect(
+        x + 0.5,
+        this.toolBoxHeight + 0.5,
+        Math.floor(this.columnWidth),
+        Math.floor(this.ColumnlabelHeight)
+      );
+
+      // this.selection.isColumnSelected();
+
+      // Highlight selected columns
       if (
-        this.selection.activeCell &&
-        this.selection.activeCell.colIndex === col
+        (this.selection.activeCell &&
+          this.selection.activeCell.colIndex === col) ||
+        this.selection.isColumnSelected(col)
       ) {
         this.ctx.fillStyle = "#caead8";
         this.ctx.fillRect(
@@ -322,28 +344,50 @@ export class Grid {
           this.columnWidth,
           this.ColumnlabelHeight
         );
+        // Draw header border
+        this.ctx.strokeStyle = "#ccc";
+        this.ctx.strokeRect(
+          x + 0.5,
+          this.toolBoxHeight + 0.5,
+          Math.floor(this.columnWidth),
+          Math.floor(this.ColumnlabelHeight)
+        );
+
+        //Draw selection bottom border
+        this.ctx.strokeStyle = "#107c41";
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(
+          x + 0.5,
+          this.toolBoxHeight + this.ColumnlabelHeight,
+          this.columnWidth,
+          1
+        );
+        this.ctx.lineWidth = 1;
+
+        // Draw header text
+        this.ctx.fillStyle = "#0f703b";
+        this.ctx.font = "bold 12px Arial";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        const label = Utils.colIndexToName(col);
+        this.ctx.fillText(
+          label,
+          x + this.columnWidth / 2,
+          this.ColumnlabelHeight / 2 + this.toolBoxHeight
+        );
+      } else {
+        // Draw header text
+        this.ctx.fillStyle = "#000";
+        this.ctx.font = "bold 12px Arial";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        const label = Utils.colIndexToName(col);
+        this.ctx.fillText(
+          label,
+          x + this.columnWidth / 2,
+          this.ColumnlabelHeight / 2 + this.toolBoxHeight
+        );
       }
-
-      // Draw header border
-      this.ctx.strokeStyle = "#ccc";
-      this.ctx.strokeRect(
-        x + 0.5,
-        this.toolBoxHeight + 0.5,
-        this.columnWidth,
-        this.ColumnlabelHeight
-      );
-
-      // Draw header text
-      this.ctx.fillStyle = "#000";
-      this.ctx.font = "bold 12px Arial";
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
-      const label = Utils.colIndexToName(col);
-      this.ctx.fillText(
-        label,
-        x + this.columnWidth / 2,
-        this.ColumnlabelHeight / 2 + this.toolBoxHeight
-      );
     }
   }
 
@@ -371,34 +415,73 @@ export class Grid {
     );
 
     for (let row = this.startRow; row <= this.endRow; row++) {
-      const y =
+      const y = Math.floor(
         this.getRowY(row) -
-        scrollTop +
-        this.ColumnlabelHeight +
-        this.toolBoxHeight;
-
-      // Highlight selected row
-      if (
-        this.selection.activeCell &&
-        this.selection.activeCell.rowIndex === row
-      ) {
-        this.ctx.fillStyle = "#caead8";
-        this.ctx.fillRect(0, y, this.RowlabelWidth, this.rowHeight);
-      }
+          scrollTop +
+          this.ColumnlabelHeight +
+          this.toolBoxHeight
+      );
 
       // Draw border
       this.ctx.strokeStyle = "#ccc";
-      this.ctx.strokeRect(0.5, y + 0.5, this.RowlabelWidth, this.rowHeight);
-
-      // Draw row number
-      this.ctx.fillStyle = "#000";
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
-      this.ctx.fillText(
-        (row + 1).toString(),
-        this.RowlabelWidth / 2,
-        y + this.rowHeight / 2
+      this.ctx.strokeRect(
+        0.5,
+        y + 0.5,
+        Math.floor(this.RowlabelWidth),
+        Math.floor(this.rowHeight)
       );
+
+      //Highlight active row
+
+      //Highlight selected rows
+      // console.log(this.selection);
+      // console.log(this.selection.isRowSelected(row));
+      if (
+        (this.selection.activeCell &&
+          this.selection.activeCell.rowIndex === row) ||
+        this.selection.isRowSelected(row)
+      ) {
+        this.ctx.fillStyle = "#caead8";
+        this.ctx.fillRect(0, y, this.RowlabelWidth, this.rowHeight);
+        // Draw border
+        this.ctx.strokeStyle = "#ccc";
+        this.ctx.strokeRect(
+          0.5,
+          y + 0.5,
+          Math.floor(this.RowlabelWidth),
+          Math.floor(this.rowHeight)
+        );
+        //draw selection right border
+        this.ctx.strokeStyle = "#107c41";
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(
+          Math.floor(this.RowlabelWidth),
+          y + 0.5,
+          1,
+          Math.floor(this.rowHeight)
+        );
+        this.ctx.lineWidth = 1;
+
+        // Draw row number
+        this.ctx.fillStyle = "#0f703b";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText(
+          (row + 1).toString(),
+          this.RowlabelWidth / 2,
+          y + this.rowHeight / 2
+        );
+      } else {
+        // Draw row number
+        this.ctx.fillStyle = "#000";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText(
+          (row + 1).toString(),
+          this.RowlabelWidth / 2,
+          y + this.rowHeight / 2
+        );
+      }
     }
   }
 
@@ -406,14 +489,14 @@ export class Grid {
     this.ctx.fillStyle = "#e0e0e0";
     this.ctx.fillRect(
       0,
-      this.toolBoxHeight,
+      Math.floor(this.toolBoxHeight),
       this.RowlabelWidth,
       this.ColumnlabelHeight
     );
     this.ctx.strokeStyle = "#ccc";
     this.ctx.strokeRect(
       0 + 0.5,
-      this.toolBoxHeight + 0.5,
+      Math.floor(this.toolBoxHeight) + 0.5,
       this.RowlabelWidth,
       this.ColumnlabelHeight
     );
@@ -505,6 +588,10 @@ export class Grid {
             this.selection.clear();
             const cellsInRange = this.cellrange.getCells(this);
             cellsInRange.forEach((c) => this.selection.selectCell(c));
+            const columnsInRange = this.cellrange.getSelctedColumns(this);
+            columnsInRange.forEach((c) => this.selection.selectColumn(c));
+            const rowsInRange = this.cellrange.getSelectedRows(this);
+            rowsInRange.forEach((r) => this.selection.selectRow(r));
             this.redrawVisible();
           }
         }

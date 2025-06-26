@@ -31,6 +31,22 @@ export class CellRange {
     return cells;
   }
 
+  getSelctedColumns() {
+    const columns = [];
+    for (let c = this.startCol; c <= this.endCol; c++) {
+      columns.push(c);
+    }
+    return columns;
+  }
+
+  getSelectedRows() {
+    const rows = [];
+    for (let r = this.startRow; r <= this.endRow; r++) {
+      rows.push(r);
+    }
+    return rows;
+  }
+
   clearRange() {
     // console.log("clearRange");
     this.startRow = null;

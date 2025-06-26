@@ -11,7 +11,9 @@ export class Selection {
 
   selectCell(cell) {
     this.selectedCells.add(cell);
-    this.activeCell = cell;
+    if (this.activeCell == null) {
+      this.activeCell = cell;
+    }
   }
 
   selectRow(row) {
