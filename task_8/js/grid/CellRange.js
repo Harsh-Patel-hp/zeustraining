@@ -1,12 +1,9 @@
 export class CellRange {
-  constructor(startRow, startCol, endRow, endCol) {
-    this.startRow = Math.min(startRow, endRow);
-
-    this.startCol = Math.min(startCol, endCol);
-
-    this.endRow = Math.max(startRow, endRow);
-
-    this.endCol = Math.max(startCol, endCol);
+  constructor(startRow = null, startCol = null, endRow = null, endCol = null) {
+    this.startRow = startRow !== null ? Math.min(startRow, endRow) : null;
+    this.startCol = startCol !== null ? Math.min(startCol, endCol) : null;
+    this.endRow = startRow !== null ? Math.max(startRow, endRow) : null;
+    this.endCol = startCol !== null ? Math.max(startCol, endCol) : null;
   }
 
   contains(row, col) {
@@ -35,15 +32,17 @@ export class CellRange {
   }
 
   clearRange() {
-    console.log("clearRange");
+    // console.log("clearRange");
     this.startRow = null;
     this.startCol = null;
     this.endRow = null;
     this.endCol = null;
-    console.log(this);
+    // console.log(this);
   }
 
   isCellRange() {
+    // console.log("isCellRange-------");
+    // console.log(this);
     return (
       this.startRow !== null &&
       this.startCol !== null &&

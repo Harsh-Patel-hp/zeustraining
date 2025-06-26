@@ -236,25 +236,41 @@ export class Grid {
         );
 
         if (this.cellrange.isCellRange()) {
-          // console.log("this.cellrange", this.cellrange);
-          let selectedCellleft =
-            this.getColumnX(this.cellrange.startCol) + this.RowlabelWidth;
-          let selectedCelltop =
-            this.getRowY(this.cellrange.startRow + 2) - this.ColumnlabelHeight;
+          // console.log("----------this.cellrange", this.cellrange);
+          let selectedCellleft = Math.floor(
+            this.getColumnX(this.cellrange.startCol) +
+              this.RowlabelWidth -
+              scrollLeft
+          );
+          let selectedCelltop = Math.floor(
+            this.getRowY(this.cellrange.startRow + 1) - scrollTop
+          );
 
-          let selectedCellright =
-            this.getColumnX(this.cellrange.endCol) + this.RowlabelWidth;
+          let selectedCellWidth = Math.floor(
+            this.getColumnX(this.cellrange.endCol + 1 - this.cellrange.startCol)
+          );
 
-          let selectedCellbottom =
-            this.getRowY(this.cellrange.endRow + 2) - this.ColumnlabelHeight;
+          let selectedCellHeight = Math.floor(
+            this.getRowY(this.cellrange.endRow + 1 - this.cellrange.startRow)
+          );
+          // console.log(
+          //   "selectedCellWidth",
+          //   selectedCellWidth,
+          //   ", selectedCellleft",
+          //   selectedCellleft,
+          //   " , selectedCelltop",
+          //   selectedCelltop,
+          //   " , selectedCellHeight",
+          //   selectedCellHeight
+          // );
+
           this.ctx.strokeStyle = "#137e43";
           this.ctx.lineWidth = 2;
           this.ctx.strokeRect(
             selectedCellleft,
             selectedCelltop,
-            selectedCellbottom,
-            selectedCellright,
-            this.rows[row].height - 1
+            selectedCellWidth,
+            selectedCellHeight
           );
           this.ctx.lineWidth = 1;
         }
