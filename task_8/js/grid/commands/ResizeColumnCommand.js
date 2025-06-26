@@ -1,4 +1,6 @@
-class ResizeColumnCommand extends Command {
+import { Command } from "./Command.js";
+
+export class ResizeColumnCommand extends Command {
   constructor(column, oldWidth, newWidth) {
     super();
 

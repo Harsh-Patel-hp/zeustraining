@@ -16,6 +16,10 @@ export class Selection {
     }
   }
 
+  clearActiveCell() {
+    this.activeCell = null;
+  }
+
   selectRow(row) {
     this.selectedRows.add(row);
   }

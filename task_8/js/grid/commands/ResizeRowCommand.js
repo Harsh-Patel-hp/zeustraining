@@ -1,4 +1,5 @@
-class ResizeRowCommand extends Command {
+import { Command } from "./Command.js";
+export class ResizeRowCommand extends Command {
   constructor(row, oldHeight, newHeight) {
     super();
 
