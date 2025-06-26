@@ -159,8 +159,8 @@ export class Grid {
     // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
     // console.log("AFTER");
 
-    this.ColumnlabelHeight = Math.floor(this.ColumnlabelHeight);
-    this.RowlabelWidth = Math.floor(this.RowlabelWidth);
+    // this.ColumnlabelHeight = Math.floor(this.ColumnlabelHeight);
+    // this.RowlabelWidth = Math.floor(this.RowlabelWidth);
 
     const scrollTop = this.scrollY;
     const scrollLeft = this.scrollX;
@@ -434,7 +434,7 @@ export class Grid {
       //Highlight active row
 
       //Highlight selected rows
-      // console.log(this.selection);
+      // console.log(this.cellrange);
       // console.log(this.selection.isRowSelected(row));
       if (
         (this.selection.activeCell &&
@@ -541,18 +541,81 @@ export class Grid {
       const x = e.clientX - rect.left + this.scrollX - this.RowlabelWidth;
       const y = e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight;
 
-      // Handle cell selection
-      const cell = this.getCellAtPosition(x, y);
-      if (cell) {
+      // console.log("rect.left", rect.left, " , rect.top", rect.top);
+      // console.log("e.clientX", e.clientX, " , e.clientY", e.clientY);
+      // console.log(
+      //   "this.RowlabelWidth",
+      //   this.RowlabelWidth,
+      //   " , this.ColumnlabelHeight",
+      //   this.ColumnlabelHeight
+      // );
+      // console.log(
+      //   "this.scrollX",
+      //   this.scrollX,
+      //   " , this.scrollY",
+      //   this.scrollY
+      // );
+      // console.log("x", x, " , y", y);
+
+      //handle row selection
+      if (e.clientY - rect.top < this.ColumnlabelHeight) {
+        // console.log("column selected");
         this.selection.clear();
         this.cellrange.clearRange();
-        this.selection.selectCell(cell);
+        this.selection.selectCell(null);
+        // console.log("this.getColIndexFromX(y)", this.getColIndexFromX(x));
+        let WholeSelectedColumn = this.getColIndexFromX(x);
+        // console.log("WholeSelectedColumn", WholeSelectedColumn);
+        // let WholeSelectedColumn = 0;
+        this.cellrange = new CellRange(
+          0,
+          WholeSelectedColumn,
+          this.totalRows - 1,
+          WholeSelectedColumn
+        );
+        const cellsInRange = this.cellrange.getCells(this);
+        cellsInRange.forEach((c) => this.selection.selectCell(c));
+        const columnsInRange = this.cellrange.getSelctedColumns(this);
+        columnsInRange.forEach((c) => this.selection.selectColumn(c));
+        const rowsInRange = this.cellrange.getSelectedRows(this);
+        rowsInRange.forEach((r) => this.selection.selectRow(r));
         this.redrawVisible();
-      }
+      } else if (e.clientX - rect.left < this.RowlabelWidth) {
+        // console.log("row selected");
+        this.selection.clear();
+        this.cellrange.clearRange();
+        this.selection.selectCell(null);
+        // console.log("this.getColIndexFromX(y)", this.getColIndexFromX(x));
+        let WholeSelectedColumn = this.getRowIndexFromY(y);
+        // console.log("WholeSelectedColumn", WholeSelectedColumn);
+        // let WholeSelectedColumn = 0;
+        this.cellrange = new CellRange(
+          WholeSelectedColumn,
+          0,
+          WholeSelectedColumn,
+          this.totalColumns - 1
+        );
+        const cellsInRange = this.cellrange.getCells(this);
+        cellsInRange.forEach((c) => this.selection.selectCell(c));
+        const columnsInRange = this.cellrange.getSelctedColumns(this);
+        columnsInRange.forEach((c) => this.selection.selectColumn(c));
+        const rowsInRange = this.cellrange.getSelectedRows(this);
+        rowsInRange.forEach((r) => this.selection.selectRow(r));
+        this.redrawVisible();
+      } else {
+        // Handle cell selection
+        const cell = this.getCellAtPosition(x, y);
+        if (cell) {
+          this.selection.clear();
+          this.cellrange.clearRange();
+          this.selection.selectCell(cell);
+          this.redrawVisible();
+        }
 
-      dragStartX = x;
-      dragStartY = y;
-      isDragging = true;
+        dragStartX = x;
+        dragStartY = y;
+        isDragging = true;
+      }
     });
 
     this.grid_container.addEventListener("mousemove", (e) => {
