@@ -294,32 +294,26 @@ export class Grid {
         );
 
         if (this.cellrange.isCellRange()) {
-          console.log("----------this.cellrange", this.cellrange);
+          // console.log("----------this.cellrange", this.cellrange);
           let selectedCellleft = Math.floor(
             this.getColumnX(this.cellrange.startCol) +
               this.RowlabelWidth -
               scrollLeft
           );
           let selectedCelltop = Math.floor(
-            this.getRowY(this.cellrange.startRow + 1) - scrollTop
+            this.getRowY(this.cellrange.startRow) +
+              this.ColumnlabelHeight -
+              scrollTop
           );
 
           let selectedCellWidth = Math.floor(
-            this.getColumnX(this.cellrange.endCol + 1 - this.cellrange.startCol)
+            this.getColumnX(this.cellrange.endCol + 1) -
+              this.getColumnX(this.cellrange.startCol)
           );
 
           let selectedCellHeight = Math.floor(
-            this.getRowY(this.cellrange.endRow + 1 - this.cellrange.startRow)
-          );
-          console.log(
-            "selectedCellWidth",
-            selectedCellWidth,
-            ", selectedCellleft",
-            selectedCellleft,
-            " , selectedCelltop",
-            selectedCelltop,
-            " , selectedCellHeight",
-            selectedCellHeight
+            this.getRowY(this.cellrange.endRow + 1) -
+              this.getRowY(this.cellrange.startRow)
           );
 
           this.ctx.strokeStyle = "#137e43";
@@ -405,6 +399,8 @@ export class Grid {
           Math.floor(this.columns[col].width),
           Math.floor(this.ColumnlabelHeight)
         );
+
+        console.log("col", col, this.columns[col].width);
 
         //Draw selection bottom border
         this.ctx.strokeStyle = "#107c41";
