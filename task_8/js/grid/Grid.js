@@ -5,49 +5,114 @@ import { Cell } from "./Cell.js";
 import { EditCellCommand } from "./commands/EditCellCommand.js";
 import { ResizeColumnCommand } from "./commands/ResizeColumnCommand.js";
 import { ResizeRowCommand } from "./commands/ResizeRowCommand.js";
-
 import { Utils } from "./utils.js";
 import { CellRange } from "./CellRange.js";
 
 export class Grid {
+  /**
+   * Initializes the Grid object
+   * @param {HTMLCanvasElement} canvas Canvas element for rendering the grid
+   * @param {number} columns Number of columns in the grid
+   * @param {number} rows Number of rows in the grid
+   */
   constructor(canvas, columns = 500, rows = 100000) {
+    /** @type {HTMLCanvasElement} Stores the canvas element for rendering */
     this.canvas = canvas;
+
+    /** @type {CanvasRenderingContext2D} Stores the 2D rendering context of the canvas */
     this.ctx = canvas.getContext("2d");
+
+    /** @type {number} Total number of columns in the grid */
     this.totalColumns = columns;
+
+    /** @type {number} Total number of rows in the grid */
     this.totalRows = rows;
+
+    /** @type {number} Number of columns visible in the viewport */
     this.visibleColumns = 30;
+
+    /** @type {number} Number of rows visible in the viewport */
     this.visibleRows = 50;
+
+    /** @type {number} Height of each row */
     this.rowHeight = 25;
+
+    /** @type {number} Zoom factor for the grid */
     this.zoomFactor = this.zoomLevel || 1;
-    this.RowlabelWidth = 25;
+
+    /** @type {number} Width of the row labels */
+    this.RowlabelWidth = 33;
+
+    /** @type {number} Height of the column labels */
     this.ColumnlabelHeight = 25;
+
+    /** @type {number} Width of each column */
     this.columnWidth = 100;
+
+    /** @type {number} Horizontal scroll position */
     this.scrollX = 0;
+
+    /** @type {number} Vertical scroll position */
     this.scrollY = 0;
+
+    /** @type {number} Height of the toolbox */
     this.toolBoxHeight = 0;
+
+    /** @type {Array<Column>} Array of column objects */
     this.columns = [];
+
+    /** @type {Array<Row>} Array of row objects */
     this.rows = [];
+
+    /** @type {Selection} Manages the selection of cells */
     this.selection = new Selection();
+
+    /** @type {CellRange} Manages cell range selections */
     this.cellrange = new CellRange();
+
+    /** @type {Array<Command>} History of executed commands */
     this.commandHistory = [];
+
+    /** @type {number} Pointer to the current position in the command history */
     this.historyPointer = -1;
+
+    /** @type {Array} Stores the grid data */
     this.data = [];
+
+    /** @type {Array<string>} Stores the column headers */
     this.headers = [];
+
+    /** @type {HTMLElement} The container element for the grid */
     this.grid_container = document.getElementById("grid_container") || "";
+
+    /** @type {HTMLElement} The virtual class element for managing dimensions */
     this.virtual_class = document.getElementById("virtual_class") || "";
 
-    // Virtual scrolling properties
+    /** @type {number} Width of the viewport for virtual scrolling */
     this.viewportWidth = 0;
+
+    /** @type {number} Height of the viewport for virtual scrolling */
     this.viewportHeight = 0;
+
+    /** @type {number} The starting row index in the visible range */
     this.startRow = 0;
+
+    /** @type {number} The ending row index in the visible range */
     this.endRow = 0;
+
+    /** @type {number} The starting column index in the visible range */
     this.startCol = 0;
+
+    /** @type {number} The ending column index in the visible range */
     this.endCol = 0;
 
     this.init();
     this.setupEventListeners();
   }
 
+  /**
+   * Initializes the grid
+   */
   init() {
     // Initialize columns
     for (let i = 0; i < this.totalColumns; i++) {
@@ -61,20 +126,24 @@ export class Grid {
       const row = new Row(i, this.rowHeight);
       this.rows.push(row);
     }
-    this.virtual_class.style.height = this.rowHeight * this.totalRows + "px";
-    this.virtual_class.style.width =
-      this.columnWidth * this.totalColumns + "px";
     this.updateVirtualClassDimensions();
     this.setupCanvas();
     // this.redrawVisible();
   }
-  // Helper method to update virtual class dimensions
+
+  /**
+   * Helper method to update virtual class dimensions
+   */
   updateVirtualClassDimensions() {
     const totalWidth = this.columns.reduce((sum, col) => sum + col.width, 0);
     const totalHeight = this.rows.reduce((sum, row) => sum + row.height, 0);
     this.virtual_class.style.height = totalHeight + "px";
     this.virtual_class.style.width = totalWidth + "px";
   }
+
+  /**
+   * Helper method to setup the canvas
+   */
   setupCanvas() {
     // Set canvas size to viewport size instead of full grid size
     const container = this.grid_container;
@@ -89,13 +158,22 @@ export class Grid {
     this.canvas.style.height = this.viewportHeight + "px";
   }
 
+  /**
+   * Sets the grid data and redraws the visible cells
+   * @param {Array<Array>} data The grid data
+   */
   loadData(data) {
     this.data = data;
     // console.log(this.data);
-    // Don't populate all cells immediately, do it on demand
     this.redrawVisible();
   }
 
+  /**
+   * Set the value of the cell at the given row and column index
+   * @param {number} rowIndex The row index of the cell
+   * @param {number} colIndex The column index of the cell
+   * @param {string} value The value to set for the cell
+   */
   setCellValue(rowIndex, colIndex, value) {
     // Ensure the row has cells initialized up to colIndex
     if (!this.rows[rowIndex].cells[colIndex]) {
@@ -109,6 +187,12 @@ export class Grid {
     }
   }
 
+  /**
+   * Retrieves the cell at the specified row and column index.
+   * @param {number} rowIndex - The index of the row.
+   * @param {number} colIndex - The index of the column.
+   * @returns {Cell|null} The cell at the specified location or null if out of bounds.
+   */
   getCell(rowIndex, colIndex) {
     if (
       rowIndex >= 0 &&
@@ -128,6 +212,11 @@ export class Grid {
     return null;
   }
 
+  /** Retrives the value of the cell at the specified row and column index
+   * @param {number} rowIndex The row index of the cell
+   * @param {number} colIndex The column index of the cell
+   * @returns {string} The value of the cell at the specified location
+   */
   getCellDataValue(rowIndex, colIndex) {
     if (this.data[rowIndex]) {
       const keys = Object.keys(this.data[rowIndex]);
@@ -138,6 +227,11 @@ export class Grid {
     return "";
   }
 
+  /**
+   * Returns the row index of the row containing the specified y-coordinate.
+   * @param {number} y - The y-coordinate.
+   * @returns {number} The row index containing the specified y-coordinate.
+   */
   getRowIndexFromY(y) {
     let currentY = 0;
     for (let i = 0; i < this.rows.length; i++) {
@@ -149,6 +243,11 @@ export class Grid {
     return Math.floor(y / this.rowHeight);
   }
 
+  /**
+   * Returns the column index corresponding to the specified x-coordinate.
+   * @param {number} x - The x-coordinate.
+   * @returns {number} The column index containing the specified x-coordinate.
+   */
   getColIndexFromX(x) {
     let currentX = 0;
     for (let i = 0; i < this.columns.length; i++) {
@@ -160,6 +259,12 @@ export class Grid {
     return Math.floor(x / this.columnWidth);
   }
 
+  /**
+   * Returns the x-coordinate of the specified column index.
+   * @param {number} colIndex - The column index.
+   * @returns {number} The x-coordinate of the specified column index.
+   */
+
   getColumnX(colIndex) {
     let XofColumn = 0;
     for (let i = 0; i < colIndex; i++) {
@@ -168,6 +273,11 @@ export class Grid {
     return XofColumn;
   }
 
+  /**
+   * Returns the y-coordinate of the specified row index.
+   * @param {number} rowIndex - The row index.
+   * @returns {number} The y-coordinate of the specified row index.
+   */
   getRowY(rowIndex) {
     let YofRow = 0;
     for (let i = 0; i < rowIndex; i++) {
@@ -176,6 +286,9 @@ export class Grid {
     return YofRow;
   }
 
+  /**
+   * Helper method to redraw the visible portion of the grid
+   */
   redrawVisible() {
     // console.log("redrawVisible");
     // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
@@ -285,14 +398,29 @@ export class Grid {
         this.ctx.font = "12px Arial";
         this.ctx.textAlign = "left";
         this.ctx.textBaseline = "middle";
-        const text = cell.getDisplayValue();
-        this.ctx.fillText(
-          text,
-          x + 5,
-          y + this.rows[row].height / 2,
-          this.columns[col].width - 10
-        );
+        const text = String(cell.getDisplayValue() ?? "");
 
+        // Calculate available width for text (padding: 2.5px left + 2.5px right)
+        const availableWidth = this.columns[col].width - 5;
+
+        // Measure and truncate text to fit
+        let truncatedText = "";
+        let currentWidth = 0;
+
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          const charWidth = this.ctx.measureText(char).width;
+          if (currentWidth + charWidth > availableWidth) {
+            break;
+          }
+          truncatedText += char;
+          currentWidth += charWidth;
+        }
+
+        // Draw the truncated text
+        this.ctx.fillText(truncatedText, x + 5, y + this.rows[row].height / 2);
+
+        // Highlight selected cells
         if (this.cellrange.isCellRange()) {
           // console.log("----------this.cellrange", this.cellrange);
           let selectedCellleft = Math.floor(
@@ -352,6 +480,10 @@ export class Grid {
     this.drawCornerCell();
   }
 
+  /**
+   * Draws the column headers on the canvas.
+   * @param {number} scrollLeft The current horizontal scroll position in pixels.
+   */
   drawColumnHeaders(scrollLeft) {
     // Fill header background
     this.ctx.fillStyle = "#f0f0f0";
@@ -384,13 +516,28 @@ export class Grid {
           this.selection.activeCell.colIndex === col) ||
         this.selection.isColumnSelected(col)
       ) {
-        this.ctx.fillStyle = "#caead8";
-        this.ctx.fillRect(
-          x,
-          this.toolBoxHeight,
-          this.columns[col].width,
-          this.ColumnlabelHeight
-        );
+        if (
+          this.cellrange.endRow + 1 - this.cellrange.startRow ===
+          this.rows.length
+        ) {
+          // Draw header background for whole selected column
+          this.ctx.fillStyle = "#107c41";
+          this.ctx.fillRect(
+            x,
+            this.toolBoxHeight,
+            this.columns[col].width,
+            this.ColumnlabelHeight
+          );
+        } else {
+          // Draw header background
+          this.ctx.fillStyle = "#caead8";
+          this.ctx.fillRect(
+            x,
+            this.toolBoxHeight,
+            this.columns[col].width,
+            this.ColumnlabelHeight
+          );
+        }
         // Draw header border
         this.ctx.strokeStyle = "#ccc";
         this.ctx.strokeRect(
@@ -400,30 +547,47 @@ export class Grid {
           Math.floor(this.ColumnlabelHeight)
         );
 
-        console.log("col", col, this.columns[col].width);
+        // console.log("col", col, this.columns[col].width);
 
         //Draw selection bottom border
         this.ctx.strokeStyle = "#107c41";
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(
           x + 0.5,
-          this.toolBoxHeight + this.ColumnlabelHeight,
+          Math.floor(this.toolBoxHeight + this.ColumnlabelHeight),
           this.columns[col].width,
           1
         );
         this.ctx.lineWidth = 1;
 
-        // Draw header text
-        this.ctx.fillStyle = "#0f703b";
-        this.ctx.font = "bold 12px Arial";
-        this.ctx.textAlign = "center";
-        this.ctx.textBaseline = "middle";
-        const label = Utils.colIndexToName(col);
-        this.ctx.fillText(
-          label,
-          x + this.columns[col].width / 2,
-          this.ColumnlabelHeight / 2 + this.toolBoxHeight
-        );
+        if (
+          this.cellrange.endRow + 1 - this.cellrange.startRow ===
+          this.rows.length
+        ) {
+          // Draw header text for whole selected column
+          this.ctx.fillStyle = "#ffffff";
+          this.ctx.font = "bold 12px Arial";
+          this.ctx.textAlign = "center";
+          this.ctx.textBaseline = "middle";
+          const label = Utils.colIndexToName(col);
+          this.ctx.fillText(
+            label,
+            x + this.columns[col].width / 2,
+            this.ColumnlabelHeight / 2 + this.toolBoxHeight
+          );
+        } else {
+          // Draw header text
+          this.ctx.fillStyle = "#0f703b";
+          this.ctx.font = "bold 12px Arial";
+          this.ctx.textAlign = "center";
+          this.ctx.textBaseline = "middle";
+          const label = Utils.colIndexToName(col);
+          this.ctx.fillText(
+            label,
+            x + this.columns[col].width / 2,
+            this.ColumnlabelHeight / 2 + this.toolBoxHeight
+          );
+        }
       } else {
         // Draw header text
         this.ctx.fillStyle = "#000";
@@ -440,6 +604,10 @@ export class Grid {
     }
   }
 
+  /**
+   * Draws the row headers on the canvas.
+   * @param {number} scrollTop - The current vertical scroll position in pixels.
+   */
   drawRowHeaders(scrollTop) {
     // Set font first — must match actual drawing font
     this.ctx.font = "bold 12px Arial";
@@ -480,9 +648,7 @@ export class Grid {
         Math.floor(this.rows[row].height)
       );
 
-      //Highlight active row
-
-      //Highlight selected rows
+      // Highlight active selected rows
       // console.log(this.cellrange);
       // console.log(this.selection.isRowSelected(row));
       if (
@@ -490,8 +656,19 @@ export class Grid {
           this.selection.activeCell.rowIndex === row) ||
         this.selection.isRowSelected(row)
       ) {
-        this.ctx.fillStyle = "#caead8";
-        this.ctx.fillRect(0, y, this.RowlabelWidth, this.rows[row].height);
+        if (
+          this.cellrange.endCol + 1 - this.cellrange.startCol ===
+          this.columns.length
+        ) {
+          // Draw header background for whole selected row
+          this.ctx.fillStyle = "#107c41";
+          this.ctx.fillRect(0, y, this.RowlabelWidth, this.rows[row].height);
+        } else {
+          // Draw header background
+          this.ctx.fillStyle = "#caead8";
+          this.ctx.fillRect(0, y, this.RowlabelWidth, this.rows[row].height);
+        }
+
         // Draw border
         this.ctx.strokeStyle = "#ccc";
         this.ctx.strokeRect(
@@ -511,15 +688,30 @@ export class Grid {
         );
         this.ctx.lineWidth = 1;
 
-        // Draw row number
-        this.ctx.fillStyle = "#0f703b";
-        this.ctx.textAlign = "center";
-        this.ctx.textBaseline = "middle";
-        this.ctx.fillText(
-          (row + 1).toString(),
-          this.RowlabelWidth / 2,
-          y + this.rows[row].height / 2
-        );
+        if (
+          this.cellrange.endCol + 1 - this.cellrange.startCol ===
+          this.columns.length
+        ) {
+          // Draw row number for whole selected row
+          this.ctx.fillStyle = "#ffffff";
+          this.ctx.textAlign = "center";
+          this.ctx.textBaseline = "middle";
+          this.ctx.fillText(
+            (row + 1).toString(),
+            this.RowlabelWidth / 2,
+            y + this.rows[row].height / 2
+          );
+        } else {
+          // Draw row number
+          this.ctx.fillStyle = "#0f703b";
+          this.ctx.textAlign = "center";
+          this.ctx.textBaseline = "middle";
+          this.ctx.fillText(
+            (row + 1).toString(),
+            this.RowlabelWidth / 2,
+            y + this.rows[row].height / 2
+          );
+        }
       } else {
         // Draw row number
         this.ctx.fillStyle = "#000";
@@ -534,31 +726,46 @@ export class Grid {
     }
   }
 
-  //Check if mouse is over column resize handle
+  /**
+   * Checks if the mouse is over a column resize handle.
+   * @param {number} localX - The x-coordinate of the mouse in local space.
+   * @param {number} localY - The y-coordinate of the mouse in local space.
+   * @param {number} colIndex - The index of the column to check.
+   * @returns {boolean} True if the mouse is over the column resize handle, false otherwise.
+   */
   isOverColumnResize(localX, localY, colIndex) {
     if (localY > this.ColumnlabelHeight + this.toolBoxHeight) return false;
 
     const colX = this.getColumnX(colIndex) - this.scrollX + this.RowlabelWidth;
     const nextColX = colX + this.columns[colIndex].width;
 
-    return Math.abs(localX - nextColX) < 5;
+    return Math.abs(localX - nextColX) < 7;
   }
 
-  // Check if mouse is over row resize handle
+  /**
+   * Checks if the mouse is over a row resize handle.
+   * @param {number} localX - The x-coordinate of the mouse in local space.
+   * @param {number} localY - The y-coordinate of the mouse in local space.
+   * @param {number} rowIndex - The index of the row to check.
+   * @returns {boolean} True if the mouse is over the row resize handle, false otherwise.
+   */
   isOverRowResize(localX, localY, rowIndex) {
     if (localX > this.RowlabelWidth) return false;
-
     const rowY =
       this.getRowY(rowIndex) -
       this.scrollY +
       this.ColumnlabelHeight +
       this.toolBoxHeight;
     const nextRowY = rowY + this.rows[rowIndex].height;
-
     return Math.abs(localY - nextRowY) < 5;
   }
 
-  // Update cursor based on hover position
+  /**
+   * Updates the cursor based on the hover position.
+   * @param {number} localX - The x-coordinate of the mouse in local space.
+   * @param {number} localY - The y-coordinate of the mouse in local space.
+   * @returns {void}
+   */
   updateCursor(localX, localY) {
     // Check for column resize cursor
     if (
@@ -572,7 +779,7 @@ export class Grid {
         colIndex < this.totalColumns &&
         this.isOverColumnResize(localX, localY, colIndex)
       ) {
-        this.canvas.style.cursor = "col-resize";
+        this.grid_container.style.cursor = "col-resize";
         return;
       }
     }
@@ -590,31 +797,42 @@ export class Grid {
         rowIndex < this.totalRows &&
         this.isOverRowResize(localX, localY, rowIndex)
       ) {
-        this.canvas.style.cursor = "row-resize";
+        this.grid_container.style.cursor = "row-resize";
         return;
       }
     }
 
-    this.canvas.style.cursor = "default";
+    this.grid_container.style.cursor = "cell";
   }
 
+  /**
+   * Draws the corner cell in the top left corner of the grid.
+   */
   drawCornerCell() {
+    //box
     this.ctx.fillStyle = "#e0e0e0";
     this.ctx.fillRect(
       0,
       Math.floor(this.toolBoxHeight),
-      this.RowlabelWidth,
-      this.ColumnlabelHeight
+      Math.floor(this.RowlabelWidth),
+      Math.floor(this.ColumnlabelHeight)
     );
+
+    //border
     this.ctx.strokeStyle = "#ccc";
     this.ctx.strokeRect(
       0 + 0.5,
       Math.floor(this.toolBoxHeight) + 0.5,
-      this.RowlabelWidth,
-      this.ColumnlabelHeight
+      Math.floor(this.RowlabelWidth),
+      Math.floor(this.ColumnlabelHeight)
     );
   }
 
+  /**
+   * Gets the background color for a given cell.
+   * @param {Cell} cell - The cell to get the background color for.
+   * @returns {string} The background color for the cell.
+   */
   getCellBackgroundColor(cell) {
     if (this.selection.activeCell === cell) {
       return "#fff";
@@ -624,6 +842,11 @@ export class Grid {
     return "#fff";
   }
 
+  /**
+   * Calculates statistics for the selected cells.
+   * @param {Array<Cell>} selectedCells - An array of selected cell objects.
+   * @returns {Object|null} An object containing count, min, max, and sum of numeric values, or null if no numeric values.
+   */
   calculateStats(selectedCells) {
     const numericValues = selectedCells
       .map((cell) => parseFloat(cell.value))
@@ -638,6 +861,9 @@ export class Grid {
     };
   }
 
+  /**
+   * Sets up event listeners for the grid.
+   */
   setupEventListeners() {
     // Mouse events for selection and resizing
     let isDragging = false;
@@ -679,7 +905,7 @@ export class Grid {
         //column selection or resize
         let colIndex = this.getColIndexFromX(x);
 
-        // MODIFICATION: Enhanced column resize detection
+        // column resize detection
         if (this.isOverColumnResize(localX, localY, colIndex)) {
           resizeColumnIndex = colIndex;
           isResizing = true;
@@ -712,7 +938,7 @@ export class Grid {
         // row selection or resize
         let rowIndex = this.getRowIndexFromY(y);
 
-        // MODIFICATION: Enhanced row resize detection
+        // row resize detection
         if (this.isOverRowResize(localX, localY, rowIndex)) {
           resizeRowIndex = rowIndex;
           isResizing = true;
@@ -864,11 +1090,6 @@ export class Grid {
     this.grid_container.addEventListener("scroll", (e) => {
       this.scrollX = this.grid_container.scrollLeft;
       this.scrollY = this.grid_container.scrollTop;
-
-      // Position the canvas to match scroll position
-      // this.canvas.style.left = `${this.scrollX}px`;
-      // this.canvas.style.top = `${this.scrollY}px`;
-
       this.redrawVisible();
     });
 
@@ -879,6 +1100,10 @@ export class Grid {
     });
   }
 
+  /**
+   * Edit the cell's value
+   * @param {Cell} cell - the cell to edit
+   */
   editCell(cell) {
     const input = document.createElement("input");
     input.type = "text";
@@ -937,6 +1162,11 @@ export class Grid {
     input.addEventListener("keydown", handleKeyDown);
   }
 
+  /**
+   * Returns the column index corresponding to the specified x-coordinate.
+   * @param {number} x - The x-coordinate.
+   * @returns {number} The column index containing the specified x-coordinate.
+   */
   getColumnAtPosition(x) {
     let currentX = 0;
     for (let i = 0; i < this.columns.length; i++) {
@@ -948,6 +1178,12 @@ export class Grid {
     // Fallback for positions beyond the last column
     return this.columns.length - 1;
   }
+
+  /**
+   * Returns the row index at the specified y-coordinate.
+   * @param {number} y - The y-coordinate.
+   * @returns {number} The index of the row containing the y-coordinate.
+   */
   getRowAtPosition(y) {
     let currentY = 0;
     for (let i = 0; i < this.rows.length; i++) {
@@ -960,6 +1196,12 @@ export class Grid {
     return this.rows.length - 1;
   }
 
+  /**
+   * Returns the cell at the specified x and y coordinates.
+   * @param {number} x - The x-coordinate.
+   * @param {number} y - The y-coordinate.
+   * @returns {Cell|null} The cell at the specified coordinates, or null if out of bounds.
+   */
   getCellAtPosition(x, y) {
     const colIndex = this.getColumnAtPosition(x);
     const rowIndex = this.getRowAtPosition(y);
@@ -974,6 +1216,10 @@ export class Grid {
     return null;
   }
 
+  /**
+   * Execute a command on the grid.
+   * @param {Command} command - The command to execute.
+   */
   executeCommand(command) {
     if (command && typeof command.execute === "function") {
       command.execute();
