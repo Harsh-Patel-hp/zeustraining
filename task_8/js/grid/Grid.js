@@ -1093,6 +1093,23 @@ export class Grid {
       this.redrawVisible();
     });
 
+    document.addEventListener("keydown", (e) => {
+      // Only handle keyboard navigation if the grid container or canvas has focus
+      // or if no input elements are currently focused
+      console.log(e);
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.isContentEditable);
+
+      // Only handle navigation if no input is focused
+      if (!isInputFocused) {
+        this.handleKeyboardNavigation(e);
+      }
+    });
+
     // Handle window resize
     window.addEventListener("resize", () => {
       this.setupCanvas();
@@ -1232,4 +1249,240 @@ export class Grid {
       this.redrawVisible();
     }
   }
+
+  /**
+   * MODIFICATION: Added keyboard navigation functionality
+   * Handles keyboard navigation for cell selection
+   * @param {KeyboardEvent} e - The keyboard event
+   */
+  handleKeyboardNavigation(e) {
+    if (!this.selection.activeCell) return;
+
+    const currentRow = this.selection.activeCell.rowIndex;
+    const currentCol = this.selection.activeCell.colIndex;
+    let newRow = currentRow;
+    let newCol = currentCol;
+
+    switch (e.key) {
+      case "ArrowUp":
+        newRow = Math.max(0, currentRow - 1);
+        e.preventDefault();
+        break;
+      case "ArrowDown":
+        newRow = Math.min(this.totalRows - 1, currentRow + 1);
+        e.preventDefault();
+        break;
+      case "ArrowLeft":
+        newCol = Math.max(0, currentCol - 1);
+        e.preventDefault();
+        break;
+      case "ArrowRight":
+        newCol = Math.min(this.totalColumns - 1, currentCol + 1);
+        e.preventDefault();
+        break;
+      case "Home":
+        if (e.ctrlKey) {
+          // Ctrl+Home: Go to cell A1
+          newRow = 0;
+          newCol = 0;
+        } else {
+          // Home: Go to beginning of current row
+          newCol = 0;
+        }
+        e.preventDefault();
+        break;
+      case "End":
+        if (e.ctrlKey) {
+          // Ctrl+End: Go to last used cell (for now, go to last column of current row)
+          newCol = this.totalColumns - 1;
+        } else {
+          // End: Go to end of current row
+          newCol = this.totalColumns - 1;
+        }
+        e.preventDefault();
+        break;
+      case "PageUp":
+        newRow = Math.max(0, currentRow - this.visibleRows);
+        e.preventDefault();
+        break;
+      case "PageDown":
+        newRow = Math.min(this.totalRows - 1, currentRow + this.visibleRows);
+        e.preventDefault();
+        break;
+      case "Tab":
+        if (e.shiftKey) {
+          // Shift+Tab: Move to previous cell
+          newCol = currentCol - 1;
+          if (newCol < 0) {
+            newCol = this.totalColumns - 1;
+            newRow = Math.max(0, currentRow - 1);
+          }
+        } else {
+          // Tab: Move to next cell
+          newCol = currentCol + 1;
+          if (newCol >= this.totalColumns) {
+            newCol = 0;
+            newRow = Math.min(this.totalRows - 1, currentRow + 1);
+          }
+        }
+        e.preventDefault();
+        break;
+      case "Enter":
+        // Enter: Move to cell below
+        newRow = Math.min(this.totalRows - 1, currentRow + 1);
+        e.preventDefault();
+        break;
+      case "F2":
+        // F2: Edit current cell
+        this.editCell(this.selection.activeCell);
+        e.preventDefault();
+        return; // Don't change selection
+      default:
+        return; // Don't handle other keys
+    }
+
+    // If position changed, update selection
+    if (newRow !== currentRow || newCol !== currentCol) {
+      const newCell = this.getCell(newRow, newCol);
+      if (newCell) {
+        this.selection.clear();
+        this.cellrange.clearRange();
+        this.selection.selectCell(newCell);
+
+        // Auto-scroll to keep selected cell visible
+        this.scrollToCell(newRow, newCol);
+
+        this.redrawVisible();
+      }
+    }
+  }
+
+  scrollToCell(rowIndex, colIndex) {
+    const cellX = this.getColumnX(colIndex);
+    const cellY = this.getRowY(rowIndex);
+    const cellWidth = this.columns[colIndex].width;
+    const cellHeight = this.rows[rowIndex].height;
+
+    // Calculate visible area (excluding headers)
+    const visibleLeft = this.scrollX;
+    const visibleRight =
+      this.scrollX + (this.viewportWidth - this.RowlabelWidth);
+    const visibleTop = this.scrollY;
+    const visibleBottom =
+      this.scrollY +
+      (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
+
+    let newScrollX = this.scrollX;
+    let newScrollY = this.scrollY;
+
+    // Check horizontal scrolling
+    if (cellX < visibleLeft) {
+      // Cell is to the left of visible area
+      newScrollX = cellX;
+    } else if (cellX + cellWidth > visibleRight) {
+      // Cell is to the right of visible area
+      newScrollX =
+        cellX + cellWidth - (this.viewportWidth - this.RowlabelWidth);
+    }
+
+    // Check vertical scrolling
+    if (cellY < visibleTop) {
+      // Cell is above visible area
+      newScrollY = cellY;
+    } else if (cellY + cellHeight > visibleBottom) {
+      // Cell is below visible area
+      newScrollY =
+        cellY +
+        cellHeight -
+        (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
+    }
+
+    // Apply new scroll position if changed
+    if (newScrollX !== this.scrollX || newScrollY !== this.scrollY) {
+      this.grid_container.scrollLeft = Math.max(0, newScrollX);
+      this.grid_container.scrollTop = Math.max(0, newScrollY);
+      this.scrollX = this.grid_container.scrollLeft;
+      this.scrollY = this.grid_container.scrollTop;
+    }
+  }
 }
+
+// Add this method after the executeCommand method (around line 1200+)
+
+/**
+ * MODIFICATION: Added auto-scroll functionality for keyboard navigation
+ * Scrolls the viewport to ensure the specified cell is visible
+ * @param {number} rowIndex - The row index of the cell
+ * @param {number} colIndex - The column index of the cell
+ */
+// scrollToCell(rowIndex, colIndex) {
+//   const cellX = this.getColumnX(colIndex);
+//   const cellY = this.getRowY(rowIndex);
+//   const cellWidth = this.columns[colIndex].width;
+//   const cellHeight = this.rows[rowIndex].height;
+
+//   // Calculate visible area (excluding headers)
+//   const visibleLeft = this.scrollX;
+//   const visibleRight = this.scrollX + (this.viewportWidth - this.RowlabelWidth);
+//   const visibleTop = this.scrollY;
+//   const visibleBottom = this.scrollY + (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
+
+//   let newScrollX = this.scrollX;
+//   let newScrollY = this.scrollY;
+
+//   // Check horizontal scrolling
+//   if (cellX < visibleLeft) {
+//     // Cell is to the left of visible area
+//     newScrollX = cellX;
+//   } else if (cellX + cellWidth > visibleRight) {
+//     // Cell is to the right of visible area
+//     newScrollX = cellX + cellWidth - (this.viewportWidth - this.RowlabelWidth);
+//   }
+
+//   // Check vertical scrolling
+//   if (cellY < visibleTop) {
+//     // Cell is above visible area
+//     newScrollY = cellY;
+//   } else if (cellY + cellHeight > visibleBottom) {
+//     // Cell is below visible area
+//     newScrollY = cellY + cellHeight - (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
+//   }
+
+//   // Apply new scroll position if changed
+//   if (newScrollX !== this.scrollX || newScrollY !== this.scrollY) {
+//     this.grid_container.scrollLeft = Math.max(0, newScrollX);
+//     this.grid_container.scrollTop = Math.max(0, newScrollY);
+//     this.scrollX = this.grid_container.scrollLeft;
+//     this.scrollY = this.grid_container.scrollTop;
+//   }
+// }
+
+// MODIFICATION: Add this to the setupEventListeners method
+// Find the setupEventListeners method and add this at the end, before the closing brace:
+
+/*
+  // MODIFICATION: Added keyboard event listener for navigation
+  // Add this code at the end of setupEventListeners method, before the closing brace
+  document.addEventListener("keydown", (e) => {
+    // Only handle keyboard navigation if the grid container or canvas has focus
+    // or if no input elements are currently focused
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+      activeElement.tagName === 'INPUT' ||
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.isContentEditable
+    );
+    
+    // Only handle navigation if no input is focused
+    if (!isInputFocused) {
+      this.handleKeyboardNavigation(e);
+    }
+  });
+  
+  // MODIFICATION: Make the grid container focusable for keyboard events
+  // Add tabindex to make the container focusable
+  if (this.grid_container) {
+    this.grid_container.setAttribute('tabindex', '0');
+    this.grid_container.style.outline = 'none'; // Remove focus outline for better appearance
+  }
+*/
