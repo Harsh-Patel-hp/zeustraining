@@ -375,9 +375,9 @@ export class Grid {
         );
         const y = Math.floor(
           this.getRowY(row) -
-            scrollTop +
-            this.ColumnlabelHeight +
-            this.toolBoxHeight
+          scrollTop +
+          this.ColumnlabelHeight +
+          this.toolBoxHeight
         );
 
         // Draw cell background
@@ -425,23 +425,23 @@ export class Grid {
           // console.log("----------this.cellrange", this.cellrange);
           let selectedCellleft = Math.floor(
             this.getColumnX(this.cellrange.startCol) +
-              this.RowlabelWidth -
-              scrollLeft
+            this.RowlabelWidth -
+            scrollLeft
           );
           let selectedCelltop = Math.floor(
             this.getRowY(this.cellrange.startRow) +
-              this.ColumnlabelHeight -
-              scrollTop
+            this.ColumnlabelHeight -
+            scrollTop
           );
 
           let selectedCellWidth = Math.floor(
             this.getColumnX(this.cellrange.endCol + 1) -
-              this.getColumnX(this.cellrange.startCol)
+            this.getColumnX(this.cellrange.startCol)
           );
 
           let selectedCellHeight = Math.floor(
             this.getRowY(this.cellrange.endRow + 1) -
-              this.getRowY(this.cellrange.startRow)
+            this.getRowY(this.cellrange.startRow)
           );
 
           this.ctx.strokeStyle = "#137e43";
@@ -634,9 +634,9 @@ export class Grid {
     for (let row = this.startRow; row <= this.endRow; row++) {
       const y = Math.floor(
         this.getRowY(row) -
-          scrollTop +
-          this.ColumnlabelHeight +
-          this.toolBoxHeight
+        scrollTop +
+        this.ColumnlabelHeight +
+        this.toolBoxHeight
       );
 
       // Draw border
@@ -1010,7 +1010,9 @@ export class Grid {
         }
       } else if (isDragging) {
         const cell = this.getCellAtPosition(x, y);
+        // Auto-scroll to keep the new cell visible
         if (cell) {
+          // this.scrollToCell(cell.rowIndex, cell.colIndex);
           const startCell = this.getCellAtPosition(dragStartX, dragStartY);
           if (startCell) {
             this.cellrange = new CellRange(
@@ -1096,7 +1098,7 @@ export class Grid {
     document.addEventListener("keydown", (e) => {
       // Only handle keyboard navigation if the grid container or canvas has focus
       // or if no input elements are currently focused
-      console.log(e);
+      // console.log(e);
       const activeElement = document.activeElement;
       const isInputFocused =
         activeElement &&
@@ -1258,8 +1260,14 @@ export class Grid {
   handleKeyboardNavigation(e) {
     if (!this.selection.activeCell) return;
 
-    const currentRow = this.selection.activeCell.rowIndex;
-    const currentCol = this.selection.activeCell.colIndex;
+    let currentRow = this.selection.activeCell.rowIndex;
+    let currentCol = this.selection.activeCell.colIndex;
+
+    if (this.cellrange.isCellRange()) {
+      currentRow = this.cellrange.endRow;
+      currentCol = this.cellrange.endCol;
+    }
+
     let newRow = currentRow;
     let newCol = currentCol;
 
@@ -1345,16 +1353,79 @@ export class Grid {
     if (newRow !== currentRow || newCol !== currentCol) {
       const newCell = this.getCell(newRow, newCol);
       if (newCell) {
-        this.selection.clear();
-        this.cellrange.clearRange();
-        this.selection.selectCell(newCell);
+        if (e.shiftKey && (e.key.startsWith('Arrow') || e.key === 'Home' || e.key === 'End' || e.key === 'PageUp' || e.key === 'PageDown')) {
+          // Shift + navigation key: extend selection
+          this.handleShiftSelection(e, newRow, newCol);
+        } else {
+          // Regular navigation: move to new cell and clear range selection
+          this.selection.clear();
+          this.cellrange.clearRange();
+          this.selection.selectCell(newCell);
 
-        // Auto-scroll to keep selected cell visible
-        this.scrollToCell(newRow, newCol);
+          // Auto-scroll to keep selected cell visible
+          this.scrollToCell(newRow, newCol);
 
-        this.redrawVisible();
+          this.redrawVisible();
+        }
       }
     }
+  }
+
+  /**
+ * Handles shift + arrow key selection to extend the current selection
+ * @param {KeyboardEvent} e - The keyboard event
+ * @param {number} newRow - The new row index to extend selection to
+ * @param {number} newCol - The new column index to extend selection to
+ */
+  handleShiftSelection(e, newRow, newCol) {
+    if (!this.selection.activeCell) return;
+
+    // If we don't have a range yet, start one from the active cell
+    if (!this.cellrange.isCellRange()) {
+      this.cellrange = new CellRange(
+        this.selection.activeCell.rowIndex,
+        this.selection.activeCell.colIndex,
+        this.selection.activeCell.rowIndex,
+        this.selection.activeCell.colIndex
+      );
+    }
+
+    // Extend the range to the new position
+    // Keep the original start position and extend the end position
+    const originalStartRow = this.cellrange.startRow;
+    const originalStartCol = this.cellrange.startCol;
+
+    this.cellrange = new CellRange(
+      originalStartRow,
+      originalStartCol,
+      newRow,
+      newCol
+    );
+
+    // Clear current selection and select all cells in the range
+    this.selection.clear();
+
+    // Set the active cell to the original starting cell
+    const startCell = this.getCell(originalStartRow, originalStartCol);
+    if (startCell) {
+      this.selection.activeCell = startCell;
+    }
+
+    // Select all cells in the range
+    const cellsInRange = this.cellrange.getCells(this);
+    cellsInRange.forEach((c) => this.selection.selectCell(c));
+
+    // Select columns and rows in the range
+    const columnsInRange = this.cellrange.getSelctedColumns();
+    columnsInRange.forEach((c) => this.selection.selectColumn(c));
+
+    const rowsInRange = this.cellrange.getSelectedRows();
+    rowsInRange.forEach((r) => this.selection.selectRow(r));
+
+    // Auto-scroll to keep the new cell visible
+    this.scrollToCell(newRow, newCol);
+
+    this.redrawVisible();
   }
 
   scrollToCell(rowIndex, colIndex) {
@@ -1386,11 +1457,14 @@ export class Grid {
     }
 
     // Check vertical scrolling
+    // console.log("cellY", cellY, "visibleTop", visibleTop, "visibleBottom", visibleBottom, "newScrollY", newScrollY);
     if (cellY < visibleTop) {
+      // console.log("cellY", cellY, "newScrollY", newScrollY);
       // Cell is above visible area
       newScrollY = cellY;
     } else if (cellY + cellHeight > visibleBottom) {
       // Cell is below visible area
+      console.log("cellY : ", cellY, ",newScrollY", newScrollY);
       newScrollY =
         cellY +
         cellHeight -
@@ -1406,83 +1480,3 @@ export class Grid {
     }
   }
 }
-
-// Add this method after the executeCommand method (around line 1200+)
-
-/**
- * MODIFICATION: Added auto-scroll functionality for keyboard navigation
- * Scrolls the viewport to ensure the specified cell is visible
- * @param {number} rowIndex - The row index of the cell
- * @param {number} colIndex - The column index of the cell
- */
-// scrollToCell(rowIndex, colIndex) {
-//   const cellX = this.getColumnX(colIndex);
-//   const cellY = this.getRowY(rowIndex);
-//   const cellWidth = this.columns[colIndex].width;
-//   const cellHeight = this.rows[rowIndex].height;
-
-//   // Calculate visible area (excluding headers)
-//   const visibleLeft = this.scrollX;
-//   const visibleRight = this.scrollX + (this.viewportWidth - this.RowlabelWidth);
-//   const visibleTop = this.scrollY;
-//   const visibleBottom = this.scrollY + (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
-
-//   let newScrollX = this.scrollX;
-//   let newScrollY = this.scrollY;
-
-//   // Check horizontal scrolling
-//   if (cellX < visibleLeft) {
-//     // Cell is to the left of visible area
-//     newScrollX = cellX;
-//   } else if (cellX + cellWidth > visibleRight) {
-//     // Cell is to the right of visible area
-//     newScrollX = cellX + cellWidth - (this.viewportWidth - this.RowlabelWidth);
-//   }
-
-//   // Check vertical scrolling
-//   if (cellY < visibleTop) {
-//     // Cell is above visible area
-//     newScrollY = cellY;
-//   } else if (cellY + cellHeight > visibleBottom) {
-//     // Cell is below visible area
-//     newScrollY = cellY + cellHeight - (this.viewportHeight - this.ColumnlabelHeight - this.toolBoxHeight);
-//   }
-
-//   // Apply new scroll position if changed
-//   if (newScrollX !== this.scrollX || newScrollY !== this.scrollY) {
-//     this.grid_container.scrollLeft = Math.max(0, newScrollX);
-//     this.grid_container.scrollTop = Math.max(0, newScrollY);
-//     this.scrollX = this.grid_container.scrollLeft;
-//     this.scrollY = this.grid_container.scrollTop;
-//   }
-// }
-
-// MODIFICATION: Add this to the setupEventListeners method
-// Find the setupEventListeners method and add this at the end, before the closing brace:
-
-/*
-  // MODIFICATION: Added keyboard event listener for navigation
-  // Add this code at the end of setupEventListeners method, before the closing brace
-  document.addEventListener("keydown", (e) => {
-    // Only handle keyboard navigation if the grid container or canvas has focus
-    // or if no input elements are currently focused
-    const activeElement = document.activeElement;
-    const isInputFocused = activeElement && (
-      activeElement.tagName === 'INPUT' ||
-      activeElement.tagName === 'TEXTAREA' ||
-      activeElement.isContentEditable
-    );
-    
-    // Only handle navigation if no input is focused
-    if (!isInputFocused) {
-      this.handleKeyboardNavigation(e);
-    }
-  });
-  
-  // MODIFICATION: Make the grid container focusable for keyboard events
-  // Add tabindex to make the container focusable
-  if (this.grid_container) {
-    this.grid_container.setAttribute('tabindex', '0');
-    this.grid_container.style.outline = 'none'; // Remove focus outline for better appearance
-  }
-*/
