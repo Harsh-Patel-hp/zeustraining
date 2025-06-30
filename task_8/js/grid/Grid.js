@@ -321,15 +321,6 @@ export class Grid {
    * Helper method to redraw the visible portion of the grid
    */
   redrawVisible() {
-    // console.log("redrawVisible");
-    // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
-    // console.log("this.startRow", this.startRow, "this.endRow", this.endRow);
-    // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
-    // console.log("AFTER");
-
-    // this.ColumnlabelHeight = Math.floor(this.ColumnlabelHeight);
-    // this.RowlabelWidth = Math.floor(this.RowlabelWidth);
-
     const scrollTop = this.scrollY;
     const scrollLeft = this.scrollX;
 
@@ -374,10 +365,6 @@ export class Grid {
       this.endCol++;
     }
     this.endCol = Math.min(this.totalColumns - 1, this.endCol);
-    // console.log("this.scrollX", this.scrollX, "this.scrollY", this.scrollY);
-    // console.log("this.startRow", this.startRow, "this.endRow", this.endRow);
-    // console.log("this.startCol", this.startCol, "this.endCol", this.endCol);
-    // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // Set up clipping for cell area
@@ -1014,8 +1001,14 @@ export class Grid {
 
     this.grid_container.addEventListener("mousemove", (e) => {
       const rect = this.canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left + this.scrollX - this.RowlabelWidth;
-      const y = e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight;
+      const x = Math.max(
+        0,
+        e.clientX - rect.left + this.scrollX - this.RowlabelWidth
+      );
+      const y = Math.max(
+        0,
+        e.clientY - rect.top + this.scrollY - this.ColumnlabelHeight
+      );
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
