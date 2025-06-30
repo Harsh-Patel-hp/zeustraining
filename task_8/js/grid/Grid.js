@@ -199,7 +199,7 @@ export class Grid {
     const selectedCells = Array.from(this.selection.selectedCells);
     // console.log(selectedCells.length);
     if (selectedCells.length === 0) {
-      this.statsDisplay.textContent = "";
+      this.statsDisplay.textContent = "No Selected Cell";
       return;
     }
 
@@ -455,24 +455,24 @@ export class Grid {
         if (this.cellrange.isCellRange()) {
           // console.log("----------this.cellrange", this.cellrange);
           let selectedCellleft = Math.floor(
-            this.getColumnX(this.cellrange.startCol) +
+            this.getColumnX(this.cellrange.getStartCol()) +
               this.RowlabelWidth -
               scrollLeft
           );
           let selectedCelltop = Math.floor(
-            this.getRowY(this.cellrange.startRow) +
+            this.getRowY(this.cellrange.getStartRow()) +
               this.ColumnlabelHeight -
               scrollTop
           );
 
           let selectedCellWidth = Math.floor(
-            this.getColumnX(this.cellrange.endCol + 1) -
-              this.getColumnX(this.cellrange.startCol)
+            this.getColumnX(this.cellrange.getendCol() + 1) -
+              this.getColumnX(this.cellrange.getStartCol())
           );
 
           let selectedCellHeight = Math.floor(
-            this.getRowY(this.cellrange.endRow + 1) -
-              this.getRowY(this.cellrange.startRow)
+            this.getRowY(this.cellrange.getendRow() + 1) -
+              this.getRowY(this.cellrange.getStartRow())
           );
 
           this.ctx.strokeStyle = "#137e43";
@@ -1054,6 +1054,7 @@ export class Grid {
               cell.colIndex
             );
             this.selection.clear();
+            this.selection.setActiveCell(startCell);
             const cellsInRange = this.cellrange.getCells(this);
             cellsInRange.forEach((c) => this.selection.selectCell(c));
             const columnsInRange = this.cellrange.getSelctedColumns(this);
@@ -1300,6 +1301,7 @@ export class Grid {
       currentCol = this.cellrange.endCol;
     }
 
+    // console.log(this.cellrange);
     let newRow = currentRow;
     let newCol = currentCol;
 
@@ -1433,6 +1435,17 @@ export class Grid {
     // Keep the original start position and extend the end position
     const originalStartRow = this.cellrange.startRow;
     const originalStartCol = this.cellrange.startCol;
+
+    // console.log(
+    //   "originalStartRow",
+    //   originalStartRow,
+    //   " ,originalStartCol",
+    //   originalStartCol,
+    //   " ,newRow",
+    //   newRow,
+    //   " ,newCol",
+    //   newCol
+    // );
 
     this.cellrange = new CellRange(
       originalStartRow,

@@ -16,6 +16,10 @@ export class Selection {
     }
   }
 
+  setActiveCell(cell) {
+    this.activeCell = cell;
+  }
+
   clearActiveCell() {
     this.activeCell = null;
   }

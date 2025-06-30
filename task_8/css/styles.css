@@ -21,7 +21,7 @@ body {
 .grid-container {
   position: relative;
   overflow: auto;
-  height: 98vh;
+  height: 96vh;
   width: 100vw;
 }
 

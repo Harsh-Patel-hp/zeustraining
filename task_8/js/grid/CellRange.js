@@ -1,9 +1,9 @@
 export class CellRange {
   constructor(startRow = null, startCol = null, endRow = null, endCol = null) {
-    this.startRow = startRow !== null ? Math.min(startRow, endRow) : null;
-    this.startCol = startCol !== null ? Math.min(startCol, endCol) : null;
-    this.endRow = startRow !== null ? Math.max(startRow, endRow) : null;
-    this.endCol = startCol !== null ? Math.max(startCol, endCol) : null;
+    this.startRow = startRow !== null ? startRow : null;
+    this.startCol = startCol !== null ? startCol : null;
+    this.endRow = startRow !== null ? endRow : null;
+    this.endCol = startCol !== null ? endCol : null;
   }
 
   contains(row, col) {
@@ -18,8 +18,12 @@ export class CellRange {
   getCells(grid) {
     const cells = [];
 
-    for (let r = this.startRow; r <= this.endRow; r++) {
-      for (let c = this.startCol; c <= this.endCol; c++) {
+    let startRow = Math.min(this.startRow, this.endRow);
+    let startCol = Math.min(this.startCol, this.endCol);
+    let endRow = Math.max(this.startRow, this.endRow);
+    let endCol = Math.max(this.startCol, this.endCol);
+    for (let r = startRow; r <= endRow; r++) {
+      for (let c = startCol; c <= endCol; c++) {
         const cell = grid.getCell(r, c);
 
         if (cell) cells.push(cell);
@@ -33,7 +37,11 @@ export class CellRange {
 
   getSelctedColumns() {
     const columns = [];
-    for (let c = this.startCol; c <= this.endCol; c++) {
+    let startRow = Math.min(this.startRow, this.endRow);
+    let startCol = Math.min(this.startCol, this.endCol);
+    let endRow = Math.max(this.startRow, this.endRow);
+    let endCol = Math.max(this.startCol, this.endCol);
+    for (let c = startCol; c <= endCol; c++) {
       columns.push(c);
     }
     return columns;
@@ -41,7 +49,11 @@ export class CellRange {
 
   getSelectedRows() {
     const rows = [];
-    for (let r = this.startRow; r <= this.endRow; r++) {
+    let startRow = Math.min(this.startRow, this.endRow);
+    let startCol = Math.min(this.startCol, this.endCol);
+    let endRow = Math.max(this.startRow, this.endRow);
+    let endCol = Math.max(this.startCol, this.endCol);
+    for (let r = startRow; r <= endRow; r++) {
       rows.push(r);
     }
     return rows;
@@ -65,5 +77,21 @@ export class CellRange {
       this.endRow !== null &&
       this.endCol !== null
     );
+  }
+
+  getStartRow() {
+    return Math.min(this.startRow, this.endRow);
+  }
+
+  getendRow() {
+    return Math.max(this.startRow, this.endRow);
+  }
+
+  getStartCol() {
+    return Math.min(this.startCol, this.endCol);
+  }
+
+  getendCol() {
+    return Math.max(this.startCol, this.endCol);
   }
 }
