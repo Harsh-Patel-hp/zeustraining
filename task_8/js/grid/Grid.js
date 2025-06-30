@@ -88,6 +88,9 @@ export class Grid {
     /** @type {HTMLElement} The virtual class element for managing dimensions */
     this.virtual_class = document.getElementById("virtual_class") || "";
 
+    /** @type {HTMLElement} The element for displaying statistics */
+    this.statsDisplay = document.getElementById("stats-display") || null;
+
     /** @type {number} Width of the viewport for virtual scrolling */
     this.viewportWidth = 0;
 
@@ -184,6 +187,34 @@ export class Grid {
     const cell = this.getCell(rowIndex, colIndex);
     if (cell) {
       cell.setValue(value);
+    }
+  }
+
+  /**
+   * Updates the statistics display based on selected cells
+   */
+  updateStatsDisplay() {
+    if (!this.statsDisplay) return;
+
+    const selectedCells = Array.from(this.selection.selectedCells);
+    // console.log(selectedCells.length);
+    if (selectedCells.length === 0) {
+      this.statsDisplay.textContent = "";
+      return;
+    }
+
+    // console.log(selectedCells);
+    const stats = this.calculateStats(selectedCells);
+
+    if (stats) {
+      this.statsDisplay.textContent = `Count: ${
+        stats.count
+      } | Sum: ${stats.sum.toFixed(2)} | Average: ${stats.avg.toFixed(
+        2
+      )} | Min: ${stats.min.toFixed(2)} | Max: ${stats.max.toFixed(2)}`;
+    } else {
+      // If no numeric values, just show count
+      this.statsDisplay.textContent = `Count: ${selectedCells.length}`;
     }
   }
 
@@ -375,9 +406,9 @@ export class Grid {
         );
         const y = Math.floor(
           this.getRowY(row) -
-          scrollTop +
-          this.ColumnlabelHeight +
-          this.toolBoxHeight
+            scrollTop +
+            this.ColumnlabelHeight +
+            this.toolBoxHeight
         );
 
         // Draw cell background
@@ -425,23 +456,23 @@ export class Grid {
           // console.log("----------this.cellrange", this.cellrange);
           let selectedCellleft = Math.floor(
             this.getColumnX(this.cellrange.startCol) +
-            this.RowlabelWidth -
-            scrollLeft
+              this.RowlabelWidth -
+              scrollLeft
           );
           let selectedCelltop = Math.floor(
             this.getRowY(this.cellrange.startRow) +
-            this.ColumnlabelHeight -
-            scrollTop
+              this.ColumnlabelHeight -
+              scrollTop
           );
 
           let selectedCellWidth = Math.floor(
             this.getColumnX(this.cellrange.endCol + 1) -
-            this.getColumnX(this.cellrange.startCol)
+              this.getColumnX(this.cellrange.startCol)
           );
 
           let selectedCellHeight = Math.floor(
             this.getRowY(this.cellrange.endRow + 1) -
-            this.getRowY(this.cellrange.startRow)
+              this.getRowY(this.cellrange.startRow)
           );
 
           this.ctx.strokeStyle = "#137e43";
@@ -478,6 +509,7 @@ export class Grid {
     this.drawColumnHeaders(scrollLeft);
     this.drawRowHeaders(scrollTop);
     this.drawCornerCell();
+    this.updateStatsDisplay();
   }
 
   /**
@@ -634,9 +666,9 @@ export class Grid {
     for (let row = this.startRow; row <= this.endRow; row++) {
       const y = Math.floor(
         this.getRowY(row) -
-        scrollTop +
-        this.ColumnlabelHeight +
-        this.toolBoxHeight
+          scrollTop +
+          this.ColumnlabelHeight +
+          this.toolBoxHeight
       );
 
       // Draw border
@@ -1353,7 +1385,14 @@ export class Grid {
     if (newRow !== currentRow || newCol !== currentCol) {
       const newCell = this.getCell(newRow, newCol);
       if (newCell) {
-        if (e.shiftKey && (e.key.startsWith('Arrow') || e.key === 'Home' || e.key === 'End' || e.key === 'PageUp' || e.key === 'PageDown')) {
+        if (
+          e.shiftKey &&
+          (e.key.startsWith("Arrow") ||
+            e.key === "Home" ||
+            e.key === "End" ||
+            e.key === "PageUp" ||
+            e.key === "PageDown")
+        ) {
           // Shift + navigation key: extend selection
           this.handleShiftSelection(e, newRow, newCol);
         } else {
@@ -1372,11 +1411,11 @@ export class Grid {
   }
 
   /**
- * Handles shift + arrow key selection to extend the current selection
- * @param {KeyboardEvent} e - The keyboard event
- * @param {number} newRow - The new row index to extend selection to
- * @param {number} newCol - The new column index to extend selection to
- */
+   * Handles shift + arrow key selection to extend the current selection
+   * @param {KeyboardEvent} e - The keyboard event
+   * @param {number} newRow - The new row index to extend selection to
+   * @param {number} newCol - The new column index to extend selection to
+   */
   handleShiftSelection(e, newRow, newCol) {
     if (!this.selection.activeCell) return;
 
