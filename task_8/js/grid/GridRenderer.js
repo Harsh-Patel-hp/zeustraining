@@ -324,9 +324,7 @@ export class GridRenderer {
    * Draw selected column header
    */
   drawSelectedColumnHeader(col, x) {
-    const isWholeColumn =
-      this.grid.cellrange.endRow + 1 - this.grid.cellrange.startRow ===
-      this.grid.rows.length;
+    const isWholeColumn = this.grid.selection.isColumnSelected(col);
 
     // Draw background
     this.grid.ctx.fillStyle = isWholeColumn ? "#107c41" : "#caead8";
@@ -456,9 +454,7 @@ export class GridRenderer {
    * Draw selected row header
    */
   drawSelectedRowHeader(row, y) {
-    const isWholeRow =
-      this.grid.cellrange.endCol + 1 - this.grid.cellrange.startCol ===
-      this.grid.columns.length;
+    const isWholeRow = this.grid.selection.isRowSelected(row);
 
     // Draw background
     this.grid.ctx.fillStyle = isWholeRow ? "#107c41" : "#caead8";

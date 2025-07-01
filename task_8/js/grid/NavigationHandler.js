@@ -108,6 +108,13 @@ export class NavigationHandler {
         e.preventDefault();
         return; // Don't change selection
       default:
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          this.grid.eventHandler.editCell(
+            this.grid.selection.activeCell,
+            e.key
+          ); // optionally pass the key
+        }
+        e.preventDefault();
         return; // Don't handle other keys
     }
 

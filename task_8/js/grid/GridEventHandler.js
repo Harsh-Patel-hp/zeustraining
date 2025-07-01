@@ -55,12 +55,14 @@ export class GridEventHandler {
 
         // Column selection logic
         this.grid.cellrange.clearRange();
+        this.grid.selection.clear();
         this.grid.cellrange = new CellRange(
           0,
           colIndex,
           this.grid.totalRows - 1,
           colIndex
         );
+        this.grid.selection.selectColumn(colIndex);
         this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
         this.grid.renderer.redrawVisible();
       } else if (
@@ -81,12 +83,14 @@ export class GridEventHandler {
 
         // Row selection logic
         this.grid.cellrange.clearRange();
+        this.grid.selection.clear();
         this.grid.cellrange = new CellRange(
           rowIndex,
           0,
           rowIndex,
           this.grid.totalColumns - 1
         );
+        this.grid.selection.selectRow(rowIndex);
         this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
         this.grid.renderer.redrawVisible();
       } else {
