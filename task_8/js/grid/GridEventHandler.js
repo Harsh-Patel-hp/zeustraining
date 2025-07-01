@@ -36,6 +36,10 @@ export class GridEventHandler {
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
+      // Clear any existing selection
+      this.grid.cellrange.clearRange();
+      this.grid.selection.clear();
+
       //handle column header clicks
       if (
         localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
@@ -53,9 +57,14 @@ export class GridEventHandler {
           return; // Skip selection logic
         }
 
+        // Store initial column for drag selection
+        this.grid.dragStartColumn = colIndex;
+        this.grid.dragStartRow = null; // Clear any row drag
+
+
         // Column selection logic
-        this.grid.cellrange.clearRange();
-        this.grid.selection.clear();
+        // this.grid.cellrange.clearRange();
+        // this.grid.selection.clear();
         this.grid.cellrange = new CellRange(
           0,
           colIndex,
@@ -90,6 +99,10 @@ export class GridEventHandler {
           rowIndex,
           this.grid.totalColumns - 1
         );
+
+        // Store initial row for drag selection
+        this.grid.dragStartRow = rowIndex;
+        this.grid.dragStartColumn = null; // Clear any column drag
         this.grid.selection.selectRow(rowIndex);
         this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
         this.grid.renderer.redrawVisible();
@@ -143,24 +156,53 @@ export class GridEventHandler {
           this.grid.renderer.redrawVisible();
         }
       } else if (isDragging) {
-        const cell = this.grid.coordHelper.getCellAtPosition(x, y);
-        // Auto-scroll to keep the new cell visible
-        if (cell) {
-          this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
-          const startCell = this.grid.coordHelper.getCellAtPosition(
-            dragStartX,
-            dragStartY
-          );
-          if (startCell) {
-            this.grid.cellrange = new CellRange(
-              startCell.rowIndex,
-              startCell.colIndex,
-              cell.rowIndex,
-              cell.colIndex
-            );
-            this.grid.selection.clear();
-            this.grid.selection.setActiveCell(startCell);
+
+        if (this.grid.dragStartColumn !== null && this.grid.dragStartColumn !== undefined) {
+          const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
+          if (currentColIndex !== -1) {
+            const startCol = Math.min(this.grid.dragStartColumn, currentColIndex);
+            const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
+
+            this.grid.cellrange = new CellRange(0, startCol, this.grid.totalRows - 1, endCol);
+            this.grid.selection.selectColumn(currentColIndex);
+            this.grid.selection.setActiveCell(this.grid.rows[0].cells[this.grid.dragStartColumn]);
             this.grid.renderer.redrawVisible();
+          }
+        }
+        // Handle row drag selection
+        else if (this.grid.dragStartRow !== null && this.grid.dragStartRow !== undefined) {
+          const currentRowIndex = this.grid.coordHelper.getRowIndexFromY(y);
+          if (currentRowIndex !== -1) {
+            const startRow = Math.min(this.grid.dragStartRow, currentRowIndex);
+            const endRow = Math.max(this.grid.dragStartRow, currentRowIndex);
+
+            this.grid.cellrange = new CellRange(startRow, 0, endRow, this.grid.totalColumns - 1);
+            this.grid.selection.selectRow(currentRowIndex);
+            this.grid.selection.setActiveCell(this.grid.rows[this.grid.dragStartRow].cells[0]);
+            this.grid.renderer.redrawVisible();
+
+          }
+        }
+        else {
+          const cell = this.grid.coordHelper.getCellAtPosition(x, y);
+          // Auto-scroll to keep the new cell visible
+          if (cell) {
+            this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
+            const startCell = this.grid.coordHelper.getCellAtPosition(
+              dragStartX,
+              dragStartY
+            );
+            if (startCell) {
+              this.grid.cellrange = new CellRange(
+                startCell.rowIndex,
+                startCell.colIndex,
+                cell.rowIndex,
+                cell.colIndex
+              );
+              this.grid.selection.clear();
+              this.grid.selection.setActiveCell(startCell);
+              this.grid.renderer.redrawVisible();
+            }
           }
         }
       } else {
@@ -170,6 +212,9 @@ export class GridEventHandler {
     });
 
     this.grid.grid_container.addEventListener("mouseup", () => {
+      // Clear drag selection markers
+      this.grid.dragStartColumn = null;
+      this.grid.dragStartRow = null;
       // Enhanced resize completion with command pattern
       if (isResizing) {
         if (resizeColumnIndex !== -1) {

@@ -118,6 +118,12 @@ export class Grid {
     /** @type {number} The ending column index in the visible range */
     this.endCol = 0;
 
+    /** @type {number} The starting column of dragging columns */
+    this.dragStartColumn = null;
+
+    /** @type {number} The starting row of dragging rows */
+    this.dragStartRow = null;
+
     /** @type {GridRenderer} The renderer for the grid */
     this.renderer = new GridRenderer(this);
 
