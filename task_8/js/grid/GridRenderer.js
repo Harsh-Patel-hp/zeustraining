@@ -132,14 +132,14 @@ export class GridRenderer {
 
     const x = Math.floor(
       this.grid.coordHelper.getColumnX(col) -
-        scrollLeft +
-        this.grid.RowlabelWidth
+      scrollLeft +
+      this.grid.RowlabelWidth
     );
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
-        scrollTop +
-        this.grid.ColumnlabelHeight +
-        this.grid.toolBoxHeight
+      scrollTop +
+      this.grid.ColumnlabelHeight +
+      this.grid.toolBoxHeight
     );
 
     // Draw cell background
@@ -229,23 +229,23 @@ export class GridRenderer {
     if (this.grid.cellrange.isCellRange()) {
       let selectedCellleft = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol()) +
-          this.grid.RowlabelWidth -
-          scrollLeft
+        this.grid.RowlabelWidth -
+        scrollLeft
       );
       let selectedCelltop = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow()) +
-          this.grid.ColumnlabelHeight -
-          scrollTop
+        this.grid.ColumnlabelHeight -
+        scrollTop
       );
 
       let selectedCellWidth = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getendCol() + 1) -
-          this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
+        this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
       );
 
       let selectedCellHeight = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getendRow() + 1) -
-          this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
+        this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
       );
 
       this.grid.ctx.strokeStyle = "#137e43";
@@ -293,8 +293,8 @@ export class GridRenderer {
   drawColumnHeader(col, scrollLeft) {
     const x = Math.floor(
       this.grid.coordHelper.getColumnX(col) -
-        scrollLeft +
-        this.grid.RowlabelWidth
+      scrollLeft +
+      this.grid.RowlabelWidth
     );
 
     // Draw header border
@@ -422,9 +422,9 @@ export class GridRenderer {
   drawRowHeader(row, scrollTop) {
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
-        scrollTop +
-        this.grid.ColumnlabelHeight +
-        this.grid.toolBoxHeight
+      scrollTop +
+      this.grid.ColumnlabelHeight +
+      this.grid.toolBoxHeight
     );
 
     // Draw border

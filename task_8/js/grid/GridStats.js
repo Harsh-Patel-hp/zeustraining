@@ -16,13 +16,26 @@ export class GridStats {
       .map((cell) => parseFloat(cell.value))
       .filter((val) => !isNaN(val));
     if (numericValues.length === 0) return null;
+
+    let min = numericValues[0];
+    let max = numericValues[0];
+    let sum = 0;
+
+    for (let i = 0; i < numericValues.length; i++) {
+      const value = numericValues[i];
+      if (value < min) min = value;
+      if (value > max) max = value;
+      sum += value;
+    }
+
     return {
       count: numericValues.length,
-      min: Math.min(...numericValues),
-      max: Math.max(...numericValues),
-      sum: numericValues.reduce((a, b) => a + b, 0),
-      avg: numericValues.reduce((a, b) => a + b, 0) / numericValues.length,
+      min: min,
+      max: max,
+      sum: sum,
+      avg: sum / numericValues.length,
     };
+
   }
 
   /**
@@ -42,11 +55,10 @@ export class GridStats {
     const stats = this.calculateStats(selectedCells);
 
     if (stats) {
-      this.grid.statsDisplay.textContent = `Count: ${
-        stats.count
-      } | Sum: ${stats.sum.toFixed(2)} | Average: ${stats.avg.toFixed(
-        2
-      )} | Min: ${stats.min.toFixed(2)} | Max: ${stats.max.toFixed(2)}`;
+      this.grid.statsDisplay.textContent = `Count: ${stats.count
+        } | Sum: ${stats.sum.toFixed(2)} | Average: ${stats.avg.toFixed(
+          2
+        )} | Min: ${stats.min.toFixed(2)} | Max: ${stats.max.toFixed(2)}`;
     } else {
       // If no numeric values, just show count
       this.grid.statsDisplay.textContent = `Count: ${selectedCells.length}`;

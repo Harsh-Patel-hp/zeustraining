@@ -164,6 +164,10 @@ export class GridEventHandler {
             const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
 
             this.grid.cellrange = new CellRange(0, startCol, this.grid.totalRows - 1, endCol);
+            this.grid.selection.clear();
+            for (let i = startCol; i <= endCol; i++) {
+              this.grid.selection.selectColumn(i);
+            }
             this.grid.selection.selectColumn(currentColIndex);
             this.grid.selection.setActiveCell(this.grid.rows[0].cells[this.grid.dragStartColumn]);
             this.grid.renderer.redrawVisible();
@@ -177,6 +181,10 @@ export class GridEventHandler {
             const endRow = Math.max(this.grid.dragStartRow, currentRowIndex);
 
             this.grid.cellrange = new CellRange(startRow, 0, endRow, this.grid.totalColumns - 1);
+            this.grid.selection.clear();
+            for (let i = startRow; i <= endRow; i++) {
+              this.grid.selection.selectRow(i);
+            }
             this.grid.selection.selectRow(currentRowIndex);
             this.grid.selection.setActiveCell(this.grid.rows[this.grid.dragStartRow].cells[0]);
             this.grid.renderer.redrawVisible();
