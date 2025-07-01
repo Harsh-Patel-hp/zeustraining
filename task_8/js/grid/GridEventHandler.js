@@ -158,6 +158,7 @@ export class GridEventHandler {
               cell.rowIndex,
               cell.colIndex
             );
+            this.grid.selection.clear();
             this.grid.selection.setActiveCell(startCell);
             this.grid.renderer.redrawVisible();
           }
