@@ -24,12 +24,33 @@ export class CellRange {
    * @returns {boolean} True if the given row and column are contained in the cell range
    */
   contains(row, col) {
-    return (
-      row >= this.startRow &&
-      row <= this.endRow &&
-      col >= this.startCol &&
-      col <= this.endCol
-    );
+    let startRow = Math.min(this.startRow, this.endRow);
+    let startCol = Math.min(this.startCol, this.endCol);
+    let endRow = Math.max(this.startRow, this.endRow);
+    let endCol = Math.max(this.startCol, this.endCol);
+    return row >= startRow && row <= endRow && col >= startCol && col <= endCol;
+  }
+
+  /**
+   * Check if the given column index is contained in the cell range
+   * @param {number} col - The column index to check
+   * @returns {boolean} True if the given column index is contained in the cell range
+   */
+  isColumnInRange(col) {
+    let startCol = Math.min(this.startCol, this.endCol);
+    let endCol = Math.max(this.startCol, this.endCol);
+    return col >= startCol && col <= endCol;
+  }
+
+  /**
+   * Check if the given row index is contained in the cell range
+   * @param {number} row - The row index to check
+   * @returns {boolean} True if the given row index is contained in the cell range
+   */
+  isRowInRange(row) {
+    let startRow = Math.min(this.startRow, this.endRow);
+    let endRow = Math.max(this.startRow, this.endRow);
+    return row >= startRow && row <= endRow;
   }
 
   /**

@@ -28,12 +28,27 @@ export class VirtualScrollManager {
     this.grid.viewportWidth = container.clientWidth || 800;
     this.grid.viewportHeight = container.clientHeight || 600;
 
-    this.grid.canvas.width = this.grid.viewportWidth;
-    this.grid.canvas.height = this.grid.viewportHeight;
+    this.grid.Userdpr = window.devicePixelRatio || 1; // Handle zoom and high-DPI
+
+    if (this.grid.Userdpr > 1) {
+      this.grid.canvas.width = this.grid.viewportWidth * this.grid.Userdpr;
+      this.grid.canvas.height = this.grid.viewportHeight * this.grid.Userdpr;
+      this.grid.ctx.setTransform(
+        this.grid.Userdpr,
+        0,
+        0,
+        this.grid.Userdpr,
+        0,
+        0
+      );
+    } else {
+      this.grid.canvas.width = this.grid.viewportWidth;
+      this.grid.canvas.height = this.grid.viewportHeight;
+    }
 
     // Update canvas style
-    // this.grid.canvas.style.width = this.grid.viewportWidth + "px";
-    // this.grid.canvas.style.height = this.grid.viewportHeight + "px";
+    this.grid.canvas.style.width = this.grid.viewportWidth + "px";
+    this.grid.canvas.style.height = this.grid.viewportHeight + "px";
   }
 
   /**

@@ -129,7 +129,7 @@ export class NavigationHandler {
           // Regular navigation: move to new cell and clear range selection
           this.grid.selection.clear();
           this.grid.cellrange.clearRange();
-          this.grid.selection.selectCell(newCell);
+          this.grid.selection.setActiveCell(newCell);
 
           // Auto-scroll to keep selected cell visible
           this.grid.scrollManager.scrollToCell(newRow, newCol);
@@ -163,17 +163,6 @@ export class NavigationHandler {
     const originalStartRow = this.grid.cellrange.startRow;
     const originalStartCol = this.grid.cellrange.startCol;
 
-    // console.log(
-    //   "originalStartRow",
-    //   originalStartRow,
-    //   " ,originalStartCol",
-    //   originalStartCol,
-    //   " ,newRow",
-    //   newRow,
-    //   " ,newCol",
-    //   newCol
-    // );
-
     this.grid.cellrange = new CellRange(
       originalStartRow,
       originalStartCol,
@@ -189,17 +178,6 @@ export class NavigationHandler {
     if (startCell) {
       this.grid.selection.activeCell = startCell;
     }
-
-    // Select all cells in the range
-    const cellsInRange = this.grid.cellrange.getCells(this.grid);
-    cellsInRange.forEach((c) => this.grid.selection.selectCell(c));
-
-    // Select columns and rows in the range
-    const columnsInRange = this.grid.cellrange.getSelctedColumns();
-    columnsInRange.forEach((c) => this.grid.selection.selectColumn(c));
-
-    const rowsInRange = this.grid.cellrange.getSelectedRows();
-    rowsInRange.forEach((r) => this.grid.selection.selectRow(r));
 
     // Auto-scroll to keep the new cell visible
     this.grid.scrollManager.scrollToCell(newRow, newCol);

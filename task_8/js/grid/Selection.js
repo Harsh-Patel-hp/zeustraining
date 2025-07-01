@@ -7,9 +7,6 @@ export class Selection {
    * Creates an instance of Selection.
    */
   constructor() {
-    /** @type {Set<Cell>} The set of selected cells */
-    this.selectedCells = new Set();
-
     /** @type {Set<Row>} The set of selected rows */
     this.selectedRows = new Set();
 
@@ -18,17 +15,6 @@ export class Selection {
 
     /** @type {Cell} The active cell */
     this.activeCell = null;
-  }
-
-  /**
-   * Adds the cell to the selection set
-   * @param {Cell} cell - The cell to add to the selection
-   */
-  selectCell(cell) {
-    this.selectedCells.add(cell);
-    if (this.activeCell == null) {
-      this.activeCell = cell;
-    }
   }
 
   /**
@@ -66,22 +52,11 @@ export class Selection {
    * Clears the selection
    */
   clear() {
-    this.selectedCells.clear();
-
     this.selectedRows.clear();
 
     this.selectedColumns.clear();
 
     this.activeCell = null;
-  }
-
-  /**
-   * Checks if the cell is selected
-   * @param {Cell} cell - The cell to check
-   * @returns {boolean} True if the cell is selected
-   */
-  isCellSelected(cell) {
-    return this.selectedCells.has(cell);
   }
 
   /**

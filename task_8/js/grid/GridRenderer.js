@@ -20,7 +20,7 @@ export class GridRenderer {
     this.drawCells();
     this.drawHeaders();
     this.drawCornerCell();
-    this.grid.updateStatsDisplay();
+    this.grid.stats.updateStatsDisplay();
   }
 
   /**
@@ -310,7 +310,8 @@ export class GridRenderer {
     const isColumnSelected =
       (this.grid.selection.activeCell &&
         this.grid.selection.activeCell.colIndex === col) ||
-      this.grid.selection.isColumnSelected(col);
+      (this.grid.cellrange.isCellRange() &&
+        this.grid.cellrange.isColumnInRange(col));
 
     if (isColumnSelected) {
       this.drawSelectedColumnHeader(col, x);
@@ -441,7 +442,8 @@ export class GridRenderer {
     const isRowSelected =
       (this.grid.selection.activeCell &&
         this.grid.selection.activeCell.rowIndex === row) ||
-      this.grid.selection.isRowSelected(row);
+      (this.grid.cellrange.isCellRange() &&
+        this.grid.cellrange.isRowInRange(row));
 
     if (isRowSelected) {
       this.drawSelectedRowHeader(row, y);
@@ -543,7 +545,10 @@ export class GridRenderer {
   getCellBackgroundColor(cell) {
     if (this.grid.selection.activeCell === cell) {
       return "#fff";
-    } else if (this.grid.selection.isCellSelected(cell)) {
+    } else if (
+      this.grid.cellrange.isCellRange() &&
+      this.grid.cellrange.contains(cell.rowIndex, cell.colIndex)
+    ) {
       return "#e8f2ec";
     }
     return "#fff";

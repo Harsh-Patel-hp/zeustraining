@@ -54,7 +54,6 @@ export class GridEventHandler {
         }
 
         // Column selection logic
-        this.grid.selection.clear();
         this.grid.cellrange.clearRange();
         this.grid.cellrange = new CellRange(
           0,
@@ -62,13 +61,7 @@ export class GridEventHandler {
           this.grid.totalRows - 1,
           colIndex
         );
-        const cellsInRange = this.grid.cellrange.getCells(this.grid);
-        cellsInRange.forEach((c) => this.grid.selection.selectCell(c));
-        const columnsInRange = this.grid.cellrange.getSelctedColumns(this.grid);
-        columnsInRange.forEach((c) => this.grid.selection.selectColumn(c));
-        const rowsInRange = this.grid.cellrange.getSelectedRows(this.grid);
-        rowsInRange.forEach((r) => this.grid.selection.selectRow(r));
-        this.grid.selection.clearActiveCell();
+        this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
         this.grid.renderer.redrawVisible();
       } else if (
         localX <= this.grid.RowlabelWidth &&
@@ -87,7 +80,6 @@ export class GridEventHandler {
         }
 
         // Row selection logic
-        this.grid.selection.clear();
         this.grid.cellrange.clearRange();
         this.grid.cellrange = new CellRange(
           rowIndex,
@@ -95,21 +87,14 @@ export class GridEventHandler {
           rowIndex,
           this.grid.totalColumns - 1
         );
-        const cellsInRange = this.grid.cellrange.getCells(this.grid);
-        cellsInRange.forEach((c) => this.grid.selection.selectCell(c));
-        const columnsInRange = this.grid.cellrange.getSelctedColumns(this.grid);
-        columnsInRange.forEach((c) => this.grid.selection.selectColumn(c));
-        const rowsInRange = this.grid.cellrange.getSelectedRows(this.grid);
-        rowsInRange.forEach((r) => this.grid.selection.selectRow(r));
-        this.grid.selection.clearActiveCell();
+        this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
         this.grid.renderer.redrawVisible();
       } else {
         // Handle cell selection
         const cell = this.grid.coordHelper.getCellAtPosition(x, y);
         if (cell) {
-          this.grid.selection.clear();
           this.grid.cellrange.clearRange();
-          this.grid.selection.selectCell(cell);
+          this.grid.selection.setActiveCell(cell);
           this.grid.renderer.redrawVisible();
         }
       }
@@ -169,16 +154,7 @@ export class GridEventHandler {
               cell.rowIndex,
               cell.colIndex
             );
-            this.grid.selection.clear();
             this.grid.selection.setActiveCell(startCell);
-            const cellsInRange = this.grid.cellrange.getCells(this.grid);
-            cellsInRange.forEach((c) => this.grid.selection.selectCell(c));
-            const columnsInRange = this.grid.cellrange.getSelctedColumns(
-              this.grid
-            );
-            columnsInRange.forEach((c) => this.grid.selection.selectColumn(c));
-            const rowsInRange = this.grid.cellrange.getSelectedRows(this.grid);
-            rowsInRange.forEach((r) => this.grid.selection.selectRow(r));
             this.grid.renderer.redrawVisible();
           }
         }

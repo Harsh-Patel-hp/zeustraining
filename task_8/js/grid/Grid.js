@@ -12,6 +12,7 @@ import { GridEventHandler } from "./GridEventHandler.js";
 import { NavigationHandler } from "./NavigationHandler.js";
 import { VirtualScrollManager } from "./VirtualScrollManager .js";
 import { CoordinateHelper } from "./CoordinateHelper.js";
+import { GridStats } from "./GridStats.js";
 
 export class Grid {
   /**
@@ -62,6 +63,9 @@ export class Grid {
 
     /** @type {number} Height of the toolbox */
     this.toolBoxHeight = 0;
+
+    /** @type {number} Device pixel ratio */
+    this.Userdpr = window.devicePixelRatio;
 
     /** @type {Array<Column>} Array of column objects */
     this.columns = [];
@@ -129,6 +133,9 @@ export class Grid {
     /** @type {CoordinateHelper} Helper class for coordinate conversions */
     this.coordHelper = new CoordinateHelper(this);
 
+    /** @type {GridStats} Manages grid statistics */
+    this.stats = new GridStats(this);
+
     this.init();
     this.eventHandler.setupEventListeners();
   }
@@ -179,34 +186,6 @@ export class Grid {
     const cell = this.getCell(rowIndex, colIndex);
     if (cell) {
       cell.setValue(value);
-    }
-  }
-
-  /**
-   * Updates the statistics display based on selected cells
-   */
-  updateStatsDisplay() {
-    if (!this.statsDisplay) return;
-
-    const selectedCells = Array.from(this.selection.selectedCells);
-    // console.log(selectedCells.length);
-    if (selectedCells.length <= 1) {
-      this.statsDisplay.textContent = "No Selected Cell";
-      return;
-    }
-
-    // console.log(selectedCells);
-    const stats = this.calculateStats(selectedCells);
-
-    if (stats) {
-      this.statsDisplay.textContent = `Count: ${
-        stats.count
-      } | Sum: ${stats.sum.toFixed(2)} | Average: ${stats.avg.toFixed(
-        2
-      )} | Min: ${stats.min.toFixed(2)} | Max: ${stats.max.toFixed(2)}`;
-    } else {
-      // If no numeric values, just show count
-      this.statsDisplay.textContent = `Count: ${selectedCells.length}`;
     }
   }
 
@@ -328,25 +307,6 @@ export class Grid {
     }
 
     this.grid_container.style.cursor = "cell";
-  }
-
-  /**
-   * Calculates statistics for the selected cells.
-   * @param {Array<Cell>} selectedCells - An array of selected cell objects.
-   * @returns {Object|null} An object containing count, min, max, and sum of numeric values, or null if no numeric values.
-   */
-  calculateStats(selectedCells) {
-    const numericValues = selectedCells
-      .map((cell) => parseFloat(cell.value))
-      .filter((val) => !isNaN(val));
-    if (numericValues.length === 0) return null;
-    return {
-      count: numericValues.length,
-      min: Math.min(...numericValues),
-      max: Math.max(...numericValues),
-      sum: numericValues.reduce((a, b) => a + b, 0),
-      avg: numericValues.reduce((a, b) => a + b, 0) / numericValues.length,
-    };
   }
 
   /**
