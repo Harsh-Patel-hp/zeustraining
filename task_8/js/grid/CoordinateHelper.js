@@ -1,5 +1,10 @@
 export class CoordinateHelper {
+  /**
+   * Creates a new instance of the CoordinateHelper.
+   * @param {Grid} grid - The grid for which to provide coordinate helper functions.
+   */
   constructor(grid) {
+    /** @type {Grid} The grid for which to provide coordinate helper functions. */
     this.grid = grid;
   }
 

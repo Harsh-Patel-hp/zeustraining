@@ -4,7 +4,12 @@ import { ResizeColumnCommand } from "./commands/ResizeColumnCommand.js";
 import { ResizeRowCommand } from "./commands/ResizeRowCommand.js";
 
 export class GridEventHandler {
+  /**
+   * Constructor for GridEventHandler class.
+   * @param {Grid} grid - The Grid object this event handler is attached to.
+   */
   constructor(grid) {
+    /** @type {Grid} The Grid object this event handler is attached to. */
     this.grid = grid;
   }
 

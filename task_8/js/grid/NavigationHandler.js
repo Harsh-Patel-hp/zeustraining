@@ -1,7 +1,12 @@
 import { CellRange } from "./CellRange.js";
 
 export class NavigationHandler {
+  /**
+   * NavigationHandler constructor
+   * @param {Grid} grid - The grid instance
+   */
   constructor(grid) {
+    /** @type {Grid} The grid instance */
     this.grid = grid;
   }
 

@@ -2,7 +2,12 @@
 import { Utils } from "./utils.js";
 
 export class GridRenderer {
+  /**
+   * Constructor for GridRenderer class
+   * @param {Grid} grid - The grid to render
+   */
   constructor(grid) {
+    /** @type {Grid} The grid to render */
     this.grid = grid;
   }
 
