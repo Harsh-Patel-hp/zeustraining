@@ -190,7 +190,7 @@ export class Grid {
 
     const selectedCells = Array.from(this.selection.selectedCells);
     // console.log(selectedCells.length);
-    if (selectedCells.length === 0) {
+    if (selectedCells.length <= 1) {
       this.statsDisplay.textContent = "No Selected Cell";
       return;
     }

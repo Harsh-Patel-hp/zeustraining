@@ -32,8 +32,8 @@ export class VirtualScrollManager {
     this.grid.canvas.height = this.grid.viewportHeight;
 
     // Update canvas style
-    this.grid.canvas.style.width = this.grid.viewportWidth + "px";
-    this.grid.canvas.style.height = this.grid.viewportHeight + "px";
+    // this.grid.canvas.style.width = this.grid.viewportWidth + "px";
+    // this.grid.canvas.style.height = this.grid.viewportHeight + "px";
   }
 
   /**

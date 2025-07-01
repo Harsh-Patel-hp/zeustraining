@@ -104,7 +104,7 @@ export class NavigationHandler {
         break;
       case "F2":
         // F2: Edit current cell
-        this.grid.editCell(this.grid.selection.activeCell);
+        this.grid.eventHandler.editCell(this.grid.selection.activeCell);
         e.preventDefault();
         return; // Don't change selection
       default:

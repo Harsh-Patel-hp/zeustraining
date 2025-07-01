@@ -83,6 +83,15 @@ export class GridRenderer {
       this.grid.canvas.width,
       this.grid.canvas.height
     );
+    // Determine max row number in current viewport
+    const maxRowNumber = this.grid.endRow + 1;
+    const textWidth = this.grid.ctx.measureText(maxRowNumber.toString()).width;
+
+    // Add padding and update row header width if needed
+    const desiredWidth = textWidth + 20; // 10px padding on each side
+    if (this.grid.RowlabelWidth !== desiredWidth) {
+      this.grid.RowlabelWidth = desiredWidth;
+    }
   }
 
   /**
@@ -524,20 +533,6 @@ export class GridRenderer {
       Math.floor(this.grid.RowlabelWidth),
       Math.floor(this.grid.ColumnlabelHeight)
     );
-  }
-
-  /**
-   * Gets the background color for a given cell.
-   * @param {Cell} cell - The cell to get the background color for.
-   * @returns {string} The background color for the cell.
-   */
-  getCellBackgroundColor(cell) {
-    if (this.grid.selection.activeCell === cell) {
-      return "#fff";
-    } else if (this.grid.selection.isCellSelected(cell)) {
-      return "#e8f2ec";
-    }
-    return "#fff";
   }
 
   /**
