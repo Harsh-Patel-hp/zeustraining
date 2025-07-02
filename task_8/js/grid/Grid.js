@@ -47,7 +47,7 @@ export class Grid {
     this.zoomFactor = this.zoomLevel || 1;
 
     /** @type {number} Width of the row labels */
-    this.RowlabelWidth = 33;
+    this.RowlabelWidth = 50;
 
     /** @type {number} Height of the column labels */
     this.ColumnlabelHeight = 25;

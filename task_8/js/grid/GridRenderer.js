@@ -85,10 +85,11 @@ export class GridRenderer {
     );
     // Determine max row number in current viewport
     const maxRowNumber = this.grid.endRow + 1;
-    const textWidth = this.grid.ctx.measureText(maxRowNumber.toString()).width;
-
-    // Add padding and update row header width if needed
-    const desiredWidth = textWidth + 20; // 10px padding on each side
+    const textWidth = Math.max(
+      50,
+      this.grid.ctx.measureText(maxRowNumber.toString()).width + 20
+    );
+    const desiredWidth = textWidth;
     if (this.grid.RowlabelWidth !== desiredWidth) {
       this.grid.RowlabelWidth = desiredWidth;
     }
@@ -132,14 +133,14 @@ export class GridRenderer {
 
     const x = Math.floor(
       this.grid.coordHelper.getColumnX(col) -
-      scrollLeft +
-      this.grid.RowlabelWidth
+        scrollLeft +
+        this.grid.RowlabelWidth
     );
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
-      scrollTop +
-      this.grid.ColumnlabelHeight +
-      this.grid.toolBoxHeight
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight
     );
 
     // Draw cell background
@@ -176,35 +177,30 @@ export class GridRenderer {
    * Draw cell text with truncation
    */
   drawCellText(cell, x, y, col, row) {
-    this.grid.ctx.fillStyle = "#000";
-    this.grid.ctx.font = "12px Arial";
-    this.grid.ctx.textAlign = "left";
-    this.grid.ctx.textBaseline = "middle";
-    const text = String(cell.getDisplayValue() ?? "");
+    const ctx = this.grid.ctx;
+    ctx.fillStyle = "#000";
+    ctx.font = "12px Arial";
+    ctx.textBaseline = "middle";
 
-    // Calculate available width for text (padding: 2.5px left + 2.5px right)
-    const availableWidth = this.grid.columns[col].width - 5;
+    const rawValue = cell.getDisplayValue();
+    const text = String(rawValue ?? "");
 
-    // Measure and truncate text to fit
-    let truncatedText = "";
-    let currentWidth = 0;
+    const isNumeric = !isNaN(text) && text.trim() !== "";
 
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      const charWidth = this.grid.ctx.measureText(char).width;
-      if (currentWidth + charWidth > availableWidth) {
-        break;
-      }
-      truncatedText += char;
-      currentWidth += charWidth;
+    // Calculate vertical center
+    const textY = y + this.grid.rows[row].height / 2;
+
+    if (isNumeric) {
+      ctx.textAlign = "right";
+      // Padding: 5px from right edge
+      const textX = x + this.grid.columns[col].width - 5;
+      ctx.fillText(text, textX, textY);
+    } else {
+      ctx.textAlign = "left";
+      // Padding: 5px from left edge
+      const textX = x + 5;
+      ctx.fillText(text, textX, textY);
     }
-
-    // Draw the truncated text
-    this.grid.ctx.fillText(
-      truncatedText,
-      x + 5,
-      y + this.grid.rows[row].height / 2
-    );
   }
 
   /**
@@ -229,23 +225,23 @@ export class GridRenderer {
     if (this.grid.cellrange.isCellRange()) {
       let selectedCellleft = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol()) +
-        this.grid.RowlabelWidth -
-        scrollLeft
+          this.grid.RowlabelWidth -
+          scrollLeft
       );
       let selectedCelltop = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow()) +
-        this.grid.ColumnlabelHeight -
-        scrollTop
+          this.grid.ColumnlabelHeight -
+          scrollTop
       );
 
       let selectedCellWidth = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getendCol() + 1) -
-        this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
+          this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
       );
 
       let selectedCellHeight = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getendRow() + 1) -
-        this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
+          this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
       );
 
       this.grid.ctx.strokeStyle = "#137e43";
@@ -293,8 +289,8 @@ export class GridRenderer {
   drawColumnHeader(col, scrollLeft) {
     const x = Math.floor(
       this.grid.coordHelper.getColumnX(col) -
-      scrollLeft +
-      this.grid.RowlabelWidth
+        scrollLeft +
+        this.grid.RowlabelWidth
     );
 
     // Draw header border
@@ -357,7 +353,7 @@ export class GridRenderer {
 
     // Draw text
     this.grid.ctx.fillStyle = isWholeColumn ? "#ffffff" : "#0f703b";
-    this.grid.ctx.font = "bold 12px Arial";
+    // this.grid.ctx.font = "bold 12px Arial";
     this.grid.ctx.textAlign = "center";
     this.grid.ctx.textBaseline = "middle";
     const label = Utils.colIndexToName(col);
@@ -372,8 +368,9 @@ export class GridRenderer {
    * Draw normal column header
    */
   drawNormalColumnHeader(col, x) {
-    this.grid.ctx.fillStyle = "#000";
-    this.grid.ctx.font = "bold 12px Arial";
+    this.grid.ctx.font =
+      '14.7px "Aptos Narrow", "Segoe UI", Calibri, Thonburi, Arial, Verdana, sans-serif, "Mongolian Baiti", "Microsoft Yi Baiti", "Javanese Text"';
+    this.grid.ctx.fillStyle = "#616161";
     this.grid.ctx.textAlign = "center";
     this.grid.ctx.textBaseline = "middle";
     const label = Utils.colIndexToName(col);
@@ -394,10 +391,12 @@ export class GridRenderer {
 
     // Determine max row number in current viewport
     const maxRowNumber = this.grid.endRow + 1;
-    const textWidth = this.grid.ctx.measureText(maxRowNumber.toString()).width;
+    const textWidth = Math.max(
+      50,
+      this.grid.ctx.measureText(maxRowNumber.toString()).width + 20
+    );
 
-    // Add padding and update row header width if needed
-    const desiredWidth = textWidth + 20; // 10px padding on each side
+    const desiredWidth = textWidth; // 10px padding on each side
     if (this.grid.RowlabelWidth !== desiredWidth) {
       this.grid.RowlabelWidth = desiredWidth;
     }
@@ -422,9 +421,9 @@ export class GridRenderer {
   drawRowHeader(row, scrollTop) {
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
-      scrollTop +
-      this.grid.ColumnlabelHeight +
-      this.grid.toolBoxHeight
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight
     );
 
     // Draw border
@@ -487,11 +486,11 @@ export class GridRenderer {
 
     // Draw text
     this.grid.ctx.fillStyle = isWholeRow ? "#ffffff" : "#0f703b";
-    this.grid.ctx.textAlign = "center";
+    this.grid.ctx.textAlign = "right";
     this.grid.ctx.textBaseline = "middle";
     this.grid.ctx.fillText(
       (row + 1).toString(),
-      this.grid.RowlabelWidth / 2,
+      this.grid.RowlabelWidth - 7,
       y + this.grid.rows[row].height / 2
     );
   }
@@ -500,12 +499,14 @@ export class GridRenderer {
    * Draw normal row header
    */
   drawNormalRowHeader(row, y) {
-    this.grid.ctx.fillStyle = "#000";
-    this.grid.ctx.textAlign = "center";
+    this.grid.ctx.font =
+      '14.7px "Aptos Narrow", "Segoe UI", Calibri, Thonburi, Arial, Verdana, sans-serif, "Mongolian Baiti", "Microsoft Yi Baiti", "Javanese Text"';
+    this.grid.ctx.fillStyle = "#616161";
+    this.grid.ctx.textAlign = "right";
     this.grid.ctx.textBaseline = "middle";
     this.grid.ctx.fillText(
       (row + 1).toString(),
-      this.grid.RowlabelWidth / 2,
+      this.grid.RowlabelWidth - 7,
       y + this.grid.rows[row].height / 2
     );
   }

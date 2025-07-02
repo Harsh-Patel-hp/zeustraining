@@ -109,6 +109,7 @@ export class NavigationHandler {
         return; // Don't change selection
       default:
         if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          this.grid.selection.activeCell.value = "";
           this.grid.eventHandler.editCell(
             this.grid.selection.activeCell,
             e.key
