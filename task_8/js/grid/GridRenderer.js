@@ -170,6 +170,10 @@ export class GridRenderer {
     const startY = this.grid.ColumnlabelHeight + this.grid.toolBoxHeight;
     const endY = this.grid.canvas.height;
 
+    if (!this.grid.selection.isColumnSelected(colIndex - 1) && !this.grid.selection.isColumnSelected(colIndex + 1)) {
+      return;
+    }
+
     // Draw left border only if previous column is not selected
     if (!this.grid.selection.isColumnSelected(colIndex - 1)) {
       this.grid.ctx.beginPath();
@@ -220,6 +224,10 @@ export class GridRenderer {
     // Calculate the visible area for this row
     const startX = this.grid.RowlabelWidth;
     const endX = this.grid.canvas.width;
+
+    if (!this.grid.selection.isRowSelected(rowIndex - 1) && !this.grid.selection.isRowSelected(rowIndex + 1)) {
+      return;
+    }
 
     // Draw top border only if previous row is not selected
     if (!this.grid.selection.isRowSelected(rowIndex - 1)) {
