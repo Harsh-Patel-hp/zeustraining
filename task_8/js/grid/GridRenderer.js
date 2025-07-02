@@ -170,17 +170,21 @@ export class GridRenderer {
     const startY = this.grid.ColumnlabelHeight + this.grid.toolBoxHeight;
     const endY = this.grid.canvas.height;
 
-    // Draw left border
-    this.grid.ctx.beginPath();
-    this.grid.ctx.moveTo(x, startY);
-    this.grid.ctx.lineTo(x, endY);
-    this.grid.ctx.stroke();
+    // Draw left border only if previous column is not selected
+    if (!this.grid.selection.isColumnSelected(colIndex - 1)) {
+      this.grid.ctx.beginPath();
+      this.grid.ctx.moveTo(x, startY);
+      this.grid.ctx.lineTo(x, endY);
+      this.grid.ctx.stroke();
+    }
 
-    // Draw right border
-    this.grid.ctx.beginPath();
-    this.grid.ctx.moveTo(x + width, startY);
-    this.grid.ctx.lineTo(x + width, endY);
-    this.grid.ctx.stroke();
+    // Draw right border only if next column is not selected
+    if (!this.grid.selection.isColumnSelected(colIndex + 1)) {
+      this.grid.ctx.beginPath();
+      this.grid.ctx.moveTo(x + width, startY);
+      this.grid.ctx.lineTo(x + width, endY);
+      this.grid.ctx.stroke();
+    }
 
     // Draw top border (if first visible row is 0)
     if (this.grid.startRow === 0) {
@@ -217,17 +221,21 @@ export class GridRenderer {
     const startX = this.grid.RowlabelWidth;
     const endX = this.grid.canvas.width;
 
-    // Draw top border
-    this.grid.ctx.beginPath();
-    this.grid.ctx.moveTo(startX, y);
-    this.grid.ctx.lineTo(endX, y);
-    this.grid.ctx.stroke();
+    // Draw top border only if previous row is not selected
+    if (!this.grid.selection.isRowSelected(rowIndex - 1)) {
+      this.grid.ctx.beginPath();
+      this.grid.ctx.moveTo(startX, y);
+      this.grid.ctx.lineTo(endX, y);
+      this.grid.ctx.stroke();
+    }
 
-    // Draw bottom border
-    this.grid.ctx.beginPath();
-    this.grid.ctx.moveTo(startX, y + height);
-    this.grid.ctx.lineTo(endX, y + height);
-    this.grid.ctx.stroke();
+    // Draw bottom border only if next row is not selected
+    if (!this.grid.selection.isRowSelected(rowIndex + 1)) {
+      this.grid.ctx.beginPath();
+      this.grid.ctx.moveTo(startX, y + height);
+      this.grid.ctx.lineTo(endX, y + height);
+      this.grid.ctx.stroke();
+    }
 
     // Draw left border (if first visible column is 0)
     if (this.grid.startCol === 0) {
