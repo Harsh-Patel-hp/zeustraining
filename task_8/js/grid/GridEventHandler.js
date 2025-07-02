@@ -28,8 +28,6 @@ export class GridEventHandler {
     let isResizing = false;
 
     this.grid.grid_container.addEventListener("mousedown", (e) => {
-      //to get focus so formula bar unblur event is fired
-      this.grid.grid_container.focus();
       const rect = this.grid.canvas.getBoundingClientRect();
       const x =
         e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
@@ -378,6 +376,10 @@ export class GridEventHandler {
     });
 
     input.focus();
+
+    input.addEventListener("input", () => {
+      this.grid.stats.syncFormulaBarWithInput(input);
+    });
 
     const handleBlur = () => {
       const newValue = input.value;

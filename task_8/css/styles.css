@@ -31,6 +31,10 @@ body {
   width: 100vw;
 }
 
+.grid-container:focus {
+  outline: none;
+}
+
 .virtual-class {
   height: 100vh;
   width: 100vw;
@@ -49,6 +53,17 @@ body {
 .stats-bar {
   height: 20px;
   background-color: #ffffff;
+  font-weight: 400;
+  padding-right: 5px;
+  font-size: 12px;
+  color: rgb(96, 94, 92);
+  font-family: "Segoe UI", "Segoe UI Web", Arial, Verdana, sans-serif;
+  text-align: right;
+  white-space: nowrap;
+  line-height: 16px;
+  margin: 0px 4px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 .toolbar {

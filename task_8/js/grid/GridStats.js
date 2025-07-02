@@ -8,6 +8,7 @@ export class GridStats {
     this.grid = grid;
     this.activeCellDisplay = document.getElementById("active-cell-display");
     this.formulaBar = document.getElementById("formula-bar");
+    this.activecellText = null;
     // Setup formula bar event listener
     if (this.formulaBar) {
       this.setupFormulaBarEvents();
@@ -21,13 +22,37 @@ export class GridStats {
     this.formulaBar.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         this.commitFormulaBarValue();
+        // Refocus on grid/canvas
+        this.grid.grid_container.focus();
+
+        e.preventDefault(); // Prevent new line in input
       } else if (e.key === "Escape") {
         this.cancelFormulaBarEdit();
+        this.grid.grid_container.focus();
+        e.preventDefault(); // Prevent new line in input
+      }
+    });
+
+    this.formulaBar.addEventListener("input", () => {
+      if (this.grid.selection.activeCell && this.formulaBar) {
+        const newValue = this.formulaBar.value;
+        const oldValue = this.grid.selection.activeCell.value;
+
+        if (newValue !== oldValue) {
+          this.grid.selection.activeCell.value = newValue;
+          this.updateActiveCellDisplay();
+        }
+        this.grid.renderer.redrawVisible();
+      }
+    });
+
+    this.formulaBar.addEventListener("focus", () => {
+      if (this.grid.selection.activeCell && this.formulaBar) {
+        this.activecellText = this.grid.selection.activeCell.value;
       }
     });
 
     this.formulaBar.addEventListener("blur", () => {
-      console.log("blur");
       this.commitFormulaBarValue();
     });
   }
@@ -36,9 +61,13 @@ export class GridStats {
    * Commits the value from formula bar to active cell
    */
   commitFormulaBarValue() {
-    if (this.grid.selection.activeCell && this.formulaBar) {
+    if (
+      this.grid.selection.activeCell &&
+      this.formulaBar &&
+      this.activecellText
+    ) {
       const newValue = this.formulaBar.value;
-      const oldValue = this.grid.selection.activeCell.value;
+      const oldValue = this.activecellText;
 
       if (newValue !== oldValue) {
         const command = new EditCellCommand(
@@ -48,6 +77,7 @@ export class GridStats {
         );
         this.grid.executeCommand(command);
         this.updateActiveCellDisplay();
+        this.activecellText = null;
       }
     }
   }
@@ -56,8 +86,14 @@ export class GridStats {
    * Cancels formula bar edit and restores original value
    */
   cancelFormulaBarEdit() {
-    if (this.grid.selection.activeCell && this.formulaBar) {
-      this.formulaBar.value = this.grid.selection.activeCell.value || "";
+    if (
+      this.grid.selection.activeCell &&
+      this.formulaBar &&
+      this.activecellText
+    ) {
+      this.formulaBar.value = this.activecellText || "";
+      this.grid.selection.activeCell.value = this.activecellText || "";
+      this.grid.renderer.redrawVisible();
     }
   }
 
@@ -101,6 +137,16 @@ export class GridStats {
 
     if (this.grid.selection.activeCell) {
       this.formulaBar.value = this.grid.selection.activeCell.value || "";
+    } else {
+      this.formulaBar.value = "";
+    }
+  }
+
+  syncFormulaBarWithInput(input) {
+    if (!this.formulaBar) return;
+
+    if (input) {
+      this.formulaBar.value = input.value || "";
     } else {
       this.formulaBar.value = "";
     }
