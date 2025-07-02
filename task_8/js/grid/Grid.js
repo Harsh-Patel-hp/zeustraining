@@ -124,6 +124,13 @@ export class Grid {
     /** @type {number} The starting row of dragging rows */
     this.dragStartRow = null;
 
+    /** @type {Object} The range of columns being dragged */
+    this.lastDragColRange = { start: null, end: null };
+
+    /** @type {Object} The range of rows being dragged */
+    this.lastDragRowRange = { start: null, end: null };
+
+
     /** @type {GridRenderer} The renderer for the grid */
     this.renderer = new GridRenderer(this);
 

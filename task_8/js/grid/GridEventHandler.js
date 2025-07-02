@@ -29,89 +29,59 @@ export class GridEventHandler {
 
     this.grid.grid_container.addEventListener("mousedown", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
-      const x =
-        e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
-      const y =
-        e.clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight;
+      const x = e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
+      const y = e.clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight;
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
-      // Clear any existing selection
-      this.grid.cellrange.clearRange();
-      this.grid.selection.clear();
+      // Don't clear selection if Ctrl is held (for multi-select)
+      if (!e.ctrlKey) {
+        this.grid.cellrange.clearRange();
+        this.grid.selection.clear();
+      }
 
-      //handle column header clicks
-      if (
-        localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
-        localX >= this.grid.RowlabelWidth
-      ) {
-        //column selection or resize
+      // Handle column header clicks
+      if (localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
+        localX >= this.grid.RowlabelWidth) {
         let colIndex = this.grid.coordHelper.getColIndexFromX(x);
 
-        // column resize detection
+        // Column resize detection (unchanged)
         if (this.grid.isOverColumnResize(localX, localY, colIndex)) {
           resizeColumnIndex = colIndex;
           isResizing = true;
           initialColumnWidth = this.grid.columns[colIndex].width;
           dragStartX = localX;
-          return; // Skip selection logic
+          return;
         }
 
-        // Store initial column for drag selection
-        this.grid.dragStartColumn = colIndex;
-        this.grid.dragStartRow = null; // Clear any row drag
+        // NEW: Enhanced column selection with Ctrl support
+        this.handleColumnSelection(colIndex, e.ctrlKey);
 
-        // Column selection logic
-        // this.grid.cellrange.clearRange();
-        // this.grid.selection.clear();
-        this.grid.cellrange = new CellRange(
-          0,
-          colIndex,
-          this.grid.totalRows - 1,
-          colIndex
-        );
-        this.grid.selection.selectColumn(colIndex);
-        this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
-        this.grid.renderer.redrawVisible();
-        this.grid.stats.updateAllDisplays(false);
-      } else if (
-        localX <= this.grid.RowlabelWidth &&
-        localY >= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight
-      ) {
-        // row selection or resize
+      } else if (localX <= this.grid.RowlabelWidth &&
+        localY >= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight) {
+        // Handle row header clicks
         let rowIndex = this.grid.coordHelper.getRowIndexFromY(y);
 
-        // row resize detection
+        // Row resize detection (unchanged)
         if (this.grid.isOverRowResize(localX, localY, rowIndex)) {
           resizeRowIndex = rowIndex;
           isResizing = true;
           initialRowHeight = this.grid.rows[rowIndex].height;
           dragStartY = localY;
-          return; // Skip selection logic
+          return;
         }
 
-        // Row selection logic
-        this.grid.cellrange.clearRange();
-        this.grid.selection.clear();
-        this.grid.cellrange = new CellRange(
-          rowIndex,
-          0,
-          rowIndex,
-          this.grid.totalColumns - 1
-        );
+        // NEW: Enhanced row selection with Ctrl support
+        this.handleRowSelection(rowIndex, e.ctrlKey);
 
-        // Store initial row for drag selection
-        this.grid.dragStartRow = rowIndex;
-        this.grid.dragStartColumn = null; // Clear any column drag
-        this.grid.selection.selectRow(rowIndex);
-        this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
-        this.grid.renderer.redrawVisible();
-        this.grid.stats.updateAllDisplays(false);
       } else {
-        // Handle cell selection
+        // Handle cell selection (unchanged for now)
         const cell = this.grid.coordHelper.getCellAtPosition(x, y);
         if (cell) {
-          this.grid.cellrange.clearRange();
+          if (!e.ctrlKey) {
+            this.grid.cellrange.clearRange();
+            this.grid.selection.clear();
+          }
           this.grid.selection.setActiveCell(cell);
           this.grid.renderer.redrawVisible();
           this.grid.stats.updateAllDisplays(false);
@@ -164,30 +134,32 @@ export class GridEventHandler {
         ) {
           const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
           if (currentColIndex !== -1) {
-            const startCol = Math.min(
-              this.grid.dragStartColumn,
-              currentColIndex
-            );
+            const startCol = Math.min(this.grid.dragStartColumn, currentColIndex);
             const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
 
-            this.grid.cellrange = new CellRange(
-              0,
-              startCol,
-              this.grid.totalRows - 1,
-              endCol
-            );
-            this.grid.selection.clear();
-            for (let i = startCol; i <= endCol; i++) {
-              this.grid.selection.selectColumn(i);
+            // Only proceed if selection range changed
+            const last = this.grid.lastDragColRange;
+            if (last.start !== startCol || last.end !== endCol) {
+              // Update last drag range
+              this.grid.lastDragColRange = { start: startCol, end: endCol };
+
+              this.grid.cellrange = new CellRange(0, startCol, this.grid.totalRows - 1, endCol);
+
+              this.grid.selection.clear();
+              for (let i = startCol; i <= endCol; i++) {
+                this.grid.selection.selectColumn(i);
+              }
+
+              this.grid.selection.setActiveCell(
+                this.grid.rows[0].cells[this.grid.dragStartColumn]
+              );
+
+              this.grid.renderer.redrawVisible();
+              this.grid.stats.updateAllDisplays(true);
             }
-            this.grid.selection.selectColumn(currentColIndex);
-            this.grid.selection.setActiveCell(
-              this.grid.rows[0].cells[this.grid.dragStartColumn]
-            );
-            this.grid.renderer.redrawVisible();
-            this.grid.stats.updateAllDisplays(true);
           }
         }
+
         // Handle row drag selection
         else if (
           this.grid.dragStartRow !== null &&
@@ -198,24 +170,33 @@ export class GridEventHandler {
             const startRow = Math.min(this.grid.dragStartRow, currentRowIndex);
             const endRow = Math.max(this.grid.dragStartRow, currentRowIndex);
 
-            this.grid.cellrange = new CellRange(
-              startRow,
-              0,
-              endRow,
-              this.grid.totalColumns - 1
-            );
-            this.grid.selection.clear();
-            for (let i = startRow; i <= endRow; i++) {
-              this.grid.selection.selectRow(i);
+            // Only proceed if selection range changed
+            const last = this.grid.lastDragRowRange;
+            if (last.start !== startRow || last.end !== endRow) {
+              // Update last drag range
+              this.grid.lastDragRowRange = { start: startRow, end: endRow };
+
+              this.grid.cellrange = new CellRange(
+                startRow,
+                0,
+                endRow,
+                this.grid.totalColumns - 1
+              );
+
+              this.grid.selection.clear();
+              for (let i = startRow; i <= endRow; i++) {
+                this.grid.selection.selectRow(i);
+              }
+
+              this.grid.selection.setActiveCell(
+                this.grid.rows[this.grid.dragStartRow].cells[0]
+              );
+              this.grid.renderer.redrawVisible();
+              this.grid.stats.updateAllDisplays(true);
             }
-            this.grid.selection.selectRow(currentRowIndex);
-            this.grid.selection.setActiveCell(
-              this.grid.rows[this.grid.dragStartRow].cells[0]
-            );
-            this.grid.renderer.redrawVisible();
-            this.grid.stats.updateAllDisplays(true);
           }
-        } else {
+        }
+        else {
           const cell = this.grid.coordHelper.getCellAtPosition(x, y);
           // Auto-scroll to keep the new cell visible
           if (cell) {
@@ -248,6 +229,10 @@ export class GridEventHandler {
       // Clear drag selection markers
       this.grid.dragStartColumn = null;
       this.grid.dragStartRow = null;
+      this.grid.lastDragRowRange = { start: null, end: null };
+      this.grid.lastDragColRange = { start: null, end: null };
+
+
       // Enhanced resize completion with command pattern
       if (isResizing) {
         if (resizeColumnIndex !== -1) {
@@ -335,6 +320,64 @@ export class GridEventHandler {
       this.grid.scrollManager.setupCanvas();
       this.grid.renderer.redrawVisible();
     });
+  }
+
+  /**
+ * NEW: Handle column selection with multi-select support
+ * @param {number} colIndex - Column index to select
+ * @param {boolean} isCtrlHeld - Whether Ctrl key is held
+ */
+  handleColumnSelection(colIndex, isCtrlHeld) {
+    if (isCtrlHeld) {
+      // Toggle column selection
+      if (this.grid.selection.isColumnSelected(colIndex)) {
+        this.grid.selection.deselectColumn(colIndex);
+      } else {
+        this.grid.selection.selectColumn(colIndex);
+      }
+    } else {
+
+      // Store initial column for drag selection
+      this.grid.dragStartColumn = colIndex;
+      this.grid.dragStartRow = null; // Clear any row drag
+
+      // Single column selection - clear others first
+      this.grid.selection.clear();
+      this.grid.cellrange = new CellRange(0, colIndex, this.grid.totalRows - 1, colIndex);
+      this.grid.selection.selectColumn(colIndex);
+    }
+
+    this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
+    this.grid.renderer.redrawVisible();
+    this.grid.stats.updateAllDisplays(false);
+  }
+
+  /**
+   * NEW: Handle row selection with multi-select support
+   * @param {number} rowIndex - Row index to select
+   * @param {boolean} isCtrlHeld - Whether Ctrl key is held
+   */
+  handleRowSelection(rowIndex, isCtrlHeld) {
+    if (isCtrlHeld) {
+      // Toggle row selection
+      if (this.grid.selection.isRowSelected(rowIndex)) {
+        this.grid.selection.deselectRow(rowIndex);
+      } else {
+        this.grid.selection.selectRow(rowIndex);
+      }
+    } else {
+      // Single row selection - clear others first
+      // Store initial row for drag selection
+      this.grid.dragStartRow = rowIndex;
+      this.grid.dragStartColumn = null; // Clear any column drag
+      this.grid.selection.clear();
+      this.grid.cellrange = new CellRange(rowIndex, 0, rowIndex, this.grid.totalColumns - 1);
+      this.grid.selection.selectRow(rowIndex);
+    }
+
+    this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
+    this.grid.renderer.redrawVisible();
+    this.grid.stats.updateAllDisplays(false);
   }
 
   /**
