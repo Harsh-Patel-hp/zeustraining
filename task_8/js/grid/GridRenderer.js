@@ -20,7 +20,9 @@ export class GridRenderer {
     this.drawCells();
     this.drawHeaders();
     this.drawCornerCell();
+    // Update both stats and active cell display
     this.grid.stats.updateStatsDisplay();
+    this.grid.stats.updateActiveCellDisplay();
   }
 
   /**
@@ -353,7 +355,6 @@ export class GridRenderer {
 
     // Draw text
     this.grid.ctx.fillStyle = isWholeColumn ? "#ffffff" : "#0f703b";
-    // this.grid.ctx.font = "bold 12px Arial";
     this.grid.ctx.textAlign = "center";
     this.grid.ctx.textBaseline = "middle";
     const label = Utils.colIndexToName(col);

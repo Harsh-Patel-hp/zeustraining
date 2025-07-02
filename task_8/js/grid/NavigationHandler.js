@@ -191,5 +191,6 @@ export class NavigationHandler {
     this.grid.scrollManager.scrollToCell(newRow, newCol);
 
     this.grid.renderer.redrawVisible();
+    this.grid.stats.updateAllDisplays(true);
   }
 }

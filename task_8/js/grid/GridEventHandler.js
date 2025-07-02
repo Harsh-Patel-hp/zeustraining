@@ -28,6 +28,8 @@ export class GridEventHandler {
     let isResizing = false;
 
     this.grid.grid_container.addEventListener("mousedown", (e) => {
+      //to get focus so formula bar unblur event is fired
+      this.grid.grid_container.focus();
       const rect = this.grid.canvas.getBoundingClientRect();
       const x =
         e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
@@ -61,7 +63,6 @@ export class GridEventHandler {
         this.grid.dragStartColumn = colIndex;
         this.grid.dragStartRow = null; // Clear any row drag
 
-
         // Column selection logic
         // this.grid.cellrange.clearRange();
         // this.grid.selection.clear();
@@ -74,6 +75,7 @@ export class GridEventHandler {
         this.grid.selection.selectColumn(colIndex);
         this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
         this.grid.renderer.redrawVisible();
+        this.grid.stats.updateAllDisplays(false);
       } else if (
         localX <= this.grid.RowlabelWidth &&
         localY >= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight
@@ -106,6 +108,7 @@ export class GridEventHandler {
         this.grid.selection.selectRow(rowIndex);
         this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
         this.grid.renderer.redrawVisible();
+        this.grid.stats.updateAllDisplays(false);
       } else {
         // Handle cell selection
         const cell = this.grid.coordHelper.getCellAtPosition(x, y);
@@ -113,6 +116,7 @@ export class GridEventHandler {
           this.grid.cellrange.clearRange();
           this.grid.selection.setActiveCell(cell);
           this.grid.renderer.redrawVisible();
+          this.grid.stats.updateAllDisplays(false);
         }
       }
 
@@ -156,42 +160,64 @@ export class GridEventHandler {
           this.grid.renderer.redrawVisible();
         }
       } else if (isDragging) {
-
-        if (this.grid.dragStartColumn !== null && this.grid.dragStartColumn !== undefined) {
+        if (
+          this.grid.dragStartColumn !== null &&
+          this.grid.dragStartColumn !== undefined
+        ) {
           const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
           if (currentColIndex !== -1) {
-            const startCol = Math.min(this.grid.dragStartColumn, currentColIndex);
+            const startCol = Math.min(
+              this.grid.dragStartColumn,
+              currentColIndex
+            );
             const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
 
-            this.grid.cellrange = new CellRange(0, startCol, this.grid.totalRows - 1, endCol);
+            this.grid.cellrange = new CellRange(
+              0,
+              startCol,
+              this.grid.totalRows - 1,
+              endCol
+            );
             this.grid.selection.clear();
             for (let i = startCol; i <= endCol; i++) {
               this.grid.selection.selectColumn(i);
             }
             this.grid.selection.selectColumn(currentColIndex);
-            this.grid.selection.setActiveCell(this.grid.rows[0].cells[this.grid.dragStartColumn]);
+            this.grid.selection.setActiveCell(
+              this.grid.rows[0].cells[this.grid.dragStartColumn]
+            );
             this.grid.renderer.redrawVisible();
+            this.grid.stats.updateAllDisplays(true);
           }
         }
         // Handle row drag selection
-        else if (this.grid.dragStartRow !== null && this.grid.dragStartRow !== undefined) {
+        else if (
+          this.grid.dragStartRow !== null &&
+          this.grid.dragStartRow !== undefined
+        ) {
           const currentRowIndex = this.grid.coordHelper.getRowIndexFromY(y);
           if (currentRowIndex !== -1) {
             const startRow = Math.min(this.grid.dragStartRow, currentRowIndex);
             const endRow = Math.max(this.grid.dragStartRow, currentRowIndex);
 
-            this.grid.cellrange = new CellRange(startRow, 0, endRow, this.grid.totalColumns - 1);
+            this.grid.cellrange = new CellRange(
+              startRow,
+              0,
+              endRow,
+              this.grid.totalColumns - 1
+            );
             this.grid.selection.clear();
             for (let i = startRow; i <= endRow; i++) {
               this.grid.selection.selectRow(i);
             }
             this.grid.selection.selectRow(currentRowIndex);
-            this.grid.selection.setActiveCell(this.grid.rows[this.grid.dragStartRow].cells[0]);
+            this.grid.selection.setActiveCell(
+              this.grid.rows[this.grid.dragStartRow].cells[0]
+            );
             this.grid.renderer.redrawVisible();
-
+            this.grid.stats.updateAllDisplays(true);
           }
-        }
-        else {
+        } else {
           const cell = this.grid.coordHelper.getCellAtPosition(x, y);
           // Auto-scroll to keep the new cell visible
           if (cell) {
@@ -210,6 +236,7 @@ export class GridEventHandler {
               this.grid.selection.clear();
               this.grid.selection.setActiveCell(startCell);
               this.grid.renderer.redrawVisible();
+              this.grid.stats.updateAllDisplays(true);
             }
           }
         }
@@ -254,6 +281,10 @@ export class GridEventHandler {
         // Update virtual class dimensions after resize is complete
         this.grid.scrollManager.updateVirtualClassDimensions();
       }
+      if (isDragging) {
+        // Update displays after drag ends - show active cell only
+        this.grid.stats.updateAllDisplays(false);
+      }
       isDragging = false;
     });
 
@@ -292,6 +323,12 @@ export class GridEventHandler {
       // Only handle navigation if no input is focused
       if (!isInputFocused) {
         this.grid.navigation.handleKeyboardNavigation(e);
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (e.key === "Shift") {
+        this.grid.stats.updateAllDisplays(false);
       }
     });
 
@@ -347,6 +384,8 @@ export class GridEventHandler {
       if (newValue !== cell.value) {
         const command = new EditCellCommand(cell, cell.value, newValue);
         this.grid.executeCommand(command);
+        // Update displays after cell edit
+        this.grid.stats.updateAllDisplays(false);
       }
       input.removeEventListener("blur", handleBlur);
       input.removeEventListener("keydown", handleKeyDown);
