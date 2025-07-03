@@ -35,8 +35,6 @@ export class NavigationHandler {
     ) {
       currentRow = this.grid.cellrange.startRow;
       currentCol = this.grid.cellrange.startCol;
-
-      console.log("clearRange");
       // Clear range since we're navigating out of the selection
       this.grid.cellrange.clearRange();
     }
@@ -96,7 +94,10 @@ export class NavigationHandler {
         break;
       case "Tab":
         if (this.grid.cellrange.isCellRange()) {
-          const { startRow, endRow, startCol, endCol } = this.grid.cellrange;
+          const startRow = this.grid.cellrange.getStartRow();
+          const endRow = this.grid.cellrange.getendRow();
+          const startCol = this.grid.cellrange.getStartCol();
+          const endCol = this.grid.cellrange.getendCol();
           let newRow = this.grid.selection.activeCell.rowIndex;
           let newCol = this.grid.selection.activeCell.colIndex;
 
@@ -152,29 +153,56 @@ export class NavigationHandler {
 
       case "Enter":
         if (this.grid.cellrange.isCellRange()) {
-          const { startRow, endRow, startCol, endCol } = this.grid.cellrange;
-          let newactiverow = this.grid.selection.activeCell.rowIndex;
-          let newactivecol = this.grid.selection.activeCell.colIndex;
-          newRow = newactiverow + 1;
-          newCol = newactivecol;
+          const startRow = this.grid.cellrange.getStartRow();
+          const endRow = this.grid.cellrange.getendRow();
+          const startCol = this.grid.cellrange.getStartCol();
+          const endCol = this.grid.cellrange.getendCol();
+          let newRow = this.grid.selection.activeCell.rowIndex;
+          let newCol = this.grid.selection.activeCell.colIndex;
 
-          // If we move beyond the end of the current column in the range
-          if (newRow > endRow) {
-            newRow = startRow;
-            newCol = newactivecol + 1;
+          if (e.shiftKey) {
+            // Shift + Enter: Move up
+            newRow--;
 
-            // If we move beyond the last column, wrap around
-            if (newCol > endCol) {
-              newCol = startCol;
+            if (newRow < startRow) {
+              newRow = endRow;
+              newCol--;
+
+              if (newCol < startCol) {
+                newCol = endCol;
+              }
+            }
+          } else {
+            // Enter: Move down
+            newRow++;
+
+            if (newRow > endRow) {
+              newRow = startRow;
+              newCol++;
+
+              if (newCol > endCol) {
+                newCol = startCol;
+              }
             }
           }
+
           const newCell = this.grid.getCell(newRow, newCol);
           this.grid.selection.setActiveCell(newCell);
         } else {
-          newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+          // No cell range, normal Enter or Shift+Enter
+          if (e.shiftKey) {
+            newRow = Math.max(0, currentRow - 1);
+          } else {
+            newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+          }
+          newCol = currentCol;
+          const newCell = this.grid.getCell(newRow, newCol);
+          this.grid.selection.setActiveCell(newCell);
         }
+
         e.preventDefault();
         break;
+
       case "F2":
         // F2: Edit current cell
         this.grid.eventHandler.editCell(this.grid.selection.activeCell);

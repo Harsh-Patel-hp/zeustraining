@@ -26,6 +26,8 @@ export class GridEventHandler {
     let initialColumnWidth = 0;
     let initialRowHeight = 0;
     let isResizing = false;
+    let autoScrollTimer = null;
+    let lastMouseEvent = null;
 
     this.grid.grid_container.addEventListener("mousedown", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
@@ -96,7 +98,10 @@ export class GridEventHandler {
       dragStartY = y;
       dragStartX = x;
       isDragging = true;
+      document.addEventListener("mousemove", mouseMoveHandler);
+      document.addEventListener("mouseup", mouseUpHandler);
     });
+
 
     this.grid.grid_container.addEventListener("mousemove", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
@@ -236,6 +241,7 @@ export class GridEventHandler {
     });
 
     this.grid.grid_container.addEventListener("mouseup", () => {
+
       // Clear drag selection markers
       this.grid.dragStartColumn = null;
       this.grid.dragStartRow = null;
@@ -329,10 +335,67 @@ export class GridEventHandler {
       this.grid.scrollManager.setupCanvas();
       this.grid.renderer.redrawVisible();
     });
+
+    const mouseMoveHandler = (e) => {
+      lastMouseEvent = e;
+      // Check if auto-scroll is needed
+      const rect = this.grid.grid_container.getBoundingClientRect();
+      const edgeSize = 20; // px from edge to trigger scroll
+      let scrollX = 0, scrollY = 0;
+
+      if (e.clientX < rect.left + edgeSize) scrollX = -10;
+      else if (e.clientX > rect.right - edgeSize) scrollX = 10;
+
+      if (e.clientY < rect.top + edgeSize) scrollY = -10;
+      else if (e.clientY > rect.bottom - edgeSize) scrollY = 10;
+
+      if (scrollX !== 0 || scrollY !== 0) {
+        if (!autoScrollTimer) startAutoScroll();
+      } else {
+        stopAutoScroll();
+      }
+    };
+
+    const mouseUpHandler = (e) => {
+      isDragging = false;
+      stopAutoScroll();
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
+    };
+
+    const startAutoScroll = () => {
+      if (autoScrollTimer) return;
+      autoScrollTimer = setInterval(() => {
+        if (!lastMouseEvent) return;
+
+        const rect = this.grid.grid_container.getBoundingClientRect();
+        let dx = 0, dy = 0;
+
+        if (lastMouseEvent.clientX < rect.left + 20) dx = -10;
+        else if (lastMouseEvent.clientX > rect.right - 20) dx = 10;
+
+        if (lastMouseEvent.clientY < rect.top + 20) dy = -10;
+        else if (lastMouseEvent.clientY > rect.bottom - 20) dy = 10;
+
+        this.grid.grid_container.scrollLeft += dx;
+        this.grid.grid_container.scrollTop += dy;
+
+
+        // Optional: trigger your selection update logic here if needed
+        // (e.g., call mouseMoveHandler again or update selection)      
+      }, 16); // ~60fps
+    };
+
+    const stopAutoScroll = () => {
+      if (autoScrollTimer) {
+        clearInterval(autoScrollTimer);
+        autoScrollTimer = null;
+      }
+    };
   }
 
   /**
-   * NEW: Handle column selection with multi-select support
+   * Handle column selection with multi-select support
    * @param {number} colIndex - Column index to select
    * @param {boolean} isCtrlHeld - Whether Ctrl key is held
    */
@@ -351,7 +414,7 @@ export class GridEventHandler {
           );
           this.grid.selection.setActiveCell(
             this.grid.rows[0].cells[
-              slectedcolumnarray[slectedcolumnarray.length - 1]
+            slectedcolumnarray[slectedcolumnarray.length - 1]
             ]
           );
         }
@@ -372,7 +435,7 @@ export class GridEventHandler {
   }
 
   /**
-   * NEW: Handle row selection with multi-select support
+   * Handle row selection with multi-select support
    * @param {number} rowIndex - Row index to select
    * @param {boolean} isCtrlHeld - Whether Ctrl key is held
    */
