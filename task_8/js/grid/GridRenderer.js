@@ -135,10 +135,7 @@ export class GridRenderer {
    * NEW: Draw selection borders around selected rows and columns
    * Add this new method to GridRenderer class
    */
-  /**
-   * NEW: Draw selection borders around selected rows and columns
-   * Add this new method to GridRenderer class
-   */
+
   drawNonContinuousSelectionBorders(scrollLeft, scrollTop) {
     // Only draw borders if:
     // 1. Single column/row selected without Ctrl
@@ -342,7 +339,9 @@ export class GridRenderer {
     // Draw active cell selection (only if not part of range selection)
     if (
       this.grid.selection.activeCell === cell &&
-      !this.grid.cellrange.isCellRange()
+      !this.grid.cellrange.isCellRange() &&
+      !this.grid.selection.isRowSelected(row) &&
+      !this.grid.selection.isColumnSelected(col)
     ) {
       this.drawActiveCellBorder(x, y, col, row);
     }
@@ -487,7 +486,8 @@ export class GridRenderer {
       (this.grid.selection.activeCell &&
         this.grid.selection.activeCell.colIndex === col) ||
       (this.grid.cellrange.isCellRange() &&
-        this.grid.cellrange.isColumnInRange(col));
+        this.grid.cellrange.isColumnInRange(col)) ||
+      this.grid.selection.selectedRows.size > 0;
 
     if (isColumnSelected) {
       this.drawSelectedColumnHeader(col, x);
@@ -503,7 +503,6 @@ export class GridRenderer {
     // Check if this is part of multi-selection
     const isMultiSelect = this.grid.selection.selectedColumns.size == 0;
     const isWholeColumn = this.grid.selection.isColumnSelected(col);
-
     // Draw background - different colors for multi-select
     if (isWholeColumn) {
       this.grid.ctx.fillStyle = "#107c41";
@@ -571,11 +570,6 @@ export class GridRenderer {
    * Draw a single row header
    */
   drawRowHeader(row, scrollTop) {
-    if (row === undefined || row === null) {
-      console.warn("Row index is undefined or invalid");
-      return;
-    }
-
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
         scrollTop +
@@ -598,7 +592,8 @@ export class GridRenderer {
       (this.grid.selection.activeCell &&
         this.grid.selection.activeCell.rowIndex === row) ||
       (this.grid.cellrange.isCellRange() &&
-        this.grid.cellrange.isRowInRange(row));
+        this.grid.cellrange.isRowInRange(row)) ||
+      this.grid.selection.selectedColumns.size > 0;
 
     if (isRowSelected) {
       this.drawSelectedRowHeader(row, y);

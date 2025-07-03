@@ -130,7 +130,6 @@ export class Grid {
     /** @type {Object} The range of rows being dragged */
     this.lastDragRowRange = { start: null, end: null };
 
-
     /** @type {GridRenderer} The renderer for the grid */
     this.renderer = new GridRenderer(this);
 
@@ -180,6 +179,17 @@ export class Grid {
   loadData(data) {
     this.data = data;
     // console.log(this.data);
+    for (let i = 0; i < Math.min(data.length, this.totalRows); i++) {
+      const item = data[i];
+
+      let columnCount = 0;
+
+      for (let field in item) {
+        this.setCellValue(i, columnCount, item[field]);
+        columnCount++;
+        // this.headers.push(field);
+      }
+    }
     this.renderer.redrawVisible();
   }
 

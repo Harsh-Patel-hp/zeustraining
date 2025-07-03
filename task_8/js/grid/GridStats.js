@@ -158,9 +158,20 @@ export class GridStats {
    * @returns {Object|null} An object containing count, min, max, and sum of numeric values, or null if no numeric values.
    */
   calculateStats(selectedCells) {
-    const numericValues = selectedCells
-      .map((cell) => parseFloat(cell.value))
-      .filter((val) => !isNaN(val));
+    let nonEmptyCount = 0;
+    const numericValues = [];
+
+    for (const cell of selectedCells) {
+      const value = cell ? cell.value : "";
+      if (value !== null && value !== undefined && value !== "") {
+        nonEmptyCount++;
+
+        const parsed = parseFloat(value);
+        if (!isNaN(parsed)) {
+          numericValues.push(parsed);
+        }
+      }
+    }
     if (numericValues.length === 0) return null;
 
     let min = numericValues[0];
@@ -175,7 +186,7 @@ export class GridStats {
     }
 
     return {
-      count: numericValues.length,
+      count: nonEmptyCount,
       min: min,
       max: max,
       sum: sum,
@@ -219,13 +230,13 @@ export class GridStats {
 
     const selectedCells = Array.from(cellSet);
 
+    // console.log("selectedCells", selectedCells);
     if (selectedCells.length <= 1) {
       this.grid.statsDisplay.textContent = "";
       return;
     }
 
     const stats = this.calculateStats(selectedCells);
-
     if (stats) {
       this.grid.statsDisplay.textContent = `Count: ${
         stats.count

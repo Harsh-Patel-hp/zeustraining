@@ -36,18 +36,34 @@ export class Selection {
 
   /**
    * Adds the row to the selection
-   * @param {Row} row - The row to add
+   * @param {number} row - The row to add
    */
   selectRow(row) {
     this.selectedRows.add(row);
   }
 
   /**
+   * Removes the row from the selection
+   * @param {number} row - The row to remove
+   */
+  deselectRow(row) {
+    this.selectedRows.delete(row);
+  }
+
+  /**
    * Adds the column to the selection
-   * @param {Column} column - The column to add
+   * @param {number} column - The column to add
    */
   selectColumn(column) {
     this.selectedColumns.add(column);
+  }
+
+  /**
+   * Removes the row from the selection
+   * @param {number} column - The column to remove
+   */
+  deselectColumn(column) {
+    this.selectedColumns.delete(column);
   }
 
   /**

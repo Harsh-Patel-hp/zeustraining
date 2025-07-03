@@ -144,21 +144,15 @@ export class GridEventHandler {
               currentColIndex
             );
             const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
-
             // Only proceed if selection range changed
             const last = this.grid.lastDragColRange;
             if (last.start !== startCol || last.end !== endCol) {
               // Update last drag range
               this.grid.lastDragColRange = { start: startCol, end: endCol };
-
-              // this.grid.cellrange = new CellRange(
-              //   0,
-              //   startCol,
-              //   this.grid.totalRows - 1,
-              //   endCol
-              // );
-
-              this.grid.selection.clear();
+              if (!e.ctrlKey) {
+                this.grid.selection.clear();
+              }
+              // this.grid.selection.clear();
               for (let i = startCol; i <= endCol; i++) {
                 this.grid.selection.selectColumn(i);
               }
@@ -189,14 +183,10 @@ export class GridEventHandler {
               // Update last drag range
               this.grid.lastDragRowRange = { start: startRow, end: endRow };
 
-              // this.grid.cellrange = new CellRange(
-              //   startRow,
-              //   0,
-              //   endRow,
-              //   this.grid.totalColumns - 1
-              // );
-
-              this.grid.selection.clear();
+              if (!e.ctrlKey) {
+                this.grid.selection.clear();
+              }
+              // this.grid.selection.clear();
               for (let i = startRow; i <= endRow; i++) {
                 this.grid.selection.selectRow(i);
               }
@@ -340,25 +330,35 @@ export class GridEventHandler {
    */
   handleColumnSelection(colIndex, isCtrlHeld) {
     this.grid.selection.wasCtrlUsed = isCtrlHeld;
+    // Store initial column for drag selection
+    this.grid.dragStartColumn = colIndex;
+    this.grid.dragStartRow = null; // Clear any row drag
     if (isCtrlHeld) {
       // Toggle column selection
       if (this.grid.selection.isColumnSelected(colIndex)) {
         this.grid.selection.deselectColumn(colIndex);
+        if (this.grid.selection.selectedColumns.size > 0) {
+          let slectedcolumnarray = Array.from(
+            this.grid.selection.selectedColumns
+          );
+          this.grid.selection.setActiveCell(
+            this.grid.rows[0].cells[
+              slectedcolumnarray[slectedcolumnarray.length - 1]
+            ]
+          );
+        }
       } else {
         this.grid.selection.selectColumn(colIndex);
+        this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
       }
     } else {
-      // Store initial column for drag selection
-      this.grid.dragStartColumn = colIndex;
-      this.grid.dragStartRow = null; // Clear any row drag
-
       // Single column selection - clear others first
       this.grid.selection.clear();
       this.grid.cellrange.clearRange();
       this.grid.selection.selectColumn(colIndex);
+      this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
     }
 
-    this.grid.selection.setActiveCell(this.grid.rows[0].cells[colIndex]);
     this.grid.renderer.redrawVisible();
     this.grid.stats.updateAllDisplays(false);
   }
@@ -370,24 +370,32 @@ export class GridEventHandler {
    */
   handleRowSelection(rowIndex, isCtrlHeld) {
     this.grid.selection.wasCtrlUsed = isCtrlHeld;
+    // Store initial row for drag selection
+    this.grid.dragStartRow = rowIndex;
+    this.grid.dragStartColumn = null; // Clear any column drag
     if (isCtrlHeld) {
       // Toggle row selection
       if (this.grid.selection.isRowSelected(rowIndex)) {
         this.grid.selection.deselectRow(rowIndex);
+
+        if (this.grid.selection.selectedRows.size > 0) {
+          let slectedrowarray = Array.from(this.grid.selection.selectedRows);
+          this.grid.selection.setActiveCell(
+            this.grid.rows[slectedrowarray[slectedrowarray.length - 1]].cells[0]
+          );
+        }
       } else {
         this.grid.selection.selectRow(rowIndex);
+        this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
       }
     } else {
       // Single row selection - clear others first
-      // Store initial row for drag selection
-      this.grid.dragStartRow = rowIndex;
-      this.grid.dragStartColumn = null; // Clear any column drag
       this.grid.selection.clear();
       this.grid.cellrange.clearRange();
       this.grid.selection.selectRow(rowIndex);
+      this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
     }
 
-    this.grid.selection.setActiveCell(this.grid.rows[rowIndex].cells[0]);
     this.grid.renderer.redrawVisible();
     this.grid.stats.updateAllDisplays(false);
   }
