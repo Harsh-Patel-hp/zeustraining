@@ -38,13 +38,6 @@ export class GridEventHandler {
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
-      // Don't clear selection if Ctrl is held (for multi-select)
-      if (!e.ctrlKey) {
-        this.grid.cellrange.clearRange();
-        this.grid.selection.clear();
-        this.grid.selection.wasCtrlUsed = false;
-      }
-
       // Handle column header clicks
       if (
         localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
@@ -228,6 +221,8 @@ export class GridEventHandler {
               cell.colIndex
             );
 
+            console.log("clear range and selection");
+
             this.grid.selection.clear();
             this.grid.selection.setActiveCell(startCell);
             this.grid.renderer.redrawVisible();
@@ -409,14 +404,6 @@ export class GridEventHandler {
         clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight
       );
 
-      // ...PASTE your drag selection logic here from mousemove handler...
-      // For example:
-      // - If dragging columns: update selection for columns
-      // - If dragging rows: update selection for rows
-      // - If dragging cells: update cell range selection
-      // (Copy logic from your mousemove handler that processes drag selections)
-      // This keeps everything in sync!
-
       if (
         this.grid.dragStartColumn !== null &&
         this.grid.dragStartColumn !== undefined
@@ -433,7 +420,7 @@ export class GridEventHandler {
           if (last.start !== startCol || last.end !== endCol) {
             // Update last drag range
             this.grid.lastDragColRange = { start: startCol, end: endCol };
-            if (ctrlKey) {
+            if (!ctrlKey) {
               this.grid.selection.clear();
             }
             // this.grid.selection.clear();
@@ -467,7 +454,7 @@ export class GridEventHandler {
             // Update last drag range
             this.grid.lastDragRowRange = { start: startRow, end: endRow };
 
-            if (ctrlKey) {
+            if (!ctrlKey) {
               this.grid.selection.clear();
             }
             // this.grid.selection.clear();
