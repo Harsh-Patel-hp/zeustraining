@@ -29,8 +29,10 @@ export class GridEventHandler {
 
     this.grid.grid_container.addEventListener("mousedown", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
-      const y = e.clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight;
+      const x =
+        e.clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth;
+      const y =
+        e.clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight;
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
@@ -38,11 +40,14 @@ export class GridEventHandler {
       if (!e.ctrlKey) {
         this.grid.cellrange.clearRange();
         this.grid.selection.clear();
+        this.grid.selection.wasCtrlUsed = false;
       }
 
       // Handle column header clicks
-      if (localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
-        localX >= this.grid.RowlabelWidth) {
+      if (
+        localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
+        localX >= this.grid.RowlabelWidth
+      ) {
         let colIndex = this.grid.coordHelper.getColIndexFromX(x);
 
         // Column resize detection (unchanged)
@@ -56,9 +61,10 @@ export class GridEventHandler {
 
         // NEW: Enhanced column selection with Ctrl support
         this.handleColumnSelection(colIndex, e.ctrlKey);
-
-      } else if (localX <= this.grid.RowlabelWidth &&
-        localY >= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight) {
+      } else if (
+        localX <= this.grid.RowlabelWidth &&
+        localY >= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight
+      ) {
         // Handle row header clicks
         let rowIndex = this.grid.coordHelper.getRowIndexFromY(y);
 
@@ -73,7 +79,6 @@ export class GridEventHandler {
 
         // NEW: Enhanced row selection with Ctrl support
         this.handleRowSelection(rowIndex, e.ctrlKey);
-
       } else {
         // Handle cell selection (unchanged for now)
         const cell = this.grid.coordHelper.getCellAtPosition(x, y);
@@ -134,7 +139,10 @@ export class GridEventHandler {
         ) {
           const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
           if (currentColIndex !== -1) {
-            const startCol = Math.min(this.grid.dragStartColumn, currentColIndex);
+            const startCol = Math.min(
+              this.grid.dragStartColumn,
+              currentColIndex
+            );
             const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
 
             // Only proceed if selection range changed
@@ -143,7 +151,12 @@ export class GridEventHandler {
               // Update last drag range
               this.grid.lastDragColRange = { start: startCol, end: endCol };
 
-              this.grid.cellrange = new CellRange(0, startCol, this.grid.totalRows - 1, endCol);
+              // this.grid.cellrange = new CellRange(
+              //   0,
+              //   startCol,
+              //   this.grid.totalRows - 1,
+              //   endCol
+              // );
 
               this.grid.selection.clear();
               for (let i = startCol; i <= endCol; i++) {
@@ -176,12 +189,12 @@ export class GridEventHandler {
               // Update last drag range
               this.grid.lastDragRowRange = { start: startRow, end: endRow };
 
-              this.grid.cellrange = new CellRange(
-                startRow,
-                0,
-                endRow,
-                this.grid.totalColumns - 1
-              );
+              // this.grid.cellrange = new CellRange(
+              //   startRow,
+              //   0,
+              //   endRow,
+              //   this.grid.totalColumns - 1
+              // );
 
               this.grid.selection.clear();
               for (let i = startRow; i <= endRow; i++) {
@@ -195,8 +208,7 @@ export class GridEventHandler {
               this.grid.stats.updateAllDisplays(true);
             }
           }
-        }
-        else {
+        } else {
           const cell = this.grid.coordHelper.getCellAtPosition(x, y);
           // Auto-scroll to keep the new cell visible
           if (cell) {
@@ -231,7 +243,6 @@ export class GridEventHandler {
       this.grid.dragStartRow = null;
       this.grid.lastDragRowRange = { start: null, end: null };
       this.grid.lastDragColRange = { start: null, end: null };
-
 
       // Enhanced resize completion with command pattern
       if (isResizing) {
@@ -323,11 +334,12 @@ export class GridEventHandler {
   }
 
   /**
- * NEW: Handle column selection with multi-select support
- * @param {number} colIndex - Column index to select
- * @param {boolean} isCtrlHeld - Whether Ctrl key is held
- */
+   * NEW: Handle column selection with multi-select support
+   * @param {number} colIndex - Column index to select
+   * @param {boolean} isCtrlHeld - Whether Ctrl key is held
+   */
   handleColumnSelection(colIndex, isCtrlHeld) {
+    this.grid.selection.wasCtrlUsed = isCtrlHeld;
     if (isCtrlHeld) {
       // Toggle column selection
       if (this.grid.selection.isColumnSelected(colIndex)) {
@@ -336,14 +348,13 @@ export class GridEventHandler {
         this.grid.selection.selectColumn(colIndex);
       }
     } else {
-
       // Store initial column for drag selection
       this.grid.dragStartColumn = colIndex;
       this.grid.dragStartRow = null; // Clear any row drag
 
       // Single column selection - clear others first
       this.grid.selection.clear();
-      this.grid.cellrange = new CellRange(0, colIndex, this.grid.totalRows - 1, colIndex);
+      this.grid.cellrange.clearRange();
       this.grid.selection.selectColumn(colIndex);
     }
 
@@ -358,6 +369,7 @@ export class GridEventHandler {
    * @param {boolean} isCtrlHeld - Whether Ctrl key is held
    */
   handleRowSelection(rowIndex, isCtrlHeld) {
+    this.grid.selection.wasCtrlUsed = isCtrlHeld;
     if (isCtrlHeld) {
       // Toggle row selection
       if (this.grid.selection.isRowSelected(rowIndex)) {
@@ -371,7 +383,7 @@ export class GridEventHandler {
       this.grid.dragStartRow = rowIndex;
       this.grid.dragStartColumn = null; // Clear any column drag
       this.grid.selection.clear();
-      this.grid.cellrange = new CellRange(rowIndex, 0, rowIndex, this.grid.totalColumns - 1);
+      this.grid.cellrange.clearRange();
       this.grid.selection.selectRow(rowIndex);
     }
 

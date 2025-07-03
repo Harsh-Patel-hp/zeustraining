@@ -15,6 +15,8 @@ export class Selection {
 
     /** @type {Cell} The active cell */
     this.activeCell = null;
+
+    this.wasCtrlUsed = false;
   }
 
   /**

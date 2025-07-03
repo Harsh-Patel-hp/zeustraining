@@ -189,14 +189,41 @@ export class GridStats {
   updateStatsDisplay() {
     if (!this.grid.statsDisplay) return;
 
-    const selectedCells = this.grid.cellrange.getCells(this.grid);
-    // console.log(selectedCells.length);
+    const cellSet = new Set();
+
+    // 1. Add all cells from cellrange
+    const rangeCells = this.grid.cellrange.getCells(this.grid);
+    for (const cell of rangeCells) {
+      cellSet.add(cell);
+    }
+
+    // 2. Add all cells from selected rows
+    for (const rowIndex of this.grid.selection.selectedRows) {
+      const row = this.grid.rows[rowIndex];
+      if (row && row.cells) {
+        for (const cell of row.cells) {
+          cellSet.add(cell);
+        }
+      }
+    }
+
+    // 3. Add all cells from selected columns
+    for (const colIndex of this.grid.selection.selectedColumns) {
+      for (let i = 0; i < this.grid.rows.length; i++) {
+        const row = this.grid.rows[i];
+        if (row && row.cells[colIndex]) {
+          cellSet.add(row.cells[colIndex]);
+        }
+      }
+    }
+
+    const selectedCells = Array.from(cellSet);
+
     if (selectedCells.length <= 1) {
       this.grid.statsDisplay.textContent = "";
       return;
     }
 
-    // console.log(selectedCells);
     const stats = this.calculateStats(selectedCells);
 
     if (stats) {
@@ -206,7 +233,6 @@ export class GridStats {
         2
       )} | Min: ${stats.min.toFixed(2)} | Max: ${stats.max.toFixed(2)}`;
     } else {
-      // If no numeric values, just show count
       this.grid.statsDisplay.textContent = `Count: ${selectedCells.length}`;
     }
   }

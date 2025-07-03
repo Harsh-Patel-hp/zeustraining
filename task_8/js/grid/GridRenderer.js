@@ -132,10 +132,28 @@ export class GridRenderer {
   }
 
   /**
- * NEW: Draw selection borders around selected rows and columns
- * Add this new method to GridRenderer class
- */
+   * NEW: Draw selection borders around selected rows and columns
+   * Add this new method to GridRenderer class
+   */
+  /**
+   * NEW: Draw selection borders around selected rows and columns
+   * Add this new method to GridRenderer class
+   */
   drawNonContinuousSelectionBorders(scrollLeft, scrollTop) {
+    // Only draw borders if:
+    // 1. Single column/row selected without Ctrl
+    // 2. Continuous selection (drag selection)
+    // Don't draw if Ctrl was used for multi-select
+
+    const shouldDrawBorders =
+      !this.grid.selection.wasCtrlUsed &&
+      (this.grid.selection.selectedColumns.size > 0 ||
+        this.grid.selection.selectedRows.size > 0);
+
+    if (!shouldDrawBorders) {
+      return;
+    }
+
     this.grid.ctx.strokeStyle = "#137e43";
     this.grid.ctx.lineWidth = 2;
 
@@ -162,7 +180,9 @@ export class GridRenderer {
    */
   drawColumnSelectionBorder(colIndex, scrollLeft, scrollTop) {
     const x = Math.floor(
-      this.grid.coordHelper.getColumnX(colIndex) - scrollLeft + this.grid.RowlabelWidth
+      this.grid.coordHelper.getColumnX(colIndex) -
+        scrollLeft +
+        this.grid.RowlabelWidth
     );
     const width = this.grid.columns[colIndex].width;
 
@@ -170,11 +190,17 @@ export class GridRenderer {
     const startY = this.grid.ColumnlabelHeight + this.grid.toolBoxHeight;
     const endY = this.grid.canvas.height;
 
-    if (!this.grid.selection.isColumnSelected(colIndex - 1) && !this.grid.selection.isColumnSelected(colIndex + 1)) {
+    // For single column selection, draw all borders
+    if (this.grid.selection.selectedColumns.size === 1) {
+      // Draw complete border around single column
+      this.grid.ctx.beginPath();
+      this.grid.ctx.rect(x, startY, width, endY - startY);
+      this.grid.ctx.stroke();
       return;
     }
 
-    // Draw left border only if previous column is not selected
+    // For continuous selection, only draw outer edges
+    // Draw left border only if previous column is NOT selected
     if (!this.grid.selection.isColumnSelected(colIndex - 1)) {
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(x, startY);
@@ -182,7 +208,7 @@ export class GridRenderer {
       this.grid.ctx.stroke();
     }
 
-    // Draw right border only if next column is not selected
+    // Draw right border only if next column is NOT selected
     if (!this.grid.selection.isColumnSelected(colIndex + 1)) {
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(x + width, startY);
@@ -190,18 +216,19 @@ export class GridRenderer {
       this.grid.ctx.stroke();
     }
 
-    // Draw top border (if first visible row is 0)
-    if (this.grid.startRow === 0) {
-      this.grid.ctx.beginPath();
-      this.grid.ctx.moveTo(x, startY);
-      this.grid.ctx.lineTo(x + width, startY);
-      this.grid.ctx.stroke();
-    }
+    // Draw top border (always for continuous selection)
+    this.grid.ctx.beginPath();
+    this.grid.ctx.moveTo(x, startY);
+    this.grid.ctx.lineTo(x + width, startY);
+    this.grid.ctx.stroke();
 
-    // Draw bottom border (if last visible row is the last row)
+    // Draw bottom border (always for continuous selection)
     if (this.grid.endRow === this.grid.totalRows - 1) {
-      const lastRowY = this.grid.coordHelper.getRowY(this.grid.endRow) - scrollTop +
-        this.grid.ColumnlabelHeight + this.grid.toolBoxHeight +
+      const lastRowY =
+        this.grid.coordHelper.getRowY(this.grid.endRow) -
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight +
         this.grid.rows[this.grid.endRow].height;
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(x, lastRowY);
@@ -216,8 +243,10 @@ export class GridRenderer {
    */
   drawRowSelectionBorder(rowIndex, scrollLeft, scrollTop) {
     const y = Math.floor(
-      this.grid.coordHelper.getRowY(rowIndex) - scrollTop +
-      this.grid.ColumnlabelHeight + this.grid.toolBoxHeight
+      this.grid.coordHelper.getRowY(rowIndex) -
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight
     );
     const height = this.grid.rows[rowIndex].height;
 
@@ -225,11 +254,17 @@ export class GridRenderer {
     const startX = this.grid.RowlabelWidth;
     const endX = this.grid.canvas.width;
 
-    if (!this.grid.selection.isRowSelected(rowIndex - 1) && !this.grid.selection.isRowSelected(rowIndex + 1)) {
+    // For single row selection, draw all borders
+    if (this.grid.selection.selectedRows.size === 1) {
+      // Draw complete border around single row
+      this.grid.ctx.beginPath();
+      this.grid.ctx.rect(startX, y, endX - startX, height);
+      this.grid.ctx.stroke();
       return;
     }
 
-    // Draw top border only if previous row is not selected
+    // For continuous selection, only draw outer edges
+    // Draw top border only if previous row is NOT selected
     if (!this.grid.selection.isRowSelected(rowIndex - 1)) {
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(startX, y);
@@ -237,7 +272,7 @@ export class GridRenderer {
       this.grid.ctx.stroke();
     }
 
-    // Draw bottom border only if next row is not selected
+    // Draw bottom border only if next row is NOT selected
     if (!this.grid.selection.isRowSelected(rowIndex + 1)) {
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(startX, y + height);
@@ -245,25 +280,25 @@ export class GridRenderer {
       this.grid.ctx.stroke();
     }
 
-    // Draw left border (if first visible column is 0)
-    if (this.grid.startCol === 0) {
-      this.grid.ctx.beginPath();
-      this.grid.ctx.moveTo(startX, y);
-      this.grid.ctx.lineTo(startX, y + height);
-      this.grid.ctx.stroke();
-    }
+    // Draw left border (always for continuous selection)
+    this.grid.ctx.beginPath();
+    this.grid.ctx.moveTo(startX, y);
+    this.grid.ctx.lineTo(startX, y + height);
+    this.grid.ctx.stroke();
 
-    // Draw right border (if last visible column is the last column)
-    if (this.grid.endCol === this.grid.totalColumns - 1) {
-      const lastColX = this.grid.coordHelper.getColumnX(this.grid.endCol) - scrollLeft +
-        this.grid.RowlabelWidth + this.grid.columns[this.grid.endCol].width;
+    // Draw right border (always for continuous selection)
+    if (this.grid.endCol === this.grid.columns.length - 1) {
+      const lastColX =
+        this.grid.coordHelper.getColumnX(this.grid.endCol) -
+        scrollLeft +
+        this.grid.RowlabelWidth +
+        this.grid.columns[this.grid.endCol].width;
       this.grid.ctx.beginPath();
       this.grid.ctx.moveTo(lastColX, y);
       this.grid.ctx.lineTo(lastColX, y + height);
       this.grid.ctx.stroke();
     }
   }
-
   /**
    * Draw a single cell
    */
@@ -272,11 +307,15 @@ export class GridRenderer {
     if (!cell) return;
 
     const x = Math.floor(
-      this.grid.coordHelper.getColumnX(col) - scrollLeft + this.grid.RowlabelWidth
+      this.grid.coordHelper.getColumnX(col) -
+        scrollLeft +
+        this.grid.RowlabelWidth
     );
     const y = Math.floor(
-      this.grid.coordHelper.getRowY(row) - scrollTop +
-      this.grid.ColumnlabelHeight + this.grid.toolBoxHeight
+      this.grid.coordHelper.getRowY(row) -
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight
     );
 
     // Draw cell background
@@ -301,7 +340,10 @@ export class GridRenderer {
     this.drawCellText(cell, x, y, col, row);
 
     // Draw active cell selection (only if not part of range selection)
-    if (this.grid.selection.activeCell === cell && !this.grid.cellrange.isCellRange()) {
+    if (
+      this.grid.selection.activeCell === cell &&
+      !this.grid.cellrange.isCellRange()
+    ) {
       this.drawActiveCellBorder(x, y, col, row);
     }
   }
@@ -358,23 +400,23 @@ export class GridRenderer {
     if (this.grid.cellrange.isCellRange()) {
       let selectedCellleft = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol()) +
-        this.grid.RowlabelWidth -
-        scrollLeft
+          this.grid.RowlabelWidth -
+          scrollLeft
       );
       let selectedCelltop = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow()) +
-        this.grid.ColumnlabelHeight -
-        scrollTop
+          this.grid.ColumnlabelHeight -
+          scrollTop
       );
 
       let selectedCellWidth = Math.floor(
         this.grid.coordHelper.getColumnX(this.grid.cellrange.getendCol() + 1) -
-        this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
+          this.grid.coordHelper.getColumnX(this.grid.cellrange.getStartCol())
       );
 
       let selectedCellHeight = Math.floor(
         this.grid.coordHelper.getRowY(this.grid.cellrange.getendRow() + 1) -
-        this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
+          this.grid.coordHelper.getRowY(this.grid.cellrange.getStartRow())
       );
 
       this.grid.ctx.strokeStyle = "#137e43";
@@ -426,8 +468,8 @@ export class GridRenderer {
   drawColumnHeader(col, scrollLeft) {
     const x = Math.floor(
       this.grid.coordHelper.getColumnX(col) -
-      scrollLeft +
-      this.grid.RowlabelWidth
+        scrollLeft +
+        this.grid.RowlabelWidth
     );
 
     // Draw header border
@@ -440,9 +482,12 @@ export class GridRenderer {
     );
 
     // NEW: Check if column is selected (works for non-continuous selection too)
-    const isColumnSelected = this.grid.selection.isColumnSelected(col) ||
-      (this.grid.selection.activeCell && this.grid.selection.activeCell.colIndex === col) ||
-      (this.grid.cellrange.isCellRange() && this.grid.cellrange.isColumnInRange(col));
+    const isColumnSelected =
+      this.grid.selection.isColumnSelected(col) ||
+      (this.grid.selection.activeCell &&
+        this.grid.selection.activeCell.colIndex === col) ||
+      (this.grid.cellrange.isCellRange() &&
+        this.grid.cellrange.isColumnInRange(col));
 
     if (isColumnSelected) {
       this.drawSelectedColumnHeader(col, x);
@@ -533,9 +578,9 @@ export class GridRenderer {
 
     const y = Math.floor(
       this.grid.coordHelper.getRowY(row) -
-      scrollTop +
-      this.grid.ColumnlabelHeight +
-      this.grid.toolBoxHeight
+        scrollTop +
+        this.grid.ColumnlabelHeight +
+        this.grid.toolBoxHeight
     );
 
     // Draw border
@@ -548,9 +593,12 @@ export class GridRenderer {
     );
 
     // NEW: Check if row is selected (works for non-continuous selection too)
-    const isRowSelected = this.grid.selection.isRowSelected(row) ||
-      (this.grid.selection.activeCell && this.grid.selection.activeCell.rowIndex === row) ||
-      (this.grid.cellrange.isCellRange() && this.grid.cellrange.isRowInRange(row));
+    const isRowSelected =
+      this.grid.selection.isRowSelected(row) ||
+      (this.grid.selection.activeCell &&
+        this.grid.selection.activeCell.rowIndex === row) ||
+      (this.grid.cellrange.isCellRange() &&
+        this.grid.cellrange.isRowInRange(row));
 
     if (isRowSelected) {
       this.drawSelectedRowHeader(row, y);
@@ -590,7 +638,7 @@ export class GridRenderer {
     );
 
     // Draw selection right border - thicker for multi-select
-    this.grid.ctx.strokeStyle = "#107c41"
+    this.grid.ctx.strokeStyle = "#107c41";
     this.grid.ctx.lineWidth = 2;
     this.grid.ctx.strokeRect(
       Math.floor(this.grid.RowlabelWidth) - 2,
@@ -658,8 +706,11 @@ export class GridRenderer {
   getCellBackgroundColor(cell) {
     const isActiveCell = this.grid.selection.activeCell === cell;
     const isInSelectedRow = this.grid.selection.isRowSelected(cell.rowIndex);
-    const isInSelectedColumn = this.grid.selection.isColumnSelected(cell.colIndex);
-    const isInCellRange = this.grid.cellrange.isCellRange() &&
+    const isInSelectedColumn = this.grid.selection.isColumnSelected(
+      cell.colIndex
+    );
+    const isInCellRange =
+      this.grid.cellrange.isCellRange() &&
       this.grid.cellrange.contains(cell.rowIndex, cell.colIndex);
 
     // Priority: active cell > range selection > row/column selection

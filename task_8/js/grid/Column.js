@@ -16,6 +16,10 @@ export class Column {
     this.width = width;
   }
 
+  /**
+   * to resize the column
+   * @param {number} newWidth new width of the column
+   */
   resize(newWidth) {
     this.width = newWidth;
   }
