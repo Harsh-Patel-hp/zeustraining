@@ -18,5 +18,6 @@ function loadwindow() {
     rows
   );
 
-  grid.loadData(sampleData(200));
+  const grid = new Grid(canvas, 200, 100000);
+  grid.loadData(sampleData(100000));
 }
