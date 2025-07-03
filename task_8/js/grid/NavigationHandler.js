@@ -26,6 +26,21 @@ export class NavigationHandler {
       currentCol = this.grid.cellrange.endCol;
     }
 
+    // If there's a selection area and Shift is NOT held, use startRow/startCol as the navigation anchor
+    if (
+      this.grid.cellrange.isCellRange() &&
+      !e.shiftKey &&
+      e.key !== "Enter" &&
+      e.key !== "Tab"
+    ) {
+      currentRow = this.grid.cellrange.startRow;
+      currentCol = this.grid.cellrange.startCol;
+
+      console.log("clearRange");
+      // Clear range since we're navigating out of the selection
+      this.grid.cellrange.clearRange();
+    }
+
     // console.log(this.grid.cellrange);
     let newRow = currentRow;
     let newCol = currentCol;
@@ -80,26 +95,84 @@ export class NavigationHandler {
         e.preventDefault();
         break;
       case "Tab":
-        if (e.shiftKey) {
-          // Shift+Tab: Move to previous cell
-          newCol = currentCol - 1;
-          if (newCol < 0) {
-            newCol = this.grid.totalColumns - 1;
-            newRow = Math.max(0, currentRow - 1);
+        if (this.grid.cellrange.isCellRange()) {
+          const { startRow, endRow, startCol, endCol } = this.grid.cellrange;
+          let newRow = this.grid.selection.activeCell.rowIndex;
+          let newCol = this.grid.selection.activeCell.colIndex;
+
+          if (e.shiftKey) {
+            // Shift+Tab: Move left
+            newCol--;
+
+            if (newCol < startCol) {
+              newCol = endCol;
+              newRow--;
+
+              if (newRow < startRow) {
+                newRow = endRow;
+              }
+            }
+          } else {
+            // Tab: Move right
+            newCol++;
+
+            if (newCol > endCol) {
+              newCol = startCol;
+              newRow++;
+
+              if (newRow > endRow) {
+                newRow = startRow;
+              }
+            }
           }
+
+          const newCell = this.grid.getCell(newRow, newCol);
+          this.grid.selection.setActiveCell(newCell);
         } else {
-          // Tab: Move to next cell
-          newCol = currentCol + 1;
-          if (newCol >= this.grid.totalColumns) {
-            newCol = 0;
-            newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+          // Default Tab behavior without selection
+          if (e.shiftKey) {
+            newCol = currentCol - 1;
+            if (newCol < 0) {
+              newCol = this.grid.totalColumns - 1;
+              newRow = Math.max(0, currentRow - 1);
+            }
+          } else {
+            newCol = currentCol + 1;
+            if (newCol >= this.grid.totalColumns) {
+              newCol = 0;
+              newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+            }
           }
+          const newCell = this.grid.getCell(newRow, newCol);
+          this.grid.selection.setActiveCell(newCell);
         }
+
         e.preventDefault();
         break;
+
       case "Enter":
-        // Enter: Move to cell below
-        newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+        if (this.grid.cellrange.isCellRange()) {
+          const { startRow, endRow, startCol, endCol } = this.grid.cellrange;
+          let newactiverow = this.grid.selection.activeCell.rowIndex;
+          let newactivecol = this.grid.selection.activeCell.colIndex;
+          newRow = newactiverow + 1;
+          newCol = newactivecol;
+
+          // If we move beyond the end of the current column in the range
+          if (newRow > endRow) {
+            newRow = startRow;
+            newCol = newactivecol + 1;
+
+            // If we move beyond the last column, wrap around
+            if (newCol > endCol) {
+              newCol = startCol;
+            }
+          }
+          const newCell = this.grid.getCell(newRow, newCol);
+          this.grid.selection.setActiveCell(newCell);
+        } else {
+          newRow = Math.min(this.grid.totalRows - 1, currentRow + 1);
+        }
         e.preventDefault();
         break;
       case "F2":
@@ -120,7 +193,7 @@ export class NavigationHandler {
     }
 
     // If position changed, update selection
-    if (newRow !== currentRow || newCol !== currentCol) {
+    if (newRow !== currentRow + 1 || newCol !== currentCol + 1) {
       const newCell = this.grid.getCell(newRow, newCol);
       if (newCell) {
         if (
@@ -134,14 +207,16 @@ export class NavigationHandler {
           // Shift + navigation key: extend selection
           this.handleShiftSelection(e, newRow, newCol);
         } else {
-          // Regular navigation: move to new cell and clear range selection
-          this.grid.selection.clear();
-          this.grid.cellrange.clearRange();
-          this.grid.selection.setActiveCell(newCell);
+          // If a cell range is active, keep it, just update active cell
+          if (!this.grid.cellrange.isCellRange()) {
+            // No selection: normal single-cell nav
+            this.grid.selection.clear();
+            this.grid.cellrange.clearRange();
+            this.grid.selection.setActiveCell(newCell);
+          }
 
           // Auto-scroll to keep selected cell visible
           this.grid.scrollManager.scrollToCell(newRow, newCol);
-
           this.grid.renderer.redrawVisible();
         }
       }

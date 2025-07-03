@@ -345,6 +345,22 @@ export class GridRenderer {
     ) {
       this.drawActiveCellBorder(x, y, col, row);
     }
+
+    if (
+      this.grid.selection.activeCell === cell &&
+      (this.grid.selection.isRowSelected(row) ||
+        this.grid.selection.isColumnSelected(col)) &&
+      this.grid.selection.wasCtrlUsed
+    ) {
+      this.grid.ctx.strokeStyle = "#137e43";
+      this.grid.ctx.lineWidth = 1;
+      this.grid.ctx.strokeRect(
+        Math.floor(x) + 3 + 0.5,
+        Math.floor(y) + 3 + 0.5,
+        Math.floor(this.grid.columns[col].width) - 5,
+        Math.floor(this.grid.rows[row].height) - 5
+      );
+    }
   }
 
   /**

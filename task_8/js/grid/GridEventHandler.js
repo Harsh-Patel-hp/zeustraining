@@ -200,25 +200,33 @@ export class GridEventHandler {
           }
         } else {
           const cell = this.grid.coordHelper.getCellAtPosition(x, y);
-          // Auto-scroll to keep the new cell visible
-          if (cell) {
+          const startCell = this.grid.coordHelper.getCellAtPosition(
+            dragStartX,
+            dragStartY
+          );
+
+          // Only proceed if both cells exist and are different
+          if (
+            cell &&
+            startCell &&
+            (cell.rowIndex !== startCell.rowIndex ||
+              cell.colIndex !== startCell.colIndex)
+          ) {
+            // Auto-scroll to keep the new cell visible
             this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
-            const startCell = this.grid.coordHelper.getCellAtPosition(
-              dragStartX,
-              dragStartY
+
+            // Create range
+            this.grid.cellrange = new CellRange(
+              startCell.rowIndex,
+              startCell.colIndex,
+              cell.rowIndex,
+              cell.colIndex
             );
-            if (startCell) {
-              this.grid.cellrange = new CellRange(
-                startCell.rowIndex,
-                startCell.colIndex,
-                cell.rowIndex,
-                cell.colIndex
-              );
-              this.grid.selection.clear();
-              this.grid.selection.setActiveCell(startCell);
-              this.grid.renderer.redrawVisible();
-              this.grid.stats.updateAllDisplays(true);
-            }
+
+            this.grid.selection.clear();
+            this.grid.selection.setActiveCell(startCell);
+            this.grid.renderer.redrawVisible();
+            this.grid.stats.updateAllDisplays(true);
           }
         }
       } else {
