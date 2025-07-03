@@ -42,6 +42,11 @@ export class Grid {
 
     /** @type {number} Height of each row */
     this.rowHeight = 25;
+    this.zoomFactor = this.zoomLevel || 1;
+
+    this.RowlabelWidth = 100;
+
+    this.ColumnlabelHeight = 50;
 
     /** @type {number} Zoom factor for the grid */
     this.zoomFactor = this.zoomLevel || 1;
@@ -90,7 +95,9 @@ export class Grid {
 
     /** @type {Array<string>} Stores the column headers */
     this.headers = [];
-
+    this.grid_container = grid_container || "";
+    this.virtual_class = document.getElementById("virtual_class") || "";
+    
     /** @type {HTMLElement} The container element for the grid */
     this.grid_container = document.getElementById("grid_container") || "";
 
@@ -211,6 +218,7 @@ export class Grid {
       cell.setValue(value);
     }
   }
+
 
   /**
    * Retrieves the cell at the specified row and column index.
