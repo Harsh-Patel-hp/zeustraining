@@ -382,7 +382,11 @@ export class GridEventHandler {
 
 
         // Optional: trigger your selection update logic here if needed
-        // (e.g., call mouseMoveHandler again or update selection)      
+        // (e.g., call mouseMoveHandler again or update selection)     
+
+        // --- ADD THIS LINE ---
+        updateDragSelection(lastMouseEvent.clientX, lastMouseEvent.clientY, lastMouseEvent.ctrlKey);
+
       }, 16); // ~60fps
     };
 
@@ -392,7 +396,127 @@ export class GridEventHandler {
         autoScrollTimer = null;
       }
     };
+
+    // 1. Helper to update selection during drag
+    const updateDragSelection = (clientX, clientY, ctrlKey) => {
+      const rect = this.grid.canvas.getBoundingClientRect();
+      const x = Math.max(
+        0,
+        clientX - rect.left + this.grid.scrollX - this.grid.RowlabelWidth
+      );
+      const y = Math.max(
+        0,
+        clientY - rect.top + this.grid.scrollY - this.grid.ColumnlabelHeight
+      );
+
+      // ...PASTE your drag selection logic here from mousemove handler...
+      // For example:
+      // - If dragging columns: update selection for columns
+      // - If dragging rows: update selection for rows
+      // - If dragging cells: update cell range selection
+      // (Copy logic from your mousemove handler that processes drag selections)
+      // This keeps everything in sync!
+
+      if (
+        this.grid.dragStartColumn !== null &&
+        this.grid.dragStartColumn !== undefined
+      ) {
+        const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
+        if (currentColIndex !== -1) {
+          const startCol = Math.min(
+            this.grid.dragStartColumn,
+            currentColIndex
+          );
+          const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
+          // Only proceed if selection range changed
+          const last = this.grid.lastDragColRange;
+          if (last.start !== startCol || last.end !== endCol) {
+            // Update last drag range
+            this.grid.lastDragColRange = { start: startCol, end: endCol };
+            if (ctrlKey) {
+              this.grid.selection.clear();
+            }
+            // this.grid.selection.clear();
+            for (let i = startCol; i <= endCol; i++) {
+              this.grid.selection.selectColumn(i);
+            }
+
+            this.grid.selection.setActiveCell(
+              this.grid.rows[0].cells[this.grid.dragStartColumn]
+            );
+
+            this.grid.renderer.redrawVisible();
+            this.grid.stats.updateAllDisplays(true);
+          }
+        }
+      }
+
+      // Handle row drag selection
+      else if (
+        this.grid.dragStartRow !== null &&
+        this.grid.dragStartRow !== undefined
+      ) {
+        const currentRowIndex = this.grid.coordHelper.getRowIndexFromY(y);
+        if (currentRowIndex !== -1) {
+          const startRow = Math.min(this.grid.dragStartRow, currentRowIndex);
+          const endRow = Math.max(this.grid.dragStartRow, currentRowIndex);
+
+          // Only proceed if selection range changed
+          const last = this.grid.lastDragRowRange;
+          if (last.start !== startRow || last.end !== endRow) {
+            // Update last drag range
+            this.grid.lastDragRowRange = { start: startRow, end: endRow };
+
+            if (ctrlKey) {
+              this.grid.selection.clear();
+            }
+            // this.grid.selection.clear();
+            for (let i = startRow; i <= endRow; i++) {
+              this.grid.selection.selectRow(i);
+            }
+
+            this.grid.selection.setActiveCell(
+              this.grid.rows[this.grid.dragStartRow].cells[0]
+            );
+            this.grid.renderer.redrawVisible();
+            this.grid.stats.updateAllDisplays(true);
+          }
+        }
+      } else {
+        const cell = this.grid.coordHelper.getCellAtPosition(x, y);
+        const startCell = this.grid.coordHelper.getCellAtPosition(
+          dragStartX,
+          dragStartY
+        );
+
+        // Only proceed if both cells exist and are different
+        if (
+          cell &&
+          startCell &&
+          (cell.rowIndex !== startCell.rowIndex ||
+            cell.colIndex !== startCell.colIndex)
+        ) {
+          // Auto-scroll to keep the new cell visible
+          this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
+
+          // Create range
+          this.grid.cellrange = new CellRange(
+            startCell.rowIndex,
+            startCell.colIndex,
+            cell.rowIndex,
+            cell.colIndex
+          );
+
+          this.grid.selection.clear();
+          this.grid.selection.setActiveCell(startCell);
+          this.grid.renderer.redrawVisible();
+          this.grid.stats.updateAllDisplays(true);
+        }
+      }
+    };
   }
+
+
 
   /**
    * Handle column selection with multi-select support
