@@ -42,6 +42,20 @@ export class GridEventHandler {
       const localX = e.clientX - rect.left;
       const localY = e.clientY - rect.top;
 
+      const { offsetWidth, offsetHeight, clientWidth, clientHeight } =
+        this.grid.grid_container;
+
+      // Right scroll bar detection
+      const scrollbarX = clientWidth < offsetWidth && e.offsetX > clientWidth;
+      // Bottom scroll bar detection
+      const scrollbarY =
+        clientHeight < offsetHeight && e.offsetY > clientHeight;
+
+      if (scrollbarX || scrollbarY) {
+        // Click was on scroll bar, do nothing
+        return;
+      }
+
       // Handle column header clicks
       if (
         localY <= this.grid.ColumnlabelHeight + this.grid.toolBoxHeight &&
@@ -50,7 +64,10 @@ export class GridEventHandler {
         let colIndex = this.grid.coordHelper.getColIndexFromX(x);
 
         // Column resize detection (unchanged)
-        if (this.grid.isOverColumnResize(localX, localY, colIndex)) {
+        if (
+          this.grid.isOverColumnResize(localX, localY, colIndex) &&
+          e.button == 0
+        ) {
           resizeColumnIndex = colIndex;
           isResizing = true;
           initialColumnWidth = this.grid.columns[colIndex].width;
@@ -58,7 +75,7 @@ export class GridEventHandler {
           return;
         }
 
-        // NEW: Enhanced column selection with Ctrl support
+        // Enhanced column selection with Ctrl support
         this.handleColumnSelection(colIndex, e.ctrlKey);
       } else if (
         localX <= this.grid.RowlabelWidth &&
@@ -68,7 +85,10 @@ export class GridEventHandler {
         let rowIndex = this.grid.coordHelper.getRowIndexFromY(y);
 
         // Row resize detection (unchanged)
-        if (this.grid.isOverRowResize(localX, localY, rowIndex)) {
+        if (
+          this.grid.isOverRowResize(localX, localY, rowIndex) &&
+          e.button == 0
+        ) {
           resizeRowIndex = rowIndex;
           isResizing = true;
           initialRowHeight = this.grid.rows[rowIndex].height;
@@ -92,9 +112,10 @@ export class GridEventHandler {
         }
       }
 
-      dragStartY = y;
-      dragStartX = x;
       isDragging = true;
+      dragStartX = x;
+      dragStartY = y;
+
       document.addEventListener("mousemove", mouseMoveHandler);
       document.addEventListener("mouseup", mouseUpHandler);
     });
@@ -630,7 +651,32 @@ export class GridEventHandler {
     input.focus();
 
     input.addEventListener("input", () => {
+      // Clear previous references
+      this.grid.selection.clearFormulaReferences();
+
+      // console.log(input.value);
+      if (input.value.startsWith("=")) {
+        const regex = /\b([a-zA-Z]+)(\d+)\b/g;
+        let match;
+
+        while ((match = regex.exec(input.value)) !== null) {
+          const colLetters = match[1].toUpperCase(); // e.g., "AB"
+          const rowNumber = parseInt(match[2], 10); // e.g., "12" -> 12
+
+          // Convert column letters to index (A=0, B=1, ..., Z=25, AA=26, etc.)
+          let colIndex = 0;
+          for (let i = 0; i < colLetters.length; i++) {
+            colIndex = colIndex * 26 + (colLetters.charCodeAt(i) - 65 + 1);
+          }
+          colIndex -= 1; // Make it 0-based
+          const rowIndex = rowNumber - 1; // Also 0-based
+
+          let cell = this.grid.getCell(rowIndex, colIndex);
+          this.grid.selection.setFormulaReferences(cell);
+        }
+      }
       this.grid.stats.syncFormulaBarWithInput(input);
+      this.grid.renderer.redrawVisible();
     });
 
     /**
@@ -647,6 +693,8 @@ export class GridEventHandler {
       input.removeEventListener("blur", handleBlur);
       input.removeEventListener("keydown", handleKeyDown);
       container.removeChild(input);
+      this.grid.selection.clearFormulaReferences();
+      this.grid.renderer.redrawVisible();
     };
 
     /**

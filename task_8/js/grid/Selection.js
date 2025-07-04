@@ -16,7 +16,53 @@ export class Selection {
     /** @type {Cell} The active cell */
     this.activeCell = null;
 
+    /** @type {Set<Cell>} The set of referenced cell */
+    this.formulaReferencesMap = null;
+
     this.wasCtrlUsed = false;
+  }
+
+  /**
+   * Adds a cell to the set of referenced cells
+   * @param {Cell} cell - The cell to add
+   */
+  setFormulaReferences(cell) {
+    if (!this.formulaReferencesMap) {
+      this.formulaReferencesMap = new Map();
+    }
+
+    // If already stored, skip
+    if (this.formulaReferencesMap.has(cell)) return;
+
+    // Generate a unique color for this reference
+    const colors = [
+      "#e6194B",
+      "#3cb44b",
+      "#ffe119",
+      "#4363d8",
+      "#f58231",
+      "#911eb4",
+      "#46f0f0",
+      "#f032e6",
+    ];
+    const color = colors[this.formulaReferencesMap.size % colors.length];
+
+    this.formulaReferencesMap.set(cell, color);
+  }
+
+  /**
+   * Deletes a cell from the set of referenced cells
+   * @param {Cell} cell - The cell to delete
+   */
+  deleteFormulaReferences(cell) {
+    this.formulaReferences.delete(cell);
+  }
+
+  /**
+   * Clears the set of referenced cells
+   */
+  clearFormulaReferences() {
+    this.formulaReferencesMap = new Map();
   }
 
   /**

@@ -336,6 +336,20 @@ export class GridRenderer {
     // Draw cell text
     this.drawCellText(cell, x, y, col, row);
 
+    // Check if this cell is referenced in formula
+    if (this.grid.selection.formulaReferencesMap?.has(cell)) {
+      const color = this.grid.selection.formulaReferencesMap.get(cell);
+      this.grid.ctx.strokeStyle = color;
+      this.grid.ctx.lineWidth = 2;
+      this.grid.ctx.strokeRect(
+        x + 1,
+        y + 1,
+        Math.floor(this.grid.columns[col].width) - 1,
+        Math.floor(this.grid.rows[row].height) - 1
+      );
+      this.grid.ctx.lineWidth = 1;
+    }
+
     // Draw active cell selection (only if not part of range selection)
     if (
       this.grid.selection.activeCell === cell &&
@@ -372,24 +386,25 @@ export class GridRenderer {
     ctx.font = "12px Arial";
     ctx.textBaseline = "middle";
 
-    const rawValue = cell.getDisplayValue();
-    const text = String(rawValue ?? "");
+    let rawValue = cell.getDisplayValue();
+    let text = String(rawValue ?? "");
+
+    // Check for formula
+    if (text.startsWith("=")) {
+      const formula = text.slice(1); // Remove '='
+      const result = this.evaluateFormula(formula, cell);
+      text = String(result);
+    }
 
     const isNumeric = !isNaN(text) && text.trim() !== "";
-
-    // Calculate vertical center
     const textY = y + this.grid.rows[row].height / 2;
 
     if (isNumeric) {
       ctx.textAlign = "right";
-      // Padding: 5px from right edge
-      const textX = x + this.grid.columns[col].width - 5;
-      ctx.fillText(text, textX, textY);
+      ctx.fillText(text, x + this.grid.columns[col].width - 5, textY);
     } else {
       ctx.textAlign = "left";
-      // Padding: 5px from left edge
-      const textX = x + 5;
-      ctx.fillText(text, textX, textY);
+      ctx.fillText(text, x + 5, textY);
     }
   }
 
@@ -742,5 +757,56 @@ export class GridRenderer {
     }
 
     return "#fff";
+  }
+
+  /**
+   * Evaluates a formula by replacing cell references with actual values.
+   * @param {string} formula - The formula to evaluate, containing cell references.
+   * @param {Cell} currentCell - The current cell from which the formula is evaluated.
+   * @returns {string|number} The evaluated result of the formula, or an error string if invalid.
+   */
+  evaluateFormula(formula, currentCell) {
+    const cellRefRegex = /\b([a-zA-Z]+)(\d+)\b/g;
+
+    let hasInvalidReference = false;
+
+    const formulaWithValues = formula.replace(
+      cellRefRegex,
+      (match, colStr, rowStr) => {
+        // Convert column letters to index
+        colStr = colStr.toUpperCase();
+        let col = 0;
+        for (let i = 0; i < colStr.length; i++) {
+          col = col * 26 + (colStr.charCodeAt(i) - 65 + 1);
+        }
+        col -= 1;
+
+        const row = parseInt(rowStr, 10) - 1;
+        const refCell = this.grid.getCell(row, col);
+
+        if (!refCell || refCell === currentCell) return "0";
+
+        const val = refCell.getDisplayValue();
+
+        // Check for non-numeric string
+        if (isNaN(val)) {
+          hasInvalidReference = true;
+          return "0"; // dummy value, actual result will return "#VALUE!"
+        }
+
+        return val;
+      }
+    );
+
+    if (hasInvalidReference) {
+      return "#VALUE!";
+    }
+
+    try {
+      const result = eval(formulaWithValues);
+      return result;
+    } catch (e) {
+      return "#ERROR";
+    }
   }
 }
