@@ -29,6 +29,10 @@ export class GridEventHandler {
     let autoScrollTimer = null;
     let lastMouseEvent = null;
 
+    /**
+     * Handles mouse down events on the grid.
+     * @param {MouseEvent} e - The mouse down event.
+     */
     this.grid.grid_container.addEventListener("mousedown", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
       const x =
@@ -95,7 +99,10 @@ export class GridEventHandler {
       document.addEventListener("mouseup", mouseUpHandler);
     });
 
-
+    /**
+     * Handles mouse move events on the grid.
+     * @param {MouseEvent} e - The mouse event object.
+     */
     this.grid.grid_container.addEventListener("mousemove", (e) => {
       const rect = this.grid.canvas.getBoundingClientRect();
       const x = Math.max(
@@ -210,9 +217,6 @@ export class GridEventHandler {
             (cell.rowIndex !== startCell.rowIndex ||
               cell.colIndex !== startCell.colIndex)
           ) {
-            // Auto-scroll to keep the new cell visible
-            this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
-
             // Create range
             this.grid.cellrange = new CellRange(
               startCell.rowIndex,
@@ -220,8 +224,6 @@ export class GridEventHandler {
               cell.rowIndex,
               cell.colIndex
             );
-
-            console.log("clear range and selection");
 
             this.grid.selection.clear();
             this.grid.selection.setActiveCell(startCell);
@@ -235,8 +237,10 @@ export class GridEventHandler {
       }
     });
 
+    /**
+     * Handles mouse up events
+     */
     this.grid.grid_container.addEventListener("mouseup", () => {
-
       // Clear drag selection markers
       this.grid.dragStartColumn = null;
       this.grid.dragStartRow = null;
@@ -336,7 +340,8 @@ export class GridEventHandler {
       // Check if auto-scroll is needed
       const rect = this.grid.grid_container.getBoundingClientRect();
       const edgeSize = 20; // px from edge to trigger scroll
-      let scrollX = 0, scrollY = 0;
+      let scrollX = 0,
+        scrollY = 0;
 
       if (e.clientX < rect.left + edgeSize) scrollX = -10;
       else if (e.clientX > rect.right - edgeSize) scrollX = 10;
@@ -358,13 +363,17 @@ export class GridEventHandler {
       document.removeEventListener("mouseup", mouseUpHandler);
     };
 
+    /**
+     * Starts the auto-scroll timer
+     */
     const startAutoScroll = () => {
       if (autoScrollTimer) return;
       autoScrollTimer = setInterval(() => {
         if (!lastMouseEvent) return;
 
         const rect = this.grid.grid_container.getBoundingClientRect();
-        let dx = 0, dy = 0;
+        let dx = 0,
+          dy = 0;
 
         if (lastMouseEvent.clientX < rect.left + 20) dx = -10;
         else if (lastMouseEvent.clientX > rect.right - 20) dx = 10;
@@ -374,17 +383,17 @@ export class GridEventHandler {
 
         this.grid.grid_container.scrollLeft += dx;
         this.grid.grid_container.scrollTop += dy;
-
-
-        // Optional: trigger your selection update logic here if needed
-        // (e.g., call mouseMoveHandler again or update selection)     
-
-        // --- ADD THIS LINE ---
-        updateDragSelection(lastMouseEvent.clientX, lastMouseEvent.clientY, lastMouseEvent.ctrlKey);
-
-      }, 16); // ~60fps
+        updateDragSelection(
+          lastMouseEvent.clientX,
+          lastMouseEvent.clientY,
+          lastMouseEvent.ctrlKey
+        );
+      }, 16);
     };
 
+    /**
+     * Stops the auto-scroll timer
+     */
     const stopAutoScroll = () => {
       if (autoScrollTimer) {
         clearInterval(autoScrollTimer);
@@ -392,7 +401,13 @@ export class GridEventHandler {
       }
     };
 
-    // 1. Helper to update selection during drag
+    /**
+     * Updates the drag selection by re-calculating the row and column indices based
+     * on the mouse position and scroll position of the grid container.
+     * @param {number} clientX - The x-coordinate of the mouse in client space.
+     * @param {number} clientY - The y-coordinate of the mouse in client space.
+     * @param {boolean} ctrlKey - Whether the control key is pressed.
+     */
     const updateDragSelection = (clientX, clientY, ctrlKey) => {
       const rect = this.grid.canvas.getBoundingClientRect();
       const x = Math.max(
@@ -410,10 +425,7 @@ export class GridEventHandler {
       ) {
         const currentColIndex = this.grid.coordHelper.getColIndexFromX(x);
         if (currentColIndex !== -1) {
-          const startCol = Math.min(
-            this.grid.dragStartColumn,
-            currentColIndex
-          );
+          const startCol = Math.min(this.grid.dragStartColumn, currentColIndex);
           const endCol = Math.max(this.grid.dragStartColumn, currentColIndex);
           // Only proceed if selection range changed
           const last = this.grid.lastDragColRange;
@@ -483,9 +495,6 @@ export class GridEventHandler {
           (cell.rowIndex !== startCell.rowIndex ||
             cell.colIndex !== startCell.colIndex)
         ) {
-          // Auto-scroll to keep the new cell visible
-          this.grid.scrollManager.scrollToCell(cell.rowIndex, cell.colIndex);
-
           // Create range
           this.grid.cellrange = new CellRange(
             startCell.rowIndex,
@@ -502,8 +511,6 @@ export class GridEventHandler {
       }
     };
   }
-
-
 
   /**
    * Handle column selection with multi-select support
@@ -525,7 +532,7 @@ export class GridEventHandler {
           );
           this.grid.selection.setActiveCell(
             this.grid.rows[0].cells[
-            slectedcolumnarray[slectedcolumnarray.length - 1]
+              slectedcolumnarray[slectedcolumnarray.length - 1]
             ]
           );
         }
@@ -626,6 +633,9 @@ export class GridEventHandler {
       this.grid.stats.syncFormulaBarWithInput(input);
     });
 
+    /**
+     * Handle blur and keydown events
+     */
     const handleBlur = () => {
       const newValue = input.value;
       if (newValue !== cell.value) {
@@ -639,6 +649,10 @@ export class GridEventHandler {
       container.removeChild(input);
     };
 
+    /**
+     * Handle keydown event
+     * @param {KeyboardEvent} e
+     */
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         handleBlur();
