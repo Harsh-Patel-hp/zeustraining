@@ -344,8 +344,8 @@ export class GridRenderer {
       this.grid.ctx.strokeRect(
         x + 1,
         y + 1,
-        Math.floor(this.grid.columns[col].width) - 1,
-        Math.floor(this.grid.rows[row].height) - 1
+        Math.floor(this.grid.columns[col].width) - 2,
+        Math.floor(this.grid.rows[row].height) - 2
       );
       this.grid.ctx.lineWidth = 1;
     }
@@ -806,7 +806,7 @@ export class GridRenderer {
       const result = eval(formulaWithValues);
       return result;
     } catch (e) {
-      return "#ERROR";
+      return "#VALUE!";
     }
   }
 }

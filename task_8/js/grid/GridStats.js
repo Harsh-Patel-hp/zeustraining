@@ -42,6 +42,31 @@ export class GridStats {
           this.grid.selection.activeCell.value = newValue;
           this.updateActiveCellDisplay();
         }
+
+        // Clear previous references
+        this.grid.selection.clearFormulaReferences();
+
+        // console.log(input.value);
+        if (this.formulaBar.value.startsWith("=")) {
+          const regex = /\b([a-zA-Z]+)(\d+)\b/g;
+          let match;
+
+          while ((match = regex.exec(this.formulaBar.value)) !== null) {
+            const colLetters = match[1].toUpperCase(); // e.g., "AB"
+            const rowNumber = parseInt(match[2], 10); // e.g., "12" -> 12
+
+            // Convert column letters to index (A=0, B=1, ..., Z=25, AA=26, etc.)
+            let colIndex = 0;
+            for (let i = 0; i < colLetters.length; i++) {
+              colIndex = colIndex * 26 + (colLetters.charCodeAt(i) - 65 + 1);
+            }
+            colIndex -= 1; // Make it 0-based
+            const rowIndex = rowNumber - 1; // Also 0-based
+
+            let cell = this.grid.getCell(rowIndex, colIndex);
+            this.grid.selection.setFormulaReferences(cell);
+          }
+        }
         this.grid.renderer.redrawVisible();
       }
     });
@@ -53,6 +78,7 @@ export class GridStats {
     });
 
     this.formulaBar.addEventListener("blur", () => {
+      this.grid.selection.clearFormulaReferences();
       this.commitFormulaBarValue();
     });
   }

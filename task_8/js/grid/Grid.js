@@ -97,7 +97,7 @@ export class Grid {
     this.headers = [];
     this.grid_container = grid_container || "";
     this.virtual_class = document.getElementById("virtual_class") || "";
-    
+
     /** @type {HTMLElement} The container element for the grid */
     this.grid_container = document.getElementById("grid_container") || "";
 
@@ -218,7 +218,6 @@ export class Grid {
       cell.setValue(value);
     }
   }
-
 
   /**
    * Retrieves the cell at the specified row and column index.
